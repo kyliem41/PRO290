@@ -2,10 +2,9 @@
 extern crate rocket;
 
 mod utils;
+mod models;
 
 use std::env;
-
-use serde::Serialize;
 
 #[launch]
 fn rocket() -> _ {

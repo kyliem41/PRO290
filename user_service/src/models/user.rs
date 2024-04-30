@@ -15,9 +15,9 @@ pub struct User {
 
 //finish
 impl User {
-    pub fn new() -> Self {
-        Self{
-
-        }
-    }
+    // pub fn new() -> Self {
+    //     Self{
+            
+    //     }
+    // }
 }
