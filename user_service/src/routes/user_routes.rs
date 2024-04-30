@@ -7,5 +7,5 @@ use models::user::User;
 
 #[post("/post", data = "<user>")]
 pub fn post_user(user: Json<User>) {
-    //
+    
 }
