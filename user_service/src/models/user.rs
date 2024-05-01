@@ -1,23 +1,35 @@
 use serde::{Serialize, Deserialize};
-use rocket::serde::json::serde_json;
+use uuid::Uuid;
 
 #[derive(Clone, Serialize, Deserialize)]
 pub struct User {
-    pub id: String,
+    pub id: Uuid,
     pub username: String,
     pub email: String,
     pub password: String,
-    pub dob: String, //maybe make this a date object but idk
-    pub pfp: String, //place holder because i need to do some research to figure out how to do this
+    pub dob: String, // maybe make this a date object but idk
+    pub pfp: Uuid,
+    pub bio: String,
     pub followers: Vec<String>,
-    pub following: Vec<String>
+    pub following: Vec<String>,
 }
 
-//finish
+/*
+TODO
+make the pfp uuid default to a default pfp in the database
+ */
 impl User {
-    // pub fn new() -> Self {
-    //     Self{
-            
-    //     }
-    // }
+    pub fn new(username: String, email: String, password: String, dob: String, pfp: Uuid, bio: String, followers: Vec<String>, following: Vec<String>,) -> Self {
+        Self {
+            id: Uuid::new_v4(),
+            username,
+            email,
+            password,
+            dob,
+            pfp,
+            bio,
+            followers,
+            following,
+        }
+    }
 }

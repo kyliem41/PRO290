@@ -2,6 +2,11 @@ use uuid::Uuid;
 use pwhash::bcrypt;
 use pwhash::unix;
 
+/*
+TODO
+add generation and verification using jwt for user auth
+ */
+
 pub fn generate_uuid() -> Uuid {
     let uuid = Uuid::new_v4();
     uuid
