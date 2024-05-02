@@ -54,7 +54,7 @@ pub async fn get_user_by_id(id: &str) -> status::Custom<Value>{
     match Uuid::parse_str(id) {
         Ok(_) => {
             let db = match UserDB::new().await {
-                Ok(db) => db, // Wrap the UserDB instance in an Arc for thread safety
+                Ok(db) => db,
                 Err(err) => {
                     println!("{}", err);
                     let response_json = json!({"message": "Error creating connection to database"});
@@ -100,8 +100,30 @@ pub fn update_pfp(id: &str, pfp: Json<Value>) {
 
 
 #[delete("/delete/<id>")]
-pub fn delete_user(id: &str) {
+pub async fn delete_user(id: &str) -> status::Custom<String> {
+    match Uuid::parse_str(id) {
+        Ok(_) => {
+            let db = match UserDB::new().await {
+                Ok(db) => db,
+                Err(err) => {
+                    println!("{}", err);
+                    return status::Custom(Status::InternalServerError, "Error creating connection to database".to_string())
+                }
+            }; 
 
+            match db.delete_user(id.to_string()).await {
+                Ok(_) => return status::Custom(Status::Ok, "".to_string()),
+                Err(err) => {
+                    println!("{}", err);
+                    return status::Custom(Status::InternalServerError, "Error deleting user".to_string())
+                }
+            }
+        },
+        Err(err) => {
+            println!("{}", err);
+            status::Custom(Status::BadRequest, "invalid id".to_string())
+        }
+    }
 }
 
 #[delete("/logout/<token>")]

@@ -50,5 +50,11 @@ impl UserDB {
 
         Ok(json_value)
     }
-    
+
+    pub async fn delete_user(&self, id: String) -> Result<(), Box<dyn std::error::Error>> {
+        let query = self.client.prepare("DELETE FROM users WHERE id = $1").await?;
+        self.client.execute(&query, &[&id]).await?;
+
+        Ok(())
+    }
 }
