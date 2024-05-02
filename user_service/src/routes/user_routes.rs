@@ -4,17 +4,32 @@ use rocket::{http::Status, request::FromParam};
 use rocket::response::status;
 use rocket::State;
 use serde::Serialize;
-use serde_json::Value;
+use serde_json::{json, Value};
 use crate::models::user::User;
 use crate::utils::utils;
+use crate::dal::userdb::UserDB;
 
 #[post("/post", data = "<user>")]
-pub fn post_user(user: Json<User>) {
-    
-    let mut user: User = user.into_inner();
-    user.id = utils::generate_uuid();
+pub async fn post_user(user: Json<User>) -> status::Custom<String> {
+    let mut user = user.into_inner();
+    user.id = utils::generate_uuid().to_string();
 
-    
+    // Create an instance of UserDB
+    let db = match UserDB::new().await {
+        Ok(db) => db, // Wrap the UserDB instance in an Arc for thread safety
+        Err(err) => {
+            println!("{}", err);
+            return status::Custom(Status::InternalServerError, "Error creating connection to database".to_string())
+        }
+    };
+
+    match db.create_user(user).await {
+        Ok(_) => return status::Custom(Status::Created, "".to_string()),
+        Err(err) => {
+            println!("{}", err);
+            return status::Custom(Status::InternalServerError, "Error occured when creating user in database".to_string())
+        }
+    }
 }
 
 #[post("/login", data = "<login>")]
@@ -32,9 +47,35 @@ pub fn follow_user(token: &str, id: &str ){
 
 }
 
+//TODO handle 404
 #[get("/get/id/<id>")]
-pub fn get_user_by_id(id: &str) {
+pub async fn get_user_by_id(id: &str) -> status::Custom<Value>{
 
+    match Uuid::parse_str(id) {
+        Ok(_) => {
+            let db = match UserDB::new().await {
+                Ok(db) => db, // Wrap the UserDB instance in an Arc for thread safety
+                Err(err) => {
+                    println!("{}", err);
+                    let response_json = json!({"message": "Error creating connection to database"});
+                    return status::Custom(Status::InternalServerError, response_json)
+                }
+            }; 
+
+            if let Ok (user_json) = db.get_user(id.to_string()).await {
+                return status::Custom(Status::Ok, user_json)
+            }
+
+            //i think 404 should be here
+            let response_json = json!({"message": "User not found"});
+            status::Custom(Status::BadRequest, response_json)
+        },
+        Err(err) => {
+            println!("{}", err);
+            let response_json = json!({"message": "invalid id"});
+            status::Custom(Status::BadRequest, response_json)
+        }
+    }
 }
 
 #[get("/health")]
