@@ -1,0 +1,34 @@
+version: "3.1"
+
+networks:
+  yapper:
+    external: false
+
+services:
+
+  TraefikGateway:
+    container_name: TraefikGateway
+    image: traefik:v3.0
+    command: --api.insecure=true --providers.docker
+    ports:
+      - "80:80"
+      - "8080:8080"
+    volumes:
+      # So that Traefik can listen to the Docker events
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - yapper
+
+  CassandraDBPosts:
+    container_name: CassandraDBPosts
+    image: cassandra:latest
+    restart: always
+    hostname: CassandraDBPosts
+    ports:
+      - "7000:7000"
+      - "9042:9042"
+      - "7199:7199"
+      - "7001:7001"
+      - "9160:9160"
+    networks:
+      - yapper
