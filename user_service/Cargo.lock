@@ -1514,6 +1514,18 @@ dependencies = [
 ]
 
 [[package]]
+name = "rocket-multipart-form-data"
+version = "0.10.7"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "f3c3cd05b4ff598b9490fbdfc8edcfdbab0ff3f546c0f58d5d3a7127addbc789"
+dependencies = [
+ "mime",
+ "multer",
+ "rocket",
+ "tokio-util",
+]
+
+[[package]]
 name = "rocket_codegen"
 version = "0.5.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2241,6 +2253,7 @@ dependencies = [
  "pwhash",
  "reqwest",
  "rocket",
+ "rocket-multipart-form-data",
  "serde",
  "serde_json",
  "tokio",

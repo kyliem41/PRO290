@@ -10,7 +10,7 @@ pub struct UserDB {
 
 impl UserDB {
     pub async fn new() -> Result<Self, Error> {
-        let url: String = env::var("URL").expect("URL not set");
+        let url: String = env::var("USER_URL").expect("URL not set");
         let (client, connection) = tokio_postgres::connect(&url, NoTls).await?;
 
         // Spawn a background task to handle the connection

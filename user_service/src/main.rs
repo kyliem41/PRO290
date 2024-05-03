@@ -1,5 +1,6 @@
 #[macro_use]
 extern crate rocket;
+extern crate rocket_multipart_form_data;
 
 mod utils;
 mod models;

@@ -1,24 +1,52 @@
+#![feature(proc_macro_hygiene, decl_macro)]
 use uuid::Uuid;
 use rocket::serde::json::{self, Json};
 use rocket::{http::Status, request::FromParam};
 use rocket::response::status;
+use rocket::Data;
 use rocket::State;
 use serde::Serialize;
 use serde_json::{json, Value};
 use crate::models::user::User;
+use crate::models::forms::UserForm;
 use crate::utils::utils;
 use crate::dal::userdb::UserDB;
+use crate::dal::imagedb::ImageDB;
+use rocket::http::ContentType;
+use rocket::form::Form;
 
-#[post("/post", data = "<user>")]
-pub async fn post_user(user: Json<User>) -> status::Custom<String> {
-    let mut user = user.into_inner();
-    user.id = utils::generate_uuid().to_string();
+/*
+TODO
+add check for pfp being empty
+add default pfp
+hash password
+*/
+#[post("/post", data = "<user_form>")]
+pub async fn post_user(user_form: Form<UserForm<'_>>) -> status::Custom<String> {
+    let user_data: UserForm = user_form.into_inner();
+    let image_id: String = utils::generate_uuid().to_string();
+
+    // Create an instance of UserDB
+    let db = match ImageDB::new().await {
+        Ok(db) => db, // Wrap the UserDB instance in an Arc for thread safety
+        Err(err) => {
+            println!("ImageDatabase: {}", err);
+            return status::Custom(Status::InternalServerError, "Error creating connection to database".to_string())
+        }
+    };
+
+    if let Err(err) = db.post_image(&image_id, user_data.pfp).await {
+        println!("ImageDatabase: {}", err);
+        return status::Custom(Status::InternalServerError, format!("Error posting image to database"))
+    }
+
+    let user: User = User::new(user_data.username, user_data.email, user_data.password, user_data.dob, image_id, user_data.bio, user_data.followers, user_data.following);
 
     // Create an instance of UserDB
     let db = match UserDB::new().await {
         Ok(db) => db, // Wrap the UserDB instance in an Arc for thread safety
         Err(err) => {
-            println!("{}", err);
+            println!("UserDatabase: {}", err);
             return status::Custom(Status::InternalServerError, "Error creating connection to database".to_string())
         }
     };
@@ -26,7 +54,7 @@ pub async fn post_user(user: Json<User>) -> status::Custom<String> {
     match db.create_user(user).await {
         Ok(_) => return status::Custom(Status::Created, "".to_string()),
         Err(err) => {
-            println!("{}", err);
+            println!("UserDatabase: {}", err);
             return status::Custom(Status::InternalServerError, "Error occured when creating user in database".to_string())
         }
     }
@@ -135,3 +163,11 @@ pub fn logout(token: &str) {
 pub fn unfollow_user(token: &str, id: &str) {
 
 }
+
+// #[post("/test/file", data = "<user_form>")]
+// pub fn test_getting_a_file(user_form: Form<UserForm>) -> String {
+//     let test = &user_form.test;
+//     println!("{}", test);
+
+//     "Ok".to_string()
+// }
