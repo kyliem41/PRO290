@@ -37,10 +37,6 @@ pub async fn post_user(user_form: Form<UserForm<'_>>) -> status::Custom<String> 
         return status::Custom(Status::InternalServerError, format!("Error posting image to database"))
     }
 
-    let hash: String = utils::hash_password(user_data.password);
-    println!("hashed password: {}", hash);
-    let user: User = User::new(user_data.username, user_data.email, hash, user_data.dob, image_id, user_data.bio, user_data.followers, user_data.following);
-
     // Create an instance of UserDB
     let db = match UserDB::new().await {
         Ok(db) => db, // Wrap the UserDB instance in an Arc for thread safety
@@ -49,6 +45,13 @@ pub async fn post_user(user_form: Form<UserForm<'_>>) -> status::Custom<String> 
             return status::Custom(Status::InternalServerError, "Error creating connection to database".to_string())
         }
     };
+
+    if db.does_username_exist(&user_data.username).await.unwrap() {
+        return status::Custom(Status::BadRequest, "Username needs to be unique".to_string())
+    }
+
+    let hash: String = utils::hash_password(user_data.password);
+    let user: User = User::new(user_data.username, user_data.email, hash, user_data.dob, image_id, user_data.bio, user_data.followers, user_data.following);
 
     match db.create_user(user).await {
         Ok(_) => return status::Custom(Status::Created, "".to_string()),
@@ -62,7 +65,7 @@ pub async fn post_user(user_form: Form<UserForm<'_>>) -> status::Custom<String> 
 #[post("/login", data = "<login>")]
 pub async fn login(login: Json<Login>) -> status::Custom<String> {
     let db = match UserDB::new().await {
-        Ok(db) => db, // Wrap the UserDB instance in an Arc for thread safety
+        Ok(db) => db,
         Err(err) => {
             println!("UserDatabase: {}", err);
             return status::Custom(Status::InternalServerError, "Error creating connection to database".to_string())
@@ -100,7 +103,7 @@ pub async fn follow_user(token: String, followed_id: String ) -> status::Custom<
         Ok(_) => {
             if let Ok(follower_id) = utils::verify_jwt(&token) {
                 let db = match UserDB::new().await {
-                    Ok(db) => db, // Wrap the UserDB instance in an Arc for thread safety
+                    Ok(db) => db,
                     Err(err) => {
                         println!("UserDatabase: {}", err);
                         return status::Custom(Status::InternalServerError, "Error creating connection to database".to_string())
@@ -165,26 +168,26 @@ pub async fn get_user_by_id(id: &str) -> status::Custom<Value>{
 
 #[get("/get/username/<username>")]
 pub fn get_user_by_username(username: &str) {
-
+    
 }
 
 //todo finish
-// #[get("/pfp/<id>")]
-// pub async fn get_pfp(id: String) -> status::Custom<Vec<u8>> {
+#[get("/pfp/<token>")]
+pub async fn get_pfp(token: String) {
 
-// }
+}
 
 //make this an enum
-#[patch("/update/<id>", data = "<update>")]
-fn update_user(id: &str, update: Json<Value>){
+#[patch("/update/<token>", data = "<update>")]
+fn update_user(token: String, update: Json<Value>){
 
 }
 
-#[patch("/update/pfp/<id>", data = "<pfp>")]
-pub fn update_pfp(id: &str, pfp: Json<Value>) {
+//should be a form
+#[patch("/update/pfp/<token>", data = "<pfp>")]
+pub fn update_pfp(token: String, pfp: Json<Value>) {
 
 }
-
 
 #[delete("/delete/<id>")]
 pub async fn delete_user(id: &str) -> status::Custom<String> {
