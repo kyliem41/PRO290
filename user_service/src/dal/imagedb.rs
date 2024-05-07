@@ -40,6 +40,7 @@ impl ImageDB {
     pub async fn get_image(&self, id: &String) -> Result<Vec<u8>, Box<dyn std::error::Error>> {
         let query = self.client.prepare("SELECT image FROM images WHERE id = $1").await?;
         let row = self.client.query_one(&query, &[id]).await?;
+        
         let image_data: Vec<u8> = row.get(0);
         Ok(image_data)
     }

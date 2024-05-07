@@ -12,7 +12,9 @@ serde_json = "1.0"
 uuid = "1.8.0"
 reqwest = { version = "0.12.4", features = ["blocking", "json"] }
 bson = "2.3"
-pwhash = "1"
 tokio = { version = "1", features = ["full"] }
 tokio-postgres = "0.7"
 rocket-multipart-form-data = "0.10.7"
+argon2 = "0.5.3"
+jsonwebtoken = "9.3.0"
+chrono = "0.4"

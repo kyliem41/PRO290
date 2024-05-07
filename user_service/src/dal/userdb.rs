@@ -1,7 +1,8 @@
+use argon2::password_hash::PasswordHashString;
 use tokio_postgres::{NoTls, Client, Error};
 use rocket::serde::json::{Json, Value};
 use serde_json::json;
-use crate::models::user::User;
+use crate::models::user::{self, User};
 use std::env;
 
 pub struct UserDB {
@@ -56,5 +57,27 @@ impl UserDB {
         self.client.execute(&query, &[&id]).await?;
 
         Ok(())
+    }
+
+    pub async fn does_username_exist(&self, username: &String) -> Result<bool, Box<dyn std::error::Error>>{
+        let query = self.client.prepare("SELECT COUNT(*) FROM users WHERE username = $1").await?;
+        let row = self.client.query_one(&query, &[username]).await?;
+        let count: i64 = row.get(0);
+
+        if count > 0 {
+            return Ok(true)
+        }
+        
+        Ok(false)
+    }
+
+    pub async fn get_password_and_id(&self, username: &String) -> Result<(String, String), Box<dyn std::error::Error>> {
+        let query = self.client.prepare("SELECT password, id FROM users WHERE username = $1").await?;
+        let row = self.client.query_one(&query, &[username]).await?;
+    
+        let password: String = row.get("password");
+        let id: String = row.get("id");
+    
+        Ok((password, id))
     }
 }

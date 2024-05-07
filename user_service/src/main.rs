@@ -49,7 +49,7 @@ fn register_to_consul() -> Result<(), Box<dyn std::error::Error>> {
 
 #[launch]
 fn rocket() -> _ {
-    let address =  env::var("API_ADDRESS").unwrap();
+    let address: String =  env::var("API_ADDRESS").unwrap();
     print!("{}", address);
 
     let config = rocket::Config {
@@ -60,7 +60,7 @@ fn rocket() -> _ {
 
     let rocket_instance = rocket::custom(config)
         .mount("/", routes![user_routes::health])
-        .mount("/user", routes![user_routes::post_user, user_routes::get_user_by_id, user_routes::delete_user]);
+        .mount("/user", routes![user_routes::post_user, user_routes::get_user_by_id, user_routes::delete_user, user_routes::login]);
 
     
     if address != "127.0.0.1" {
