@@ -1,5 +1,5 @@
 use uuid::Uuid;
-use crate::models::token::Token;
+use crate::models::{login::Login, token::Token};
 use jsonwebtoken::{encode, decode, Header, EncodingKey, DecodingKey, Algorithm, Validation};
 use std::env;
 use argon2::{
@@ -49,4 +49,11 @@ pub fn create_jwt(id: String) -> Result<String, jsonwebtoken::errors::Error> {
 
     let header = Header::new(Algorithm::HS256);
     encode(&header, &token, &EncodingKey::from_secret(secret_key.as_ref()))
+}
+
+pub fn verify_jwt(token: &String) -> Result<String, jsonwebtoken::errors::Error> {
+    let secret_key: String = env::var("SECRET_KEY").unwrap();
+    let validation = Validation::new(Algorithm::HS256);
+    let token_data = decode::<Token>(token, &DecodingKey::from_secret(secret_key.as_ref()), &validation)?;
+    Ok(token_data.claims.id)
 }

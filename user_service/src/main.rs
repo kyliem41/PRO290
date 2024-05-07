@@ -60,7 +60,7 @@ fn rocket() -> _ {
 
     let rocket_instance = rocket::custom(config)
         .mount("/", routes![user_routes::health])
-        .mount("/user", routes![user_routes::post_user, user_routes::get_user_by_id, user_routes::delete_user, user_routes::login]);
+        .mount("/user", routes![user_routes::post_user, user_routes::get_user_by_id, user_routes::delete_user, user_routes::login, user_routes::follow_user]);
 
     
     if address != "127.0.0.1" {

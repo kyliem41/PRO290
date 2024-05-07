@@ -80,4 +80,15 @@ impl UserDB {
     
         Ok((password, id))
     }
+
+    //check if the followed account exists
+    pub async fn follow_account(&self ,follower_id: String, followed_id: String) -> Result<(), Box<dyn std::error::Error>> {
+        let query = self.client.prepare("UPDATE users SET following = array_append(following, $1) WHERE id = $2").await?;
+        self.client.execute(&query, &[&followed_id, &follower_id]).await?;
+
+        let query = self.client.prepare("Update users SET followers = array_append(followers, $1) WHERE id = $2").await?;
+        self.client.execute(&query, &[&follower_id, &followed_id]);
+
+        Ok(())
+    } 
 }

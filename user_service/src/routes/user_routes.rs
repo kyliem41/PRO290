@@ -91,12 +91,40 @@ pub async fn login(login: Json<Login>) -> status::Custom<String> {
 
 #[post("/password/reset", data = "<email>")]
 pub fn reset_password(email: Json<Value>) {
-
+    
 }
 
-#[post("/follow/<token>/<id>")]
-pub fn follow_user(token: &str, id: &str ){
+#[post("/follow/<token>/<followed_id>")]
+pub async fn follow_user(token: String, followed_id: String ) -> status::Custom<String>{
+    match Uuid::parse_str(&followed_id) {
+        Ok(_) => {
+            if let Ok(follower_id) = utils::verify_jwt(&token) {
+                let db = match UserDB::new().await {
+                    Ok(db) => db, // Wrap the UserDB instance in an Arc for thread safety
+                    Err(err) => {
+                        println!("UserDatabase: {}", err);
+                        return status::Custom(Status::InternalServerError, "Error creating connection to database".to_string())
+                    }
+                };
 
+                match db.follow_account(follower_id, followed_id).await {
+                    Ok(_) => {
+                        return status::Custom(Status::Ok, "".to_string())
+                    },
+                    Err(err) => {
+                        println!("{}", err);
+                        return status::Custom(Status::InternalServerError, "Error following account".to_string())
+                    }
+                }
+            }
+
+            return status::Custom(Status::InternalServerError, "Error following account".to_string())
+        },
+        Err(err) => {
+            println!("{}", err);
+            return status::Custom(Status::InternalServerError, "Id is not valid".to_string())
+        }
+    }
 }
 
 #[get("/health")]
