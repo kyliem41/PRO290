@@ -2335,6 +2335,7 @@ dependencies = [
  "bson",
  "chrono",
  "jsonwebtoken",
+ "rand",
  "reqwest",
  "rocket",
  "rocket-multipart-form-data",

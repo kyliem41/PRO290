@@ -16,7 +16,6 @@ use rocket::form::Form;
 TODO
 add check for pfp being empty
 add default pfp
-every username needs to unique 
 */
 #[post("/post", data = "<user_form>")]
 pub async fn post_user(user_form: Form<UserForm<'_>>) -> status::Custom<String> {
@@ -92,11 +91,6 @@ pub async fn login(login: Json<Login>) -> status::Custom<String> {
     status::Custom(Status::NotFound, "Username was not found in database".to_string())
 }
 
-#[post("/password/reset", data = "<email>")]
-pub fn reset_password(email: Json<Value>) {
-    
-}
-
 #[post("/follow/<token>/<followed_id>")]
 pub async fn follow_user(token: String, followed_id: String ) -> status::Custom<String>{
     match Uuid::parse_str(&followed_id) {
@@ -137,9 +131,9 @@ pub fn health() -> String {
 
 //TODO handle 404
 #[get("/get/id/<id>")]
-pub async fn get_user_by_id(id: &str) -> status::Custom<Value>{
+pub async fn get_user_by_id(id: String) -> status::Custom<Value>{
 
-    match Uuid::parse_str(id) {
+    match Uuid::parse_str(&id) {
         Ok(_) => {
             let db = match UserDB::new().await {
                 Ok(db) => db,
@@ -150,7 +144,7 @@ pub async fn get_user_by_id(id: &str) -> status::Custom<Value>{
                 }
             }; 
 
-            if let Ok (user_json) = db.get_user(id.to_string()).await {
+            if let Ok (user_json) = db.get_user_with_id(id).await {
                 return status::Custom(Status::Ok, user_json)
             }
 
@@ -167,14 +161,45 @@ pub async fn get_user_by_id(id: &str) -> status::Custom<Value>{
 }
 
 #[get("/get/username/<username>")]
-pub fn get_user_by_username(username: &str) {
-    
+pub async fn get_user_by_username(username: String) -> status::Custom<Value> {
+    let db = match UserDB::new().await {
+        Ok(db) => db,
+        Err(err) => {
+            println!("{}", err);
+            let response_json = json!({"message": "Error creating connection to database"});
+            return status::Custom(Status::InternalServerError, response_json)
+        }
+    }; 
+
+    if let Ok (user_json) = db.get_user_with_username(username).await {
+        return status::Custom(Status::Ok, user_json)
+    }
+
+    //i think 404 should be here
+    let response_json = json!({"message": "User not found"});
+    status::Custom(Status::BadRequest, response_json)
 }
 
 //todo finish
 #[get("/pfp/<token>")]
 pub async fn get_pfp(token: String) {
 
+}
+
+/*
+TODO 
+add the producer here to send an email with the code
+
+ */
+#[post("/password/reset/<token>")]
+pub fn reset_password(token: String) -> status::Custom<String> {
+    if let Ok(id) = utils::verify_jwt(&token) {
+        let code: String = utils::generate_random_code();
+        //get email and send code to queue
+        return status::Custom(Status::Ok, code)
+    }
+
+    status::Custom(Status::BadRequest, "Invalid token".to_string())
 }
 
 //make this an enum

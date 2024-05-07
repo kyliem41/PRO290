@@ -2,6 +2,7 @@ use uuid::Uuid;
 use crate::models::{login::Login, token::Token};
 use jsonwebtoken::{encode, decode, Header, EncodingKey, DecodingKey, Algorithm, Validation};
 use std::env;
+use rand::Rng;
 use argon2::{
     password_hash::{
         rand_core::OsRng,
@@ -56,4 +57,15 @@ pub fn verify_jwt(token: &String) -> Result<String, jsonwebtoken::errors::Error>
     let validation = Validation::new(Algorithm::HS256);
     let token_data = decode::<Token>(token, &DecodingKey::from_secret(secret_key.as_ref()), &validation)?;
     Ok(token_data.claims.id)
+}
+
+pub fn generate_random_code() -> String {
+    let mut code: String = "".to_string();
+
+    for _ in 0..code.len() {
+        let num: u8 = rand::thread_rng().gen_range(0..10);
+        code.push_str(&num.to_string());
+    }
+
+    code
 }

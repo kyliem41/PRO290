@@ -31,9 +31,30 @@ impl UserDB {
         Ok(())
     }
 
-    pub async fn get_user(&self, id: String) -> Result<Value, Box<dyn std::error::Error>> {
+    pub async fn get_user_with_id(&self, id: String) -> Result<Value, Box<dyn std::error::Error>> {
         let query = self.client.prepare("SELECT * FROM users WHERE id = $1").await?;
         let row = self.client.query_one(&query, &[&id]).await?;
+    
+        let user = User {
+            id: row.get("id"),
+            username: row.get("username"),
+            email: row.get("email"),
+            password: row.get("password"),
+            dob: row.get("dob"),
+            pfp: row.get("pfp"),
+            bio: row.get("bio"),
+            followers: row.get("followers"),
+            following: row.get("following"),
+        };
+    
+        let json_value = serde_json::to_value(&user)?;
+
+        Ok(json_value)
+    }
+
+    pub async fn get_user_with_username(&self, username: String) -> Result<Value, Box<dyn std::error::Error>> {
+        let query = self.client.prepare("SELECT * FROM users WHERE username = $1").await?;
+        let row = self.client.query_one(&query, &[&username]).await?;
     
         let user = User {
             id: row.get("id"),
