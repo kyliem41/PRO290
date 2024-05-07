@@ -118,7 +118,7 @@ pub async fn follow_user(token: String, followed_id: String ) -> status::Custom<
                 }
             }
 
-            return status::Custom(Status::InternalServerError, "Error following account".to_string())
+            return status::Custom(Status::InternalServerError, "Invalid Account Token".to_string())
         },
         Err(err) => {
             println!("{}", err);
@@ -174,6 +174,7 @@ pub fn get_user_by_username(username: &str) {
 
 // }
 
+//make this an enum
 #[patch("/update/<id>", data = "<update>")]
 fn update_user(id: &str, update: Json<Value>){
 
@@ -212,20 +213,35 @@ pub async fn delete_user(id: &str) -> status::Custom<String> {
     }
 }
 
-#[delete("/logout/<token>")]
-pub fn logout(token: &str) {
+#[delete("/unfollow/<token>/<followed_id>")]
+pub async fn unfollow_user(token: String, followed_id: String) -> status::Custom<String> {
+    match Uuid::parse_str(&followed_id) {
+        Ok(_) => {
+            if let Ok(follower_id) = utils::verify_jwt(&token) {
+                let db = match UserDB::new().await {
+                    Ok(db) => db,
+                    Err(err) => {
+                        println!("{}", err);
+                        return status::Custom(Status::InternalServerError, "Error creating connection to database".to_string())
+                    }
+                };
 
+                match db.unfollow_account(follower_id, followed_id).await {
+                    Ok(_) => {
+                        return status::Custom(Status::Ok, "".to_string())
+                    },
+                    Err(err) => {
+                        println!("{}", err);
+                        return status::Custom(Status::InternalServerError, "Error unfollowing account".to_string())
+                    }
+                }
+            }
+
+            return status::Custom(Status::InternalServerError, "Invalid Account Token".to_string())
+        },
+        Err(err) => {
+            println!("{}", err);
+            status::Custom(Status::BadRequest, "invalid id".to_string())
+        }
+    }
 }
-
-#[delete("/unfollow/<token>/<id>")]
-pub fn unfollow_user(token: &str, id: &str) {
-
-}
-
-// #[post("/test/file", data = "<user_form>")]
-// pub fn test_getting_a_file(user_form: Form<UserForm>) -> String {
-//     let test = &user_form.test;
-//     println!("{}", test);
-
-//     "Ok".to_string()
-// }
