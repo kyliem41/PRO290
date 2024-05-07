@@ -1,6 +1,32 @@
 @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap");
 
-/* HOME */
+/* HOME-POSTS */
+
+html, body {
+    height: 100%;
+    margin: 0;
+    overflow: hidden;
+    overflow-y: auto;
+}
+
+body::-webkit-scrollbar {
+    width: 0;
+}
+
+body {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.cards::-webkit-scrollbar {
+    width: 0;
+}
+
+.cards {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
 .search-container {
     display: flex;
     width: 98%;
@@ -8,11 +34,11 @@
     align-items: center;
     max-width: 800px;
     margin: 0 auto;
-    background-color: #01796F;
+    background-color: #90ffda;
     color: #fff;
     padding: 15px 10px;
     border-radius: 20px;
-    border: 2px solid rgba(255, 255, 255, .2);
+    border: 2px solid #57ffcc;
     backdrop-filter: blur(20px);
     box-shadow: 0 0 10px rgba(0, 0, 0, .2);
 }
@@ -36,18 +62,22 @@
     background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACQAAAAkCAYAAADhAJiYAAAAAXNSR0IArs4c6QAAAfdJREFUWEftl4FNAzEMRd1JgEmASYBJgEmASYBJYBPQU8/iy03Ozl1VDolIVau7xHn534nTnW2s7TbGY38a6NzMbszsysz4zedzUpjvFzN7k2eLxK8o5CAPhRkAe57gHLYw7KdLBoQar0MR950d7HF07BzQrZk9hYA+0ftkD+oBfTZ989vbIqgeUFSmGvzezNRaxqESNpZaD+hLRpOo16Vo+06ohs18u32ML+VUCwibsMvbRQjGu8vJIvoAjIWqAjAfEoN3d5VFtYBUHVbGhN5YueaJzkE/JnUlNAd5xjuN1eSLQBqkZVXMkRg0jtEFkFvprotAalcvAFA0grfOKJRw+3QBpVyMQPjuyaiBM/t1ITqx7lZsIx9nWwTS/InJPBdIk1gn7j3vxjoW0BysLjKrDAfVXi2LOyxTu/VeN0lp60fi4V2RUGpSLwLKtv2oSrrA0iaJCsUTthSkQxmLc5o/xMlKBzumXIcELC6sdCj2gGKwUSjGcy5piSmp0wPieZS7ev1o3aFKyezqzpG36hZgXt29UKII1R8YP+VjWq2yTIOtucICrNeYElTF2yWXfK/qUeUUqgLkivn9mb9C+jfIbfQbQLRrCGoEaPRQ1P5lqFMBAVeCOiVQhGoeB6cGcihysHnp/w2goRvjmsQ9yth/hTIZN6fQN55HgiVDzB2MAAAAAElFTkSuQmCC");
     background-size: contain;
     background-repeat: no-repeat;
+    cursor: pointer;
 }
 
 .navigation {
-    position: relative;
-    top: 650px;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 99.1%;
     display: flex;
-    overflow: hidden;
-    background-color: #01796F;
-    border: dashed;
+    justify-content: space-around;
+    background-color: #90ffda;
+    border: 2px solid #57ffcc;
     border-radius: 15px;
-    align-items: center;
-    padding-left: 20px;
+    margin: 2px;
+    padding: 3px;
+    z-index: 1;
 }
 
 .icon-button {
@@ -60,6 +90,7 @@
     outline: none;
     cursor: pointer;
     background: transparent;
+    z-index: 3;
 }
 
 .message {
@@ -116,3 +147,125 @@
     border: #888;
     background-color: transparent;
 }
+
+.cards {
+    margin: auto;
+    background-color: whitesmoke;
+    width: 900px;
+    height: calc(100% - 100px);
+    margin-bottom: 100px;
+    text-align: justify;
+    border-radius: 20px;
+    backdrop-filter: blur(20px);
+    box-shadow: 0 0 10px rgba(0, 0, 0, .2);
+}
+
+.postlist {
+    align-items: center;
+    max-width: 900px;
+    border: 2px solid #3d251e;
+    border-radius: 15px;
+    margin: auto;
+    padding: 15px;
+    box-sizing: content-box;
+}
+
+.postdetails {
+    border: 2px solid #8b6c5c;
+    border-radius: 15px;
+    padding: 30px;
+    margin-bottom: 25px;
+}
+
+/* MESSAGES */
+.messageBody {
+    background-color: #d8cbc4;
+}
+
+.messageContainer {
+    display: flex;
+    height: 85.5%;
+    margin: 5px;
+    overflow: hidden;
+}
+
+.messagesDiv {
+    flex: 2.5;
+    background-color: #8b6c5c;
+    border-radius: 20px;
+    backdrop-filter: blur(20px);
+    box-shadow: 0 0 10px rgba(0, 0, 0, .2);
+    background-color: whitesmoke;
+    margin-right: 5px;
+    text-align: center;
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+.users {
+    flex: 1;
+    background-color: #8b6c5c;
+    border-radius: 20px;
+    backdrop-filter: blur(20px);
+    box-shadow: 0 0 10px rgba(0, 0, 0, .2);
+    background-color: whitesmoke;
+    text-align: center;
+    padding: 15px;
+    overflow-y: auto;
+}
+
+.sent,
+.received {
+    background-color: #8b6c5c;
+    border: #3d251e 2px solid;
+    border-radius: 15px;
+    backdrop-filter: blur(20px);
+    box-shadow: 0 0 10px rgba(0, 0, 0, .2);
+    text-align: center;
+    color: white;
+    padding: 5px;
+    margin: 5px 0;
+    max-width: 70%;
+    height: fit-content;
+}
+
+.sent {
+    align-self: flex-end;
+}
+
+.received {
+    align-self: flex-start;
+}
+
+.sentImg,
+.receivedImg {
+    width: 25px;
+    height: 25px;
+    border: #333 2px solid;
+    border-radius: 15px;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.sentImg {
+    right: -30px;
+}
+
+.receivedImg {
+    left: -30px;
+}
+
+/* PROFILE */
+
+
+/* AUTH */
+
+/* LOCATION */
+
+/* NOTIFICATION */
+
+/* ADD POSTS */
