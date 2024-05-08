@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class LogInForm extends StatelessWidget {
@@ -38,7 +37,7 @@ class LogInForm extends StatelessWidget {
                   border: OutlineInputBorder(),
                 ),
               ),
-              SizedBox(height: 30),
+              SizedBox(height: 35),
               TextFormField(
                 decoration: InputDecoration(
                   prefixIcon: Icon(Icons.fingerprint),
@@ -73,7 +72,7 @@ class LogInForm extends StatelessWidget {
                       style: Theme.of(context).textTheme.bodySmall,
                       children: [
                         TextSpan(
-                          text: 'Sign up!',
+                          text: ' Sign up!',
                           style: TextStyle(color: Colors.blue),
                         ),
                       ],

@@ -1,6 +1,7 @@
 import 'package:english_words/english_words.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:frontend/features/screens/createUser/createUser.dart';
 import 'package:frontend/features/screens/login/loginScreen.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/foundation.dart';
@@ -136,13 +137,6 @@ class _MyHomePageState extends State<MyHomePage> {
 class GeneratorPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    //var appState = context.watch<MyAppState>();
-    // IconData icon;
-    // if (appState.favorites.contains(pair)) {
-    //   icon = Icons.favorite;
-    // } else {
-    //   icon = Icons.favorite_border;
-    // }
 
     return Center(
       child: Column(
@@ -167,7 +161,7 @@ class GeneratorPage extends StatelessWidget {
                 onPressed: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => CreateUserPage()),
+                    MaterialPageRoute(builder: (context) => const CreateUserPage()),
                   );
                 },
                 child: Text('NEW USER'),
@@ -175,25 +169,6 @@ class GeneratorPage extends StatelessWidget {
             ],
           ),
         ],
-      ),
-    );
-  }
-}
-
-class CreateUserPage extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
-    final style = theme.textTheme.displayLarge!.copyWith(
-      color: theme.colorScheme.onPrimary,
-    );
-
-    return Card(
-      color: theme.colorScheme.primary,
-      child: Padding(
-        padding: const EdgeInsets.all(90.0),
-        child: Text('Yapper', style: style),
       ),
     );
   }
@@ -219,31 +194,3 @@ class BigCard extends StatelessWidget {
     );
   }
 }
-
-// class FavoritesPage extends StatelessWidget {
-//   @override
-//   Widget build(BuildContext context) {
-//     var appState = context.watch<MyAppState>();
-
-//     if (appState.favorites.isEmpty) {
-//       return Center(
-//         child: Text('No favorites yet.'),
-//       );
-//     }
-
-//     return ListView(
-//       children: [
-//         Padding(
-//           padding: const EdgeInsets.all(20),
-//           child: Text('You have '
-//               '${appState.favorites.length} favorites:'),
-//         ),
-//         for (var pair in appState.favorites)
-//           ListTile(
-//             leading: Icon(Icons.favorite),
-//             title: Text(pair.asLowerCase),
-//           ),
-//       ],
-//     );
-//   }
-// }
