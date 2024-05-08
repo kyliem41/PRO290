@@ -1,3 +1,6 @@
+extern crate image;
+use image::{DynamicImage, ImageFormat};
+use std::io::Cursor;
 use rocket::http::uri::Query;
 use tokio_postgres::{NoTls, Client, Error};
 use rocket::serde::json::{Json, Value};
@@ -40,8 +43,9 @@ impl ImageDB {
     pub async fn get_image(&self, id: &String) -> Result<Vec<u8>, Box<dyn std::error::Error>> {
         let query = self.client.prepare("SELECT image FROM images WHERE id = $1").await?;
         let row = self.client.query_one(&query, &[id]).await?;
-        
         let image_data: Vec<u8> = row.get(0);
+
+
         Ok(image_data)
     }
 }

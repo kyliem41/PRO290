@@ -1,5 +1,5 @@
 use argon2::password_hash::PasswordHashString;
-use tokio_postgres::{NoTls, Client, Error};
+use tokio_postgres::{Client, Error, NoTls, Statement};
 use rocket::serde::json::{Json, Value};
 use serde_json::json;
 use crate::models::user::{self, User};
@@ -80,9 +80,10 @@ impl UserDB {
         Ok(())
     }
 
-    pub async fn does_username_exist(&self, username: &String) -> Result<bool, Box<dyn std::error::Error>>{
-        let query = self.client.prepare("SELECT COUNT(*) FROM users WHERE username = $1").await?;
-        let row = self.client.query_one(&query, &[username]).await?;
+    pub async fn does_field_exist(&self, field: &str ,username: &String) -> Result<bool, Box<dyn std::error::Error>> {
+        let query = format!("SELECT COUNT(*) FROM users WHERE {} = $1", field);
+        let statement = self.client.prepare(&query).await?;
+        let row = self.client.query_one(&statement, &[username]).await?;
         let count: i64 = row.get(0);
 
         if count > 0 {
@@ -90,6 +91,15 @@ impl UserDB {
         }
         
         Ok(false)
+    }
+
+    //this might not work for followers and following fields
+    pub async fn get_column(&self, id: &String, column: &str) -> Result<String, Box<dyn std::error::Error>> {
+        let query: String = format!("SELECT {} FROM users where id = $1", column);
+        let statement = self.client.prepare(&query).await?;
+        let row = self.client.query_one(&statement, &[id]).await?;
+
+        Ok(row.get(0))
     }
 
     pub async fn get_password_and_id(&self, username: &String) -> Result<(String, String), Box<dyn std::error::Error>> {

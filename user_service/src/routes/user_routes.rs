@@ -1,7 +1,11 @@
+extern crate image;
+use image::{DynamicImage, ImageFormat};
 use uuid::Uuid;
 use rocket::serde::json::{self, Json};
-use rocket::http::Status;
+use rocket::http::{Status, ContentType};
 use rocket::response::status;
+use rocket::response::Response;
+use rocket::response::Responder;
 use serde_json::{json, Value};
 use crate::models::user::User;
 use crate::models::forms::UserForm;
@@ -11,6 +15,11 @@ use crate::utils::utils;
 use crate::dal::userdb::UserDB;
 use crate::dal::imagedb::ImageDB;
 use rocket::form::Form;
+use std::io::Cursor;
+use rocket::outcome::Outcome;
+use std::path::PathBuf;
+use image::io::Reader as ImageReader;
+use rocket::response::status::Custom;
 
 /*
 TODO
@@ -45,8 +54,14 @@ pub async fn post_user(user_form: Form<UserForm<'_>>) -> status::Custom<String> 
         }
     };
 
-    if db.does_username_exist(&user_data.username).await.unwrap() {
+    //check if username already exists
+    if db.does_field_exist("username", &user_data.username).await.unwrap() {
         return status::Custom(Status::BadRequest, "Username needs to be unique".to_string())
+    }
+
+    //check if an account is linked to the email
+    if db.does_field_exist("email", &user_data.email).await.unwrap() {
+        return status::Custom(Status::BadRequest, "Email is already linked to an account".to_string())
     }
 
     let hash: String = utils::hash_password(user_data.password);
@@ -71,7 +86,7 @@ pub async fn login(login: Json<Login>) -> status::Custom<String> {
         }
     };
 
-    if db.does_username_exist(&login.username).await.unwrap() {
+    if db.does_field_exist("username", &login.username).await.unwrap() {
         match db.get_password_and_id(&login.username).await {
             Ok(user_data) => {
                 if utils::verify_password(&login.password, &user_data.0) {
@@ -122,6 +137,13 @@ pub async fn follow_user(token: String, followed_id: String ) -> status::Custom<
             return status::Custom(Status::InternalServerError, "Id is not valid".to_string())
         }
     }
+}
+
+//should verify a jwt sent after creating an account exp should be 30 mins or less
+//make change to user data
+#[post("/verify/<token>")]
+pub fn verify_user(token: String) {
+    
 }
 
 #[get("/health")]
@@ -177,30 +199,53 @@ pub async fn get_user_by_username(username: String) -> status::Custom<Value> {
 
     //i think 404 should be here
     let response_json = json!({"message": "User not found"});
-    status::Custom(Status::BadRequest, response_json)
+    status::Custom(Status::NotFound, response_json)
 }
 
-//todo finish
-#[get("/pfp/<token>")]
-pub async fn get_pfp(token: String) {
+// #[get("/pfp/<token>")]
+// pub async fn get_pfp(token: String) -> Result<Response<'static>, Custom<String>> {
+//     if let Ok(id) = utils::verify_jwt(&token) {
+//         let user_db = match UserDB::new().await {
+//             Ok(db) => db,
+//             Err(err) => {
+//                 println!("{}", err);
+//                 return Err(Custom(Status::InternalServerError, "Error creating connection to database".to_string()));
+//             }
+//         };
 
-}
+//         if let Ok(pfp_id) = user_db.get_column(&id, "pfp").await {
+//             let image_db = match ImageDB::new().await {
+//                 Ok(db) => db,
+//                 Err(err) => {
+//                     println!("ImageDatabase: {}", err);
+//                     return Err(Custom(Status::InternalServerError, "Error creating connection to database".to_string()));
+//                 }
+//             };
+
+//             if let Ok(image_data) = image_db.get_image_data(&pfp_id).await {
+//                 // Create a response with the image bytes
+//                 let response = Response::build()
+//                     .header(ContentType::JPEG)
+//                     .sized_body(image_data.len(), Cursor::new(image_data))
+//                     .finalize();
+
+//                 return Ok(response);
+//             }
+//         }
+//     }
+
+//     Err(Custom(Status::NotFound, "Image not found".to_string()))
+// }
 
 /*
 TODO 
 add the producer here to send an email with the code
 
  */
-#[post("/password/reset/<token>")]
-pub fn reset_password(token: String) -> status::Custom<String> {
-    if let Ok(id) = utils::verify_jwt(&token) {
-        let code: String = utils::generate_random_code();
-        //get email and send code to queue
-        return status::Custom(Status::Ok, code)
-    }
-
-    status::Custom(Status::BadRequest, "Invalid token".to_string())
-}
+// #[post("/password/reset/<token>")]
+// pub fn reset_password(token: String) -> status::Custom<String> {
+    
+// }
 
 //make this an enum
 #[patch("/update/<token>", data = "<update>")]
