@@ -19,16 +19,12 @@ services:
     networks:
       - yapper
 
-  CassandraDBPosts:
-    container_name: CassandraDBPosts
-    image: cassandra:latest
+  MongoDBPosts:
+    container_name: MongoDBPosts
+    image: mongo:latest
     restart: always
-    hostname: CassandraDBPosts
+    hostname: MongoDBPosts
     ports:
-      - "7000:7000"
-      - "9042:9042"
-      - "7199:7199"
-      - "7001:7001"
-      - "9160:9160"
+      - "27017:27017"
     networks:
       - yapper
