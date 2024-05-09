@@ -1,6 +1,7 @@
 use argon2::password_hash::PasswordHashString;
 use tokio_postgres::{Client, Error, NoTls, Statement};
-use rocket::serde::json::{Json, Value};
+use crate::models::update::{self, Update};
+use rocket::{form, serde::json::{Json, Value}};
 use serde_json::json;
 use crate::models::user::{self, User};
 use std::env;
@@ -100,6 +101,14 @@ impl UserDB {
         let row = self.client.query_one(&statement, &[id]).await?;
 
         Ok(row.get(0))
+    }
+
+    pub async fn update_column(&self, id: &String, update: Update) -> Result<(), Box<dyn std::error::Error>> {
+        let query:String = format!("UPDATE users SET {} = $1 WHERE id = $2", update.column);
+        let statement = self.client.prepare(&query).await?;
+        self.client.execute(&statement, &[id, &update.new_data]).await?;
+
+        Ok(())
     }
 
     pub async fn get_password_and_id(&self, username: &String) -> Result<(String, String), Box<dyn std::error::Error>> {

@@ -11,6 +11,7 @@ use crate::models::user::User;
 use crate::models::forms::UserForm;
 use crate::models::token::Token;
 use crate::models::login::Login;
+use crate::models::update::Update;
 use crate::utils::utils;
 use crate::dal::userdb::UserDB;
 use crate::dal::imagedb::ImageDB;
@@ -248,10 +249,33 @@ add the producer here to send an email with the code
 // }
 
 //make this an enum
-#[patch("/update/<token>", data = "<update>")]
-fn update_user(token: String, update: Json<Value>){
+#[patch("/update/<token>", data = "<update>")]  
+pub async fn update_user(token: String, update: Json<Update>) -> Status {
+    if let Ok(id) = utils::verify_jwt(&token) {
 
+        let db = match UserDB::new().await {
+            Ok(db) => db,
+            Err(err) => {
+                println!("{}", err);
+                return Status::InternalServerError 
+            }
+        };
+
+        let update: Update = update.into_inner();
+        match db.update_column(&id, update).await {
+            Ok(_) => {
+                return Status::Ok
+            }
+            Err(err) => {
+                println!("{}", err);
+                return Status::InternalServerError
+            }
+        }
+    }
+
+    return Status::BadRequest
 }
+
 
 //should be a form
 #[patch("/update/pfp/<token>", data = "<pfp>")]
