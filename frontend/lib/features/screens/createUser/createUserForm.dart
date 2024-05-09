@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/features/screens/home/homeScreen.dart';
+import 'package:frontend/features/screens/login/loginScreen.dart';
+import 'package:frontend/main.dart';
 
 class createUserForm extends StatelessWidget {
   const createUserForm({
@@ -76,12 +79,25 @@ class createUserForm extends StatelessWidget {
               const SizedBox(height: 30),
               SizedBox(
                 width: double.infinity,
-                child: ElevatedButton(onPressed: () {}, child: Text('SIGN UP')),
+                child: ElevatedButton(
+                    onPressed: () {
+                      //TODOS: if creation successful, if not give error message
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => MyHomePage()),
+                      );
+                    },
+                    child: Text('SIGN UP')),
               ),
               SizedBox(height: 20),
               Center(
                 child: TextButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => LogInPage()),
+                    );
+                  },
                   child: Text.rich(
                     TextSpan(
                       text: "Already have an account?",

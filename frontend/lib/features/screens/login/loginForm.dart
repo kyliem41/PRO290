@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/features/screens/createUser/createUser.dart';
+import 'package:frontend/features/screens/home/homeScreen.dart';
+import 'package:frontend/main.dart';
 
 class LogInForm extends StatelessWidget {
   const LogInForm({
@@ -24,7 +27,6 @@ class LogInForm extends StatelessWidget {
         child: Container(
           width: 900,
           height: 350,
-          //padding: EdgeInsets.symmetric(vertical: 20),
           padding: EdgeInsets.all(20),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -49,6 +51,7 @@ class LogInForm extends StatelessWidget {
                     icon: Icon(Icons.remove_red_eye_sharp),
                   ),
                 ),
+                obscureText: true,
               ),
               const SizedBox(height: 30),
               Align(
@@ -60,12 +63,23 @@ class LogInForm extends StatelessWidget {
               ),
               SizedBox(
                 width: double.infinity,
-                child: ElevatedButton(onPressed: () {}, child: Text('LOG IN')),
+                child: ElevatedButton(onPressed: () {
+                  //TODOS: if login successful, if not give error message
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(builder: (context) => MyHomePage()),
+                    );
+                }, child: Text('LOG IN')),
               ),
               SizedBox(height: 20),
               Center(
                 child: TextButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => CreateUserPage()),
+                    );
+                  },
                   child: Text.rich(
                     TextSpan(
                       text: "Don't have an account?",
