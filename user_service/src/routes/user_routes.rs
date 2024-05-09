@@ -1,5 +1,3 @@
-extern crate image;
-use image::{DynamicImage, ImageFormat};
 use uuid::Uuid;
 use rocket::serde::json::{self, Json};
 use rocket::http::{Status, ContentType};
@@ -19,7 +17,6 @@ use rocket::form::Form;
 use std::io::Cursor;
 use rocket::outcome::Outcome;
 use std::path::PathBuf;
-use image::io::Reader as ImageReader;
 use rocket::response::status::Custom;
 
 /*
@@ -66,7 +63,7 @@ pub async fn post_user(user_form: Form<UserForm<'_>>) -> status::Custom<String> 
     }
 
     let hash: String = utils::hash_password(user_data.password);
-    let user: User = User::new(user_data.username, user_data.email, hash, user_data.dob, image_id, user_data.bio, user_data.followers, user_data.following);
+    let user: User = User::new(user_data.username, user_data.email, hash, user_data.dob, image_id, user_data.bio, user_data.followers, user_data.following, false);
 
     match db.create_user(user).await {
         Ok(_) => return status::Custom(Status::Created, "".to_string()),

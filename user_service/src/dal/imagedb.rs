@@ -1,5 +1,3 @@
-extern crate image;
-use image::{DynamicImage, ImageFormat};
 use std::io::Cursor;
 use rocket::http::uri::Query;
 use tokio_postgres::{NoTls, Client, Error};
@@ -9,6 +7,8 @@ use std::env;
 use rocket::fs::TempFile;
 use std::fs::File;
 use std::io::Read;
+use std::io::{Write, Seek};
+use tempfile::NamedTempFile;
 
 pub struct ImageDB {
     client: Client,
@@ -40,12 +40,19 @@ impl ImageDB {
         Ok(())
     }
 
-    pub async fn get_image(&self, id: &String) -> Result<Vec<u8>, Box<dyn std::error::Error>> {
+    pub async fn get_image(&self, id: &String) -> Result<NamedTempFile, Box<dyn std::error::Error>> {
         let query = self.client.prepare("SELECT image FROM images WHERE id = $1").await?;
-        let row = self.client.query_one(&query, &[id]).await?;
+        let row = match self.client.query_one(&query, &[id]).await {
+            Ok(row) => row,
+            Err(e) => return Err(Box::new(e)),
+        };
         let image_data: Vec<u8> = row.get(0);
 
-
-        Ok(image_data)
+        let mut temp_file = NamedTempFile::new()?;
+        temp_file.write_all(&image_data)?;
+        temp_file.seek(std::io::SeekFrom::Start(0))?;
+    
+        Ok(temp_file)
     }
+    
 }

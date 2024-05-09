@@ -26,8 +26,8 @@ impl UserDB {
     }
 
     pub async fn create_user(&self, user: User) -> Result<(), Box<dyn std::error::Error>> {
-        let query = self.client.prepare("INSERT INTO users (id, username, email, password, dob, pfp, bio, followers, following) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)").await?;
-        self.client.execute(&query, &[&user.id, &user.username, &user.email, &user.password, &user.dob, &user.pfp.to_string(), &user.bio, &user.followers, &user.following,]).await?;
+        let query = self.client.prepare("INSERT INTO users (id, username, email, password, dob, pfp, bio, followers, following) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)").await?;
+        self.client.execute(&query, &[&user.id, &user.username, &user.email, &user.password, &user.dob, &user.pfp.to_string(), &user.bio, &user.followers, &user.following, &user.verified]).await?;
 
         Ok(())
     }
@@ -46,6 +46,7 @@ impl UserDB {
             bio: row.get("bio"),
             followers: row.get("followers"),
             following: row.get("following"),
+            verified: row.get("verified")
         };
     
         let json_value = serde_json::to_value(&user)?;
@@ -67,6 +68,7 @@ impl UserDB {
             bio: row.get("bio"),
             followers: row.get("followers"),
             following: row.get("following"),
+            verified: row.get("verified")
         };
     
         let json_value = serde_json::to_value(&user)?;
