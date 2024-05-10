@@ -13,11 +13,14 @@ use crate::models::update::Update;
 use crate::utils::utils;
 use crate::dal::userdb::UserDB;
 use crate::dal::imagedb::ImageDB;
+use crate::dal::image;
 use rocket::form::Form;
 use std::io::Cursor;
 use rocket::outcome::Outcome;
 use std::path::PathBuf;
 use rocket::response::status::Custom;
+use rocket::fs::NamedFile;
+use rocket::response::status::NotFound;
 
 /*
 TODO
@@ -28,20 +31,6 @@ add default pfp
 pub async fn post_user(user_form: Form<UserForm<'_>>) -> status::Custom<String> {
     let user_data: UserForm = user_form.into_inner();
     let image_id: String = utils::generate_uuid().to_string();
-
-    // Create an instance of UserDB
-    let db = match ImageDB::new().await {
-        Ok(db) => db, // Wrap the UserDB instance in an Arc for thread safety
-        Err(err) => {
-            println!("ImageDatabase: {}", err);
-            return status::Custom(Status::InternalServerError, "Error creating connection to database".to_string())
-        }
-    };
-
-    if let Err(err) = db.post_image(&image_id, user_data.pfp).await {
-        println!("ImageDatabase: {}", err);
-        return status::Custom(Status::InternalServerError, format!("Error posting image to database"))
-    }
 
     // Create an instance of UserDB
     let db = match UserDB::new().await {
@@ -60,6 +49,11 @@ pub async fn post_user(user_form: Form<UserForm<'_>>) -> status::Custom<String> 
     //check if an account is linked to the email
     if db.does_field_exist("email", &user_data.email).await.unwrap() {
         return status::Custom(Status::BadRequest, "Email is already linked to an account".to_string())
+    }
+
+    if let Err(err) = image::save_image(&image_id, user_data.pfp) {
+        println!("{}", err);
+        return status::Custom(Status::InternalServerError, "Error storing image to file".to_string())
     }
 
     let hash: String = utils::hash_password(user_data.password);
@@ -200,40 +194,24 @@ pub async fn get_user_by_username(username: String) -> status::Custom<Value> {
     status::Custom(Status::NotFound, response_json)
 }
 
-// #[get("/pfp/<token>")]
-// pub async fn get_pfp(token: String) -> Result<Response<'static>, Custom<String>> {
-//     if let Ok(id) = utils::verify_jwt(&token) {
-//         let user_db = match UserDB::new().await {
-//             Ok(db) => db,
-//             Err(err) => {
-//                 println!("{}", err);
-//                 return Err(Custom(Status::InternalServerError, "Error creating connection to database".to_string()));
-//             }
-//         };
+#[get("/pfp/<token>")]
+pub async fn get_pfp(token: String) -> Option<NamedFile> {
+    if let Ok(id) = utils::verify_jwt(&token) {
+        let user_db = match UserDB::new().await {
+            Ok(db) => db,
+            Err(err) => {
+                println!("{}", err);
+                return None;
+            }
+        };
 
-//         if let Ok(pfp_id) = user_db.get_column(&id, "pfp").await {
-//             let image_db = match ImageDB::new().await {
-//                 Ok(db) => db,
-//                 Err(err) => {
-//                     println!("ImageDatabase: {}", err);
-//                     return Err(Custom(Status::InternalServerError, "Error creating connection to database".to_string()));
-//                 }
-//             };
+        if let Some(pfp_id) = user_db.get_column(&id, "pfp").await {
+            return image::get_image(&pfp_id).await;
+        }
+    }
 
-//             if let Ok(image_data) = image_db.get_image_data(&pfp_id).await {
-//                 // Create a response with the image bytes
-//                 let response = Response::build()
-//                     .header(ContentType::JPEG)
-//                     .sized_body(image_data.len(), Cursor::new(image_data))
-//                     .finalize();
-
-//                 return Ok(response);
-//             }
-//         }
-//     }
-
-//     Err(Custom(Status::NotFound, "Image not found".to_string()))
-// }
+    None
+}
 
 /*
 TODO 

@@ -26,7 +26,7 @@ impl UserDB {
     }
 
     pub async fn create_user(&self, user: User) -> Result<(), Box<dyn std::error::Error>> {
-        let query = self.client.prepare("INSERT INTO users (id, username, email, password, dob, pfp, bio, followers, following) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)").await?;
+        let query = self.client.prepare("INSERT INTO users (id, username, email, password, dob, pfp, bio, followers, following, verified) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)").await?;
         self.client.execute(&query, &[&user.id, &user.username, &user.email, &user.password, &user.dob, &user.pfp.to_string(), &user.bio, &user.followers, &user.following, &user.verified]).await?;
 
         Ok(())
@@ -97,12 +97,12 @@ impl UserDB {
     }
 
     //this might not work for followers and following fields
-    pub async fn get_column(&self, id: &String, column: &str) -> Result<String, Box<dyn std::error::Error>> {
+    pub async fn get_column(&self, id: &String, column: &str) -> Option<String> {
         let query: String = format!("SELECT {} FROM users where id = $1", column);
-        let statement = self.client.prepare(&query).await?;
-        let row = self.client.query_one(&statement, &[id]).await?;
-
-        Ok(row.get(0))
+        let statement = self.client.prepare(&query).await.ok()?;
+        let row = self.client.query_one(&statement, &[id]).await.ok()?;
+    
+        Some(row.get(0))
     }
 
     pub async fn update_column(&self, id: &String, update: Update) -> Result<(), Box<dyn std::error::Error>> {

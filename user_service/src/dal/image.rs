@@ -39,14 +39,14 @@ pub fn save_image(id: &String, pfp: TempFile<'_>) -> io::Result<()> {
 }
 
 
-fn get_image_namedfile(id: &str) -> Option<NamedFile> {
+pub async fn get_image(id: &str) -> Option<NamedFile> {
     let file_path = format!("./images/{}.jpg", id);
 
     if !Path::new(&file_path).exists() {
         return None;
     }
 
-    match NamedFile::open(&file_path) {
+    match NamedFile::open(&file_path).await {
         Ok(named_file) => Some(named_file),
         Err(_) => None,
     }

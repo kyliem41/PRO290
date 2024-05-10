@@ -6,8 +6,7 @@ use serde_json::json;
 use std::env;
 use rocket::fs::TempFile;
 use std::fs::File;
-use std::io::Read;
-use std::io::{Write, Seek};
+use std::io::{self, Write, Seek, Read, BufReader, BufWriter};
 use tempfile::NamedTempFile;
 
 pub struct ImageDB {
