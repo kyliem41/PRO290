@@ -1,10 +1,11 @@
 use argon2::password_hash::PasswordHashString;
-use tokio_postgres::{Client, Error, NoTls, Statement};
+use tokio_postgres::{Client, Error, NoTls, Statement, types::ToSql}; // Added ToSql
 use crate::models::update::{self, Update};
 use rocket::{form, serde::json::{Json, Value}};
 use serde_json::json;
 use crate::models::user::{self, User};
 use std::env;
+use std::str::FromStr; // Added FromStr
 
 pub struct UserDB {
     client: Client,
@@ -106,9 +107,17 @@ impl UserDB {
     }
 
     pub async fn update_column(&self, id: &String, update: Update) -> Result<(), Box<dyn std::error::Error>> {
-        let query:String = format!("UPDATE users SET {} = $1 WHERE id = $2", update.column);
+        let query: String = format!("UPDATE users SET {} = $1 WHERE id = $2", update.column);
         let statement = self.client.prepare(&query).await?;
+
         self.client.execute(&statement, &[id, &update.new_data]).await?;
+
+        Ok(())
+    }
+
+    pub async fn verifiy_user(&self, id: &String) -> Result<(), Box<dyn std::error::Error>> {
+        let statment = self.client.prepare("UPDATE users SET verified = True WHERE id = $1").await?;
+        self.client.execute(&statment, &[id]).await?;
 
         Ok(())
     }

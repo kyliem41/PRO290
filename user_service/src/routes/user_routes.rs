@@ -1,35 +1,27 @@
+use rocket::figment::util;
 use uuid::Uuid;
-use rocket::serde::json::{self, Json};
-use rocket::http::{Status, ContentType};
+use rocket::serde::json::{Json, Value};
+use rocket::http::Status;
 use rocket::response::status;
-use rocket::response::Response;
-use rocket::response::Responder;
-use serde_json::{json, Value};
+use rocket::form::Form;
 use crate::models::user::User;
-use crate::models::forms::UserForm;
-use crate::models::token::Token;
+use crate::models::forms::{UserForm, ImageForm};
 use crate::models::login::Login;
 use crate::models::update::Update;
+use crate::models::producer;
 use crate::utils::utils;
 use crate::dal::userdb::UserDB;
-use crate::dal::imagedb::ImageDB;
 use crate::dal::image;
-use rocket::form::Form;
-use std::io::Cursor;
-use rocket::outcome::Outcome;
-use std::path::PathBuf;
-use rocket::response::status::Custom;
 use rocket::fs::NamedFile;
-use rocket::response::status::NotFound;
+use serde_json::json;
 
-/*
-TODO
-add check for pfp being empty
-add default pfp
-*/
+const EXPERIATION_ONE_DAY: i64 = 86400;
+const EXPERIATION_ONE_HOUR: i64 = 3600;
+
 #[post("/post", data = "<user_form>")]
 pub async fn post_user(user_form: Form<UserForm<'_>>) -> status::Custom<String> {
     let user_data: UserForm = user_form.into_inner();
+    let user_id: String = utils::generate_uuid().to_string();
     let image_id: String = utils::generate_uuid().to_string();
 
     // Create an instance of UserDB
@@ -57,10 +49,17 @@ pub async fn post_user(user_form: Form<UserForm<'_>>) -> status::Custom<String> 
     }
 
     let hash: String = utils::hash_password(user_data.password);
-    let user: User = User::new(user_data.username, user_data.email, hash, user_data.dob, image_id, user_data.bio, user_data.followers, user_data.following, false);
+    let user: User = User::new(user_id.clone(), user_data.username, user_data.email, hash, user_data.dob, image_id, user_data.bio, user_data.followers, user_data.following, false);
 
     match db.create_user(user).await {
-        Ok(_) => return status::Custom(Status::Created, "".to_string()),
+        Ok(_) => {
+            if let Ok(verification_token) = utils::create_jwt(user_id, EXPERIATION_ONE_HOUR) {
+                let message = format!("Click this link to verifiy you account localhost:80/user/verify/{}", verification_token);
+                producer::send_queue(message, "verification_queue");
+            }
+
+            return status::Custom(Status::Created, "".to_string())
+        },
         Err(err) => {
             println!("UserDatabase: {}", err);
             return status::Custom(Status::InternalServerError, "Error occured when creating user in database".to_string())
@@ -70,33 +69,49 @@ pub async fn post_user(user_form: Form<UserForm<'_>>) -> status::Custom<String> 
 
 #[post("/login", data = "<login>")]
 pub async fn login(login: Json<Login>) -> status::Custom<String> {
+    println!("Received login request: {:?}", login);
+
     let db = match UserDB::new().await {
         Ok(db) => db,
         Err(err) => {
-            println!("UserDatabase: {}", err);
+            println!("Error creating connection to database: {}", err);
             return status::Custom(Status::InternalServerError, "Error creating connection to database".to_string())
         }
     };
 
     if db.does_field_exist("username", &login.username).await.unwrap() {
+        println!("Username '{}' found in database", login.username);
+
         match db.get_password_and_id(&login.username).await {
             Ok(user_data) => {
+                println!("Retrieved user data: {:?}", user_data);
+
                 if utils::verify_password(&login.password, &user_data.0) {
-                    if let Ok(jwt) = utils::create_jwt(user_data.1) {
+                    println!("Password verification successful");
+
+                    if let Ok(jwt) = utils::create_jwt(user_data.1, EXPERIATION_ONE_DAY) {
+                        println!("JWT created successfully: {}", jwt);
                         return status::Custom(Status::Ok, jwt)
+                    } else {
+                        println!("Error creating JWT");
                     }
+                } else {
+                    println!("Password verification failed");
                 }
                 return status::Custom(Status::InternalServerError, "Error validating user".to_string())
             }
             Err(err) => {
-                println!("{}", err);
+                println!("Error retrieving user data: {}", err);
                 return status::Custom(Status::InternalServerError, "Error validating user".to_string())
             }
         }
+    } else {
+        println!("Username '{}' not found in database", login.username);
     }
 
     status::Custom(Status::NotFound, "Username was not found in database".to_string())
 }
+
 
 #[post("/follow/<token>/<followed_id>")]
 pub async fn follow_user(token: String, followed_id: String ) -> status::Custom<String>{
@@ -131,11 +146,26 @@ pub async fn follow_user(token: String, followed_id: String ) -> status::Custom<
     }
 }
 
-//should verify a jwt sent after creating an account exp should be 30 mins or less
-//make change to user data
 #[post("/verify/<token>")]
-pub fn verify_user(token: String) {
-    
+pub async fn verify_user(token: String) -> status::Custom<String> {
+    if let Ok(id) = utils::verify_jwt(&token) {
+        let db = match UserDB::new().await {
+            Ok(db) => db,
+            Err(err) => {
+                println!("UserDatabase: {}", err);
+                return status::Custom(Status::InternalServerError, "Error creating connection to database".to_string());
+            }
+        };
+
+        if let Err(err) = db.verifiy_user(&id).await {
+            println!("{}", err);
+            return status::Custom(Status::InternalServerError, "Error updating user verification status".to_string());
+        }
+
+        return status::Custom(Status::Ok, "User verification successful".to_string());
+    }
+
+    status::Custom(Status::BadRequest, "Invalid token".to_string())
 }
 
 #[get("/health")]
@@ -143,7 +173,6 @@ pub fn health() -> String {
     "Ok".to_string()
 }
 
-//TODO handle 404
 #[get("/get/id/<id>")]
 pub async fn get_user_by_id(id: String) -> status::Custom<Value>{
 
@@ -251,11 +280,34 @@ pub async fn update_user(token: String, update: Json<Update>) -> Status {
     return Status::BadRequest
 }
 
-
-//should be a form
 #[patch("/update/pfp/<token>", data = "<pfp>")]
-pub fn update_pfp(token: String, pfp: Json<Value>) {
+pub async fn update_pfp(token: String, pfp: Form<ImageForm<'_>>) -> status::Custom<String> {
+    if let Ok(id) = utils::verify_jwt(&token) {
 
+        let db = match UserDB::new().await {
+            Ok(db) => db,
+            Err(err) => {
+                println!("{}", err);
+                return status::Custom(Status::InternalServerError, "Error creating connection to database".to_string());
+            }
+        };
+
+        let image_id = match db.get_column(&id, "pfp").await {
+            Some(pfp_id) => pfp_id,
+            None => {
+                return status::Custom(Status::NotFound, "No pfp found".to_string());
+            }
+        };
+
+        if let Err(err) = image::save_image(&image_id, pfp.into_inner().image) {
+            println!("{}", err);
+            return status::Custom(Status::InternalServerError, "Error storing image to file".to_string());
+        }
+
+        return status::Custom(Status::Ok, "Updated pfp".to_string());
+    }
+
+    status::Custom(Status::BadRequest, "Invalid token".to_string())
 }
 
 #[delete("/delete/<id>")]

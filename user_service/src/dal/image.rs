@@ -38,7 +38,6 @@ pub fn save_image(id: &String, pfp: TempFile<'_>) -> io::Result<()> {
     Ok(())
 }
 
-
 pub async fn get_image(id: &str) -> Option<NamedFile> {
     let file_path = format!("./images/{}.jpg", id);
 
@@ -50,4 +49,8 @@ pub async fn get_image(id: &str) -> Option<NamedFile> {
         Ok(named_file) => Some(named_file),
         Err(_) => None,
     }
+}
+
+pub fn update_image(id: String, pfp: TempFile<'_>) {
+    
 }

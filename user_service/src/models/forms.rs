@@ -17,6 +17,5 @@ pub struct UserForm<'r> {
 
 #[derive(FromForm)]
 pub struct ImageForm<'r> {
-    pub id: String,
     pub image: TempFile<'r>
 }
