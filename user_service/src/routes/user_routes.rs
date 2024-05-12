@@ -51,11 +51,11 @@ pub async fn post_user(user_form: Form<UserForm<'_>>) -> status::Custom<String> 
     let hash: String = utils::hash_password(user_data.password);
     let user: User = User::new(user_id.clone(), user_data.username, user_data.email, hash, user_data.dob, image_id, user_data.bio, user_data.followers, user_data.following, false);
 
-    match db.create_user(user).await {
+    match db.create_user(user.clone()).await {
         Ok(_) => {
             if let Ok(verification_token) = utils::create_jwt(user_id, EXPERIATION_ONE_HOUR) {
                 let message = format!("Click this link to verifiy you account localhost:80/user/verify/{}", verification_token);
-                producer::send_queue(message, "verification_queue");
+                producer::send_queue(message, user.email, "Yapper Verification".to_string(), "email_queue");
             }
 
             return status::Custom(Status::Created, "".to_string())

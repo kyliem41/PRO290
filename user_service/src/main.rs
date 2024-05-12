@@ -30,8 +30,8 @@ fn register_to_consul() -> Result<(), Box<dyn std::error::Error>> {
         },
         "Tags": [
             "traefik.enable=true",
-            "traefik.http.services.cartservice.loadbalancer.server.port=8001",
-            "traefik.http.routers.cartservice.rule=PathPrefix(`/user/`)"
+            "traefik.http.services.userservice.loadbalancer.server.port=8001",
+            "traefik.http.routers.userservice.rule=PathPrefix(`/user/`)"
         ]
     });
 

@@ -106,12 +106,14 @@ impl UserDB {
         Some(row.get(0))
     }
 
-    pub async fn update_column(&self, id: &String, update: Update) -> Result<(), Box<dyn std::error::Error>> {
-        let query: String = format!("UPDATE users SET {} = $1 WHERE id = $2", update.column);
+    pub async fn update_column(&self, id: &str, update: Update) -> Result<(), Box<dyn std::error::Error>> {
+        let query: String = format!("UPDATE users SET {} = ${} WHERE id = ${}", update.column, 1, 2);
+    
         let statement = self.client.prepare(&query).await?;
-
-        self.client.execute(&statement, &[id, &update.new_data]).await?;
-
+    
+        let values: &[&(dyn ToSql + Sync)] = &[&update.new_data, &id];
+        self.client.execute(&statement, values).await?;
+    
         Ok(())
     }
 
