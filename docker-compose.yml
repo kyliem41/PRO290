@@ -21,6 +21,7 @@ services:
     ports:
       - 80:80
       - 8081:8081
+      - 8080:8080
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       # - ./traefik.yaml:/etc/traefik/traefik.yaml
@@ -38,10 +39,10 @@ services:
     networks:
       - Pro290_network
 
-  post_service:
-    container_name: post_service
-    build: ./post_service
-    image: posts_service:latest
+  PostService:
+    container_name: postservice
+    build: ./postservicejs
+    image: postservice:latest
     networks:
       - Pro290_network
     ports:
@@ -49,13 +50,13 @@ services:
     depends_on:
       - MongoDBPosts
       - Consul
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.posts_service.rule=Host(`posts.Pro290_network.com`)"
-      - "traefik.http.services.posts_service.loadbalancer.server.port=8080"
+    # labels:
+    #   - "traefik.enable=true"
+    #   - "traefik.http.routers.postservice.rule=Host(`postservice.localhost`)"
+    #   - "traefik.http.services.postservice.loadbalancer.server.port=8080"
 
   Consul:
-    image: hashicorp/consul:latest
+    image: hashicorp/consul:1.12.0
     container_name: consul
     command: "agent -dev -client=0.0.0.0"
     ports:

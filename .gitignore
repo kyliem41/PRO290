@@ -1,4 +1,4 @@
-post_service/target/
+postservicejs/node_modules/
+messageservicejs/node_modules/
 user_service/target/
-PostsAPI_Mongo/target
 
