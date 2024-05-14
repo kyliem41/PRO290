@@ -10,14 +10,11 @@ class GenerateHomePage extends StatelessWidget {
         children: [
           Expanded(
             child: Container(
-              // margin: EdgeInsets.all(20),
-              padding: EdgeInsets.all(20),
-              color: Colors.teal.shade100,
               child: PostsColumn(),
             ),
           ),
           SizedBox(
-            width: 450,
+            width: MediaQuery.of(context).size.width * 0.25,
             child: Container(
               color: Colors.white,
               child: NotificationColumn(),
@@ -28,25 +25,3 @@ class GenerateHomePage extends StatelessWidget {
     );
   }
 }
-
-// class Search extends StatelessWidget {
-//   @override
-//   Widget build(BuildContext context) {
-//     return Stack(
-//       children: [
-//         AppBar(
-//           automaticallyImplyLeading: false,
-//           title: const Text('Search:'),
-//           backgroundColor: Theme.of(context).cardColor,
-//           actions: <Widget>[
-//             IconButton(
-//               onPressed: () {},
-//               icon: Icon(Icons.arrow_forward_ios_rounded),
-//               tooltip: 'Search',
-//             ),
-//           ],
-//         ),
-//       ],
-//     );
-//   }
-// }

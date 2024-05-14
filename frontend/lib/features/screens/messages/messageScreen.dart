@@ -1,23 +1,25 @@
 import 'package:flutter/material.dart';
-import 'package:frontend/features/screens/home/homeGenerator.dart';
-import 'package:frontend/features/screens/location/locationScreen.dart';
-import 'package:frontend/features/screens/notifications/notificationScreen.dart';
-import 'package:frontend/features/screens/profile/profileScreen.dart';
+import 'package:frontend/features/screens/messages/conversationColumn.dart';
+import 'package:frontend/features/screens/messages/messageColumn.dart';
 
-class MessagesPage extends StatefulWidget {
-  @override
-  State<MessagesPage> createState() => _MessagesPageState();
-}
-
-class _MessagesPageState extends State<MessagesPage> {
-
+class MessagesPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: ListView(
+      child: Row(
         children: [
-          SizedBox(height: 30),
-          Text('MESSAGE'),
+          Expanded(
+            child: Container(
+              child: MessageColumn(),
+            ),
+          ),
+          SizedBox(
+            width: MediaQuery.of(context).size.width * 0.25,
+            child: Container(
+              color: Colors.white,
+              child: ConversationColumn(),
+            ),
+          )
         ],
       ),
     );

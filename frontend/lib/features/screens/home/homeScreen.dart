@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:frontend/features/screens/home/homeGenerator.dart';
 import 'package:frontend/features/screens/location/locationScreen.dart';
 import 'package:frontend/features/screens/messages/messageScreen.dart';
-import 'package:frontend/features/screens/notifications/notificationScreen.dart';
 import 'package:frontend/features/screens/profile/profileScreen.dart';
 import 'package:frontend/features/screens/search/searchScreen.dart';
 

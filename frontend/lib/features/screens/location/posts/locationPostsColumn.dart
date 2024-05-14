@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/features/screens/home/posts/post.dart';
 
-class PostsColumn extends StatefulWidget {
+class LocationPostsColumn extends StatefulWidget {
   @override
-  _PostsColumnState createState() => _PostsColumnState();
+  _LocationPostsColumnState createState() => _LocationPostsColumnState();
 }
 
-class _PostsColumnState extends State<PostsColumn> {
+class _LocationPostsColumnState extends State<LocationPostsColumn> {
   OverlayEntry? _overlayEntry;
 
   @override
@@ -15,7 +15,7 @@ class _PostsColumnState extends State<PostsColumn> {
       children: [
         AppBar(
           automaticallyImplyLeading: false,
-          title: const Text('Following'),
+          title: const Text('Location'),
           centerTitle: true,
           backgroundColor: Theme.of(context).highlightColor,
         ),
