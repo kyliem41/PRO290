@@ -30,8 +30,8 @@ fn register_to_consul() -> Result<(), Box<dyn std::error::Error>> {
         },
         "Tags": [
             "traefik.enable=true",
-            "traefik.http.services.cartservice.loadbalancer.server.port=8001",
-            "traefik.http.routers.cartservice.rule=PathPrefix(`/user/`)"
+            "traefik.http.services.userservice.loadbalancer.server.port=8001",
+            "traefik.http.routers.userservice.rule=PathPrefix(`/user/`)"
         ]
     });
 
@@ -60,7 +60,19 @@ fn rocket() -> _ {
 
     let rocket_instance = rocket::custom(config)
         .mount("/", routes![user_routes::health])
-        .mount("/user", routes![user_routes::post_user, user_routes::get_user_by_id, user_routes::delete_user, user_routes::login, user_routes::follow_user, user_routes::unfollow_user]);
+        .mount("/user", routes![
+            user_routes::health,
+            user_routes::post_user,
+            user_routes::get_user_by_id,
+            user_routes::delete_user,
+            user_routes::login,
+            user_routes::follow_user,
+            user_routes::get_pfp,
+            user_routes::verify_user,
+            user_routes::update_user,
+            user_routes::update_pfp,
+            user_routes::unfollow_user
+        ]);
 
     
     if address != "127.0.0.1" {

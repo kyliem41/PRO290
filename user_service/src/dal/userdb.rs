@@ -1,9 +1,11 @@
 use argon2::password_hash::PasswordHashString;
-use tokio_postgres::{Client, Error, NoTls, Statement};
-use rocket::serde::json::{Json, Value};
+use tokio_postgres::{Client, Error, NoTls, Statement, types::ToSql}; // Added ToSql
+use crate::models::update::{self, Update};
+use rocket::{form, serde::json::{Json, Value}};
 use serde_json::json;
 use crate::models::user::{self, User};
 use std::env;
+use std::str::FromStr; // Added FromStr
 
 pub struct UserDB {
     client: Client,
@@ -25,8 +27,8 @@ impl UserDB {
     }
 
     pub async fn create_user(&self, user: User) -> Result<(), Box<dyn std::error::Error>> {
-        let query = self.client.prepare("INSERT INTO users (id, username, email, password, dob, pfp, bio, followers, following) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)").await?;
-        self.client.execute(&query, &[&user.id, &user.username, &user.email, &user.password, &user.dob, &user.pfp.to_string(), &user.bio, &user.followers, &user.following,]).await?;
+        let query = self.client.prepare("INSERT INTO users (id, username, email, password, dob, pfp, bio, followers, following, verified) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)").await?;
+        self.client.execute(&query, &[&user.id, &user.username, &user.email, &user.password, &user.dob, &user.pfp.to_string(), &user.bio, &user.followers, &user.following, &user.verified]).await?;
 
         Ok(())
     }
@@ -45,6 +47,7 @@ impl UserDB {
             bio: row.get("bio"),
             followers: row.get("followers"),
             following: row.get("following"),
+            verified: row.get("verified")
         };
     
         let json_value = serde_json::to_value(&user)?;
@@ -66,6 +69,7 @@ impl UserDB {
             bio: row.get("bio"),
             followers: row.get("followers"),
             following: row.get("following"),
+            verified: row.get("verified")
         };
     
         let json_value = serde_json::to_value(&user)?;
@@ -94,12 +98,30 @@ impl UserDB {
     }
 
     //this might not work for followers and following fields
-    pub async fn get_column(&self, id: &String, column: &str) -> Result<String, Box<dyn std::error::Error>> {
+    pub async fn get_column(&self, id: &String, column: &str) -> Option<String> {
         let query: String = format!("SELECT {} FROM users where id = $1", column);
-        let statement = self.client.prepare(&query).await?;
-        let row = self.client.query_one(&statement, &[id]).await?;
+        let statement = self.client.prepare(&query).await.ok()?;
+        let row = self.client.query_one(&statement, &[id]).await.ok()?;
+    
+        Some(row.get(0))
+    }
 
-        Ok(row.get(0))
+    pub async fn update_column(&self, id: &str, update: Update) -> Result<(), Box<dyn std::error::Error>> {
+        let query: String = format!("UPDATE users SET {} = ${} WHERE id = ${}", update.column, 1, 2);
+    
+        let statement = self.client.prepare(&query).await?;
+    
+        let values: &[&(dyn ToSql + Sync)] = &[&update.new_data, &id];
+        self.client.execute(&statement, values).await?;
+    
+        Ok(())
+    }
+
+    pub async fn verifiy_user(&self, id: &String) -> Result<(), Box<dyn std::error::Error>> {
+        let statment = self.client.prepare("UPDATE users SET verified = True WHERE id = $1").await?;
+        self.client.execute(&statment, &[id]).await?;
+
+        Ok(())
     }
 
     pub async fn get_password_and_id(&self, username: &String) -> Result<(String, String), Box<dyn std::error::Error>> {

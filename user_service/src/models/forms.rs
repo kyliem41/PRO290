@@ -1,6 +1,7 @@
 use std::fs::File;
 use std::io::Write;
 use rocket::fs::TempFile;
+use tempfile::NamedTempFile;
 
 #[derive(FromForm)]
 pub struct UserForm<'r> {
@@ -16,6 +17,5 @@ pub struct UserForm<'r> {
 
 #[derive(FromForm)]
 pub struct ImageForm<'r> {
-    pub id: String,
     pub image: TempFile<'r>
 }

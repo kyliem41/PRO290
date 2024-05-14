@@ -11,8 +11,6 @@ use argon2::{
     Argon2
 };
 
-const EXPERIATION_ONE_DAY: i64 = 86400;
-
 /*
 TODO
 add generation and verification using jwt for user auth
@@ -36,27 +34,48 @@ pub fn verify_password(password: &String, hashed_password: &String) -> bool {
 }
 
 //should make exp time a const
-pub fn create_jwt(id: String) -> Result<String, jsonwebtoken::errors::Error> {
+pub fn create_jwt(id: String, expiration_time: i64) -> Result<String, jsonwebtoken::errors::Error> {
     let secret_key: String = env::var("SECRET_KEY").unwrap();
-    let experiation = chrono::Utc::now()
-        .checked_add_signed(chrono::Duration::seconds(EXPERIATION_ONE_DAY))
-        .expect("valid timestap")
+    let expiration = chrono::Utc::now()
+        .checked_add_signed(chrono::Duration::seconds(expiration_time))
+        .expect("valid timestamp")
         .timestamp();
 
     let token: Token = Token {
-        id: id,
-        exp: experiation as usize
+        id: id.clone(),
+        exp: expiration as usize
     };
 
     let header = Header::new(Algorithm::HS256);
-    encode(&header, &token, &EncodingKey::from_secret(secret_key.as_ref()))
+    let jwt = encode(&header, &token, &EncodingKey::from_secret(secret_key.as_ref()));
+
+    match jwt {
+        Ok(token) => {
+            println!("JWT created successfully for user '{}'", id);
+            Ok(token)
+        },
+        Err(err) => {
+            println!("Error creating JWT for user '{}': {}", id, err);
+            Err(err)
+        }
+    }
 }
 
 pub fn verify_jwt(token: &String) -> Result<String, jsonwebtoken::errors::Error> {
     let secret_key: String = env::var("SECRET_KEY").unwrap();
     let validation = Validation::new(Algorithm::HS256);
-    let token_data = decode::<Token>(token, &DecodingKey::from_secret(secret_key.as_ref()), &validation)?;
-    Ok(token_data.claims.id)
+    let token_data = decode::<Token>(token, &DecodingKey::from_secret(secret_key.as_ref()), &validation);
+
+    match token_data {
+        Ok(data) => {
+            println!("JWT verification successful for user '{}'", data.claims.id);
+            Ok(data.claims.id)
+        },
+        Err(err) => {
+            println!("JWT verification failed: {}", err);
+            Err(err)
+        }
+    }
 }
 
 pub fn generate_random_code() -> String {
