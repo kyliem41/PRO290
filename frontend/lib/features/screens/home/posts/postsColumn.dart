@@ -17,7 +17,7 @@ class _PostsColumnState extends State<PostsColumn> {
           automaticallyImplyLeading: false,
           title: const Text('Following'),
           centerTitle: true,
-          backgroundColor: Theme.of(context).highlightColor,
+          backgroundColor: Colors.teal.shade100,
         ),
         SizedBox(height: 20),
         ListView.builder(

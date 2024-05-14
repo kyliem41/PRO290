@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:frontend/features/screens/messages/message.dart';
+import 'package:frontend/features/screens/messages/conversations/conversationList.dart';
 
 class MessageColumn extends StatelessWidget {
   @override
@@ -17,7 +17,7 @@ class MessageColumn extends StatelessWidget {
           margin: EdgeInsets.only(top: 40),
           padding: EdgeInsets.all(12),
           child: ListView.builder(
-            itemBuilder: (_, int index) => Message(),
+            itemBuilder: (_, int index) => Placeholder(),
             itemCount: 10,
             reverse: false,
           ),

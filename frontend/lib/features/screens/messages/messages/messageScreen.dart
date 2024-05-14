@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:frontend/features/screens/messages/conversationColumn.dart';
-import 'package:frontend/features/screens/messages/messageColumn.dart';
+import 'package:frontend/features/screens/messages/conversations/conversationColumn.dart';
+import 'package:frontend/features/screens/messages/messages/messageColumn.dart';
 
 class MessagesPage extends StatelessWidget {
   @override
@@ -10,6 +10,7 @@ class MessagesPage extends StatelessWidget {
         children: [
           Expanded(
             child: Container(
+              color: Colors.teal.shade100,
               child: MessageColumn(),
             ),
           ),
