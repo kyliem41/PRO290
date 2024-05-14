@@ -49,15 +49,18 @@ fn register_to_consul() -> Result<(), Box<dyn std::error::Error>> {
 
 #[launch]
 fn rocket() -> _ {
+    //get address
     let address: String =  env::var("API_ADDRESS").unwrap();
     print!("{}", address);
 
+    //set rocket configuration
     let config = rocket::Config {
         address: address.parse().unwrap(),
         port: 8001,
         ..Default::default()
     };
 
+    //create rocket instance and mount routes
     let rocket_instance = rocket::custom(config)
         .mount("/", routes![user_routes::health])
         .mount("/user", routes![
@@ -74,7 +77,7 @@ fn rocket() -> _ {
             user_routes::unfollow_user
         ]);
 
-    
+    //check if service is in testing or needs to be registered
     if address != "127.0.0.1" {
         if let Err(err) = register_to_consul() {
             eprintln!("Failed to register with Consul: {}", err);
@@ -82,5 +85,6 @@ fn rocket() -> _ {
         }
     }
 
+    //return rocket instance
     rocket_instance
 }

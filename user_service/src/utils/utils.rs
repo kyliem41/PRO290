@@ -11,16 +11,13 @@ use argon2::{
     Argon2
 };
 
-/*
-TODO
-add generation and verification using jwt for user auth
- */
-
+//generates a unique id
 pub fn generate_uuid() -> Uuid {
     let uuid = Uuid::new_v4();
     uuid
 }
 
+//hashes a password with a random salt
 pub fn hash_password(password: String) -> String {
     let salt = SaltString::generate(&mut OsRng);
     let argon2 = Argon2::default();
@@ -28,12 +25,13 @@ pub fn hash_password(password: String) -> String {
     password_hash
 }
 
+//verifies if a plain text and hashed password match
 pub fn verify_password(password: &String, hashed_password: &String) -> bool {
     let parsed_hash = PasswordHash::new(hashed_password).unwrap();
     Argon2::default().verify_password(password.as_bytes(), &parsed_hash).is_ok()
 }
 
-//should make exp time a const
+//creates a jwt using a user id and experiation time
 pub fn create_jwt(id: String, expiration_time: i64) -> Result<String, jsonwebtoken::errors::Error> {
     let secret_key: String = env::var("SECRET_KEY").unwrap();
     let expiration = chrono::Utc::now()
@@ -61,6 +59,7 @@ pub fn create_jwt(id: String, expiration_time: i64) -> Result<String, jsonwebtok
     }
 }
 
+//verifies if a token is valid and contains a user id
 pub fn verify_jwt(token: &String) -> Result<String, jsonwebtoken::errors::Error> {
     let secret_key: String = env::var("SECRET_KEY").unwrap();
     let validation = Validation::new(Algorithm::HS256);
@@ -78,6 +77,8 @@ pub fn verify_jwt(token: &String) -> Result<String, jsonwebtoken::errors::Error>
     }
 }
 
+//generated a random string of numbers 
+//TODO give it a length why is this going to code.len() which is 0
 pub fn generate_random_code() -> String {
     let mut code: String = "".to_string();
 
