@@ -4,6 +4,7 @@ import 'package:frontend/features/screens/location/locationScreen.dart';
 import 'package:frontend/features/screens/messages/messageScreen.dart';
 import 'package:frontend/features/screens/notifications/notificationScreen.dart';
 import 'package:frontend/features/screens/profile/profileScreen.dart';
+import 'package:frontend/features/screens/search/searchScreen.dart';
 
 class MyHomePage extends StatefulWidget {
   @override
@@ -21,72 +22,63 @@ class _MyHomePageState extends State<MyHomePage> {
         page = GenerateHomePage();
         break;
       case 1:
-        // page = GenerateLocationPage();
         page = LocationPage();
         break;
       case 2:
-        // page = GenerateMessagePage();
         page = MessagesPage();
         break;
       case 3:
-        // page = GenerateNotificationPage();
-        page = NotificationPage();
+        page = SearchPage();
         break;
       case 4:
-        // page = GenerateProfilePage();
         page = ProfilePage();
+        break;
       default:
         throw UnimplementedError('no widget for $selectedIndex');
     }
 
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        return Scaffold(
-          body: Row(
-            children: [
-              SafeArea(
-                child: NavigationRail(
-                  extended: constraints.maxWidth >= 600,
-                  destinations: [
-                    NavigationRailDestination(
-                      icon: Icon(Icons.home),
-                      label: Text('Home'),
-                    ),
-                    NavigationRailDestination(
-                      icon: Icon(Icons.add_location_sharp),
-                      label: Text('Location'),
-                    ),
-                    NavigationRailDestination(
-                      icon: Icon(Icons.message_rounded),
-                      label: Text('Messages'),
-                    ),
-                    NavigationRailDestination(
-                      icon: Icon(Icons.add_alert),
-                      label: Text('Notifications'),
-                    ),
-                    NavigationRailDestination(
-                      icon: Icon(Icons.account_box_rounded),
-                      label: Text('Profile'),
-                    ),
-                  ],
-                  selectedIndex: selectedIndex,
-                  onDestinationSelected: (value) {
-                    setState(() {
-                      selectedIndex = value;
-                    });
-                  },
-                ),
+    return Scaffold(
+      body: Row(
+        children: [
+          NavigationRail(
+            extended: true,
+            minExtendedWidth: 300,
+            selectedIndex: selectedIndex,
+            onDestinationSelected: (value) {
+              setState(() {
+                selectedIndex = value;
+              });
+            },
+            destinations: [
+              NavigationRailDestination(
+                icon: Icon(Icons.home),
+                label: Text('Home'),
               ),
-              Expanded(
-                child: Container(
-                  color: Theme.of(context).colorScheme.primaryContainer,
-                  child: page,
-                ),
+              NavigationRailDestination(
+                icon: Icon(Icons.add_location_sharp),
+                label: Text('Location'),
+              ),
+              NavigationRailDestination(
+                icon: Icon(Icons.message_rounded),
+                label: Text('Messages'),
+              ),
+              NavigationRailDestination(
+                icon: Icon(Icons.account_box_rounded),
+                label: Text('Search'),
+              ),
+              NavigationRailDestination(
+                icon: Icon(Icons.account_box_rounded),
+                label: Text('Profile'),
               ),
             ],
           ),
-        );
-      }
+          Expanded(
+              child: Container(
+            color: Theme.of(context).colorScheme.primaryContainer,
+            child: page,
+          )),
+        ],
+      ),
     );
   }
 }
