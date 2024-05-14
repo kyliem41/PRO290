@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/features/screens/messages/conversation.dart';
 
 class ConversationColumn extends StatelessWidget {
   @override
@@ -23,8 +24,7 @@ class ConversationColumn extends StatelessWidget {
           margin: EdgeInsets.only(top: 40),
           padding: EdgeInsets.all(12),
           child: ListView.builder(
-            // itemBuilder: (_, int index) => ChooseConversation(),
-            itemBuilder: (_, index) => Placeholder(),
+            itemBuilder: (_, index) => ChooseConversation(),
             itemCount: 10,
             reverse: false,
           ),

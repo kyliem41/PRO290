@@ -39,43 +39,46 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       body: Row(
         children: [
-          NavigationRail(
-            extended: true,
-            minExtendedWidth: 300,
-            selectedIndex: selectedIndex,
-            onDestinationSelected: (value) {
-              setState(() {
-                selectedIndex = value;
-              });
-            },
-            destinations: [
-              NavigationRailDestination(
-                icon: Icon(Icons.home),
-                label: Text('Home'),
-              ),
-              NavigationRailDestination(
-                icon: Icon(Icons.add_location_sharp),
-                label: Text('Location'),
-              ),
-              NavigationRailDestination(
-                icon: Icon(Icons.message_rounded),
-                label: Text('Messages'),
-              ),
-              NavigationRailDestination(
-                icon: Icon(Icons.account_box_rounded),
-                label: Text('Search'),
-              ),
-              NavigationRailDestination(
-                icon: Icon(Icons.account_box_rounded),
-                label: Text('Profile'),
-              ),
-            ],
+          SizedBox(
+            width: MediaQuery.of(context).size.width * 0.15,
+            child: NavigationRail(
+              extended: true,
+              selectedIndex: selectedIndex,
+              onDestinationSelected: (value) {
+                setState(() {
+                  selectedIndex = value;
+                });
+              },
+              destinations: [
+                NavigationRailDestination(
+                  icon: Icon(Icons.home),
+                  label: Text('Home'),
+                ),
+                NavigationRailDestination(
+                  icon: Icon(Icons.add_location_sharp),
+                  label: Text('Location'),
+                ),
+                NavigationRailDestination(
+                  icon: Icon(Icons.message_rounded),
+                  label: Text('Messages'),
+                ),
+                NavigationRailDestination(
+                  icon: Icon(Icons.account_box_rounded),
+                  label: Text('Search'),
+                ),
+                NavigationRailDestination(
+                  icon: Icon(Icons.account_box_rounded),
+                  label: Text('Profile'),
+                ),
+              ],
+            ),
           ),
           Expanded(
-              child: Container(
-            color: Theme.of(context).colorScheme.primaryContainer,
-            child: page,
-          )),
+            child: Container(
+              color: Theme.of(context).colorScheme.primaryContainer,
+              child: page,
+            ),
+          ),
         ],
       ),
     );

@@ -14,7 +14,7 @@ class MessagesPage extends StatelessWidget {
             ),
           ),
           SizedBox(
-            width: MediaQuery.of(context).size.width * 0.25,
+            width: MediaQuery.of(context).size.width * 0.2,
             child: Container(
               color: Colors.white,
               child: ConversationColumn(),
