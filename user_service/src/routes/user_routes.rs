@@ -18,8 +18,12 @@ use serde_json::json;
 const EXPERIATION_ONE_DAY: i64 = 86400;
 const EXPERIATION_ONE_HOUR: i64 = 3600;
 
+//TODO add default pfps and checking if a pfp is null
+
+//post a user to the datbase takes in form data
 #[post("/post", data = "<user_form>")]
 pub async fn post_user(user_form: Form<UserForm<'_>>) -> status::Custom<String> {
+    //init user properties
     let user_data: UserForm = user_form.into_inner();
     let user_id: String = utils::generate_uuid().to_string();
     let image_id: String = utils::generate_uuid().to_string();
@@ -43,14 +47,17 @@ pub async fn post_user(user_form: Form<UserForm<'_>>) -> status::Custom<String> 
         return status::Custom(Status::BadRequest, "Email is already linked to an account".to_string())
     }
 
+    //attempt to save pfp
     if let Err(err) = image::save_image(&image_id, user_data.pfp) {
         println!("{}", err);
         return status::Custom(Status::InternalServerError, "Error storing image to file".to_string())
     }
 
+    //hash password and create user object
     let hash: String = utils::hash_password(user_data.password);
     let user: User = User::new(user_id.clone(), user_data.username, user_data.email, hash, user_data.dob, image_id, user_data.bio, user_data.followers, user_data.following, false);
 
+    //save user in database
     match db.create_user(user.clone()).await {
         Ok(_) => {
             if let Ok(verification_token) = utils::create_jwt(user_id, EXPERIATION_ONE_HOUR) {
@@ -71,6 +78,7 @@ pub async fn post_user(user_form: Form<UserForm<'_>>) -> status::Custom<String> 
 pub async fn login(login: Json<Login>) -> status::Custom<String> {
     println!("Received login request: {:?}", login);
 
+    //create instance of database
     let db = match UserDB::new().await {
         Ok(db) => db,
         Err(err) => {
@@ -79,16 +87,20 @@ pub async fn login(login: Json<Login>) -> status::Custom<String> {
         }
     };
 
+    //check if username exists
     if db.does_field_exist("username", &login.username).await.unwrap() {
         println!("Username '{}' found in database", login.username);
 
+        //get user id and password using usernmae
         match db.get_password_and_id(&login.username).await {
             Ok(user_data) => {
                 println!("Retrieved user data: {:?}", user_data);
 
+                //if password take from user = hashed password in database
                 if utils::verify_password(&login.password, &user_data.0) {
                     println!("Password verification successful");
 
+                    //create an auth token
                     if let Ok(jwt) = utils::create_jwt(user_data.1, EXPERIATION_ONE_DAY) {
                         println!("JWT created successfully: {}", jwt);
                         return status::Custom(Status::Ok, jwt)
@@ -115,9 +127,12 @@ pub async fn login(login: Json<Login>) -> status::Custom<String> {
 
 #[post("/follow/<token>/<followed_id>")]
 pub async fn follow_user(token: String, followed_id: String ) -> status::Custom<String>{
+    //check if given id is valid
     match Uuid::parse_str(&followed_id) {
         Ok(_) => {
+            //verify auth token
             if let Ok(follower_id) = utils::verify_jwt(&token) {
+                //create instance of database
                 let db = match UserDB::new().await {
                     Ok(db) => db,
                     Err(err) => {
@@ -126,6 +141,7 @@ pub async fn follow_user(token: String, followed_id: String ) -> status::Custom<
                     }
                 };
 
+                //update data in database
                 match db.follow_account(follower_id, followed_id).await {
                     Ok(_) => {
                         return status::Custom(Status::Ok, "".to_string())
@@ -148,7 +164,9 @@ pub async fn follow_user(token: String, followed_id: String ) -> status::Custom<
 
 #[post("/verify/<token>")]
 pub async fn verify_user(token: String) -> status::Custom<String> {
+    //validate auth token
     if let Ok(id) = utils::verify_jwt(&token) {
+        //create instance of databse
         let db = match UserDB::new().await {
             Ok(db) => db,
             Err(err) => {
@@ -157,6 +175,7 @@ pub async fn verify_user(token: String) -> status::Custom<String> {
             }
         };
 
+        //update data in database
         if let Err(err) = db.verifiy_user(&id).await {
             println!("{}", err);
             return status::Custom(Status::InternalServerError, "Error updating user verification status".to_string());
@@ -173,9 +192,9 @@ pub fn health() -> String {
     "Ok".to_string()
 }
 
+//TODO this should be an auth token instead of sending a user id
 #[get("/get/id/<id>")]
 pub async fn get_user_by_id(id: String) -> status::Custom<Value>{
-
     match Uuid::parse_str(&id) {
         Ok(_) => {
             let db = match UserDB::new().await {
@@ -205,6 +224,7 @@ pub async fn get_user_by_id(id: String) -> status::Custom<Value>{
 
 #[get("/get/username/<username>")]
 pub async fn get_user_by_username(username: String) -> status::Custom<Value> {
+    //create instance of database
     let db = match UserDB::new().await {
         Ok(db) => db,
         Err(err) => {
@@ -214,18 +234,21 @@ pub async fn get_user_by_username(username: String) -> status::Custom<Value> {
         }
     }; 
 
+    //get user json
     if let Ok (user_json) = db.get_user_with_username(username).await {
         return status::Custom(Status::Ok, user_json)
     }
 
-    //i think 404 should be here
+    //nothing found
     let response_json = json!({"message": "User not found"});
     status::Custom(Status::NotFound, response_json)
 }
 
 #[get("/pfp/<token>")]
 pub async fn get_pfp(token: String) -> Option<NamedFile> {
+    //verify auth token
     if let Ok(id) = utils::verify_jwt(&token) {
+        //create instance of db
         let user_db = match UserDB::new().await {
             Ok(db) => db,
             Err(err) => {
@@ -234,6 +257,7 @@ pub async fn get_pfp(token: String) -> Option<NamedFile> {
             }
         };
 
+        //get image_id from user and use that to return stored image
         if let Some(pfp_id) = user_db.get_column(&id, "pfp").await {
             return image::get_image(&pfp_id).await;
         }
@@ -252,11 +276,11 @@ add the producer here to send an email with the code
     
 // }
 
-//make this an enum
 #[patch("/update/<token>", data = "<update>")]  
 pub async fn update_user(token: String, update: Json<Update>) -> Status {
+    //verify auth token
     if let Ok(id) = utils::verify_jwt(&token) {
-
+        //create instance of database
         let db = match UserDB::new().await {
             Ok(db) => db,
             Err(err) => {
@@ -265,6 +289,7 @@ pub async fn update_user(token: String, update: Json<Update>) -> Status {
             }
         };
 
+        //update data in database
         let update: Update = update.into_inner();
         match db.update_column(&id, update).await {
             Ok(_) => {
@@ -282,8 +307,9 @@ pub async fn update_user(token: String, update: Json<Update>) -> Status {
 
 #[patch("/update/pfp/<token>", data = "<pfp>")]
 pub async fn update_pfp(token: String, pfp: Form<ImageForm<'_>>) -> status::Custom<String> {
+    //verify auth token
     if let Ok(id) = utils::verify_jwt(&token) {
-
+        //create instance of user database
         let db = match UserDB::new().await {
             Ok(db) => db,
             Err(err) => {
@@ -292,6 +318,7 @@ pub async fn update_pfp(token: String, pfp: Form<ImageForm<'_>>) -> status::Cust
             }
         };
 
+        //get image id
         let image_id = match db.get_column(&id, "pfp").await {
             Some(pfp_id) => pfp_id,
             None => {
@@ -299,6 +326,7 @@ pub async fn update_pfp(token: String, pfp: Form<ImageForm<'_>>) -> status::Cust
             }
         };
 
+        //save new image
         if let Err(err) = image::save_image(&image_id, pfp.into_inner().image) {
             println!("{}", err);
             return status::Custom(Status::InternalServerError, "Error storing image to file".to_string());
@@ -312,8 +340,10 @@ pub async fn update_pfp(token: String, pfp: Form<ImageForm<'_>>) -> status::Cust
 
 #[delete("/delete/<id>")]
 pub async fn delete_user(id: &str) -> status::Custom<String> {
+    //check if valid id
     match Uuid::parse_str(id) {
         Ok(_) => {
+            //create instance of database
             let db = match UserDB::new().await {
                 Ok(db) => db,
                 Err(err) => {
@@ -322,6 +352,7 @@ pub async fn delete_user(id: &str) -> status::Custom<String> {
                 }
             }; 
 
+            //delete user from database
             match db.delete_user(id.to_string()).await {
                 Ok(_) => return status::Custom(Status::Ok, "".to_string()),
                 Err(err) => {
@@ -339,6 +370,8 @@ pub async fn delete_user(id: &str) -> status::Custom<String> {
 
 #[delete("/unfollow/<token>/<followed_id>")]
 pub async fn unfollow_user(token: String, followed_id: String) -> status::Custom<String> {
+    //
+    
     match Uuid::parse_str(&followed_id) {
         Ok(_) => {
             if let Ok(follower_id) = utils::verify_jwt(&token) {

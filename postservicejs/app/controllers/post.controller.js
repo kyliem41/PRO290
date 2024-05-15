@@ -1,5 +1,6 @@
 const { v4: uuidv4 } = require('uuid');
-const { Post } = require('../models');
+const db = require('../models');
+const Post = db.post;
 
 exports.testRest = (req, res) => {
   res.status(200).send('Hello, World!');

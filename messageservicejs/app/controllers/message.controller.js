@@ -1,5 +1,5 @@
 const { v4: uuidv4 } = require('uuid');
-const { Post } = require('../models');
+const Message = require('../models/message.model');
 
 exports.testRest = (req, res) => {
   res.status(200).send('Hello, World!');
@@ -9,89 +9,82 @@ exports.health = (req, res) => {
   res.status(200).send('Healthy');
 };
 
-exports.findAllPosts = async (req, res) => {
+exports.findAllMessages = async (req, res) => {
   try {
-    const posts = await Post.find();
-    res.status(200).json(posts);
+    const messages = await Message.find();
+    res.status(200).json(messages);
   } catch (error) {
-    console.error('Error retrieving posts:', error);
+    console.error('Error retrieving messages:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 };
 
-exports.findPostByUserId = async (req, res) => {
+exports.findMessagesBySenderId = async (req, res) => {
   try {
-    const { userId } = req.params;
-    const posts = await Post.find({ userId });
-    res.status(200).json(posts);
+    const { senderId } = req.params;
+    const messages = await Message.find({ senderId });
+    res.status(200).json(messages);
   } catch (error) {
-    console.error('Error retrieving posts by user ID:', error);
+    console.error('Error retrieving messages by sender ID:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 };
 
-exports.createPost = async (req, res) => {
+exports.createMessage = async (req, res) => {
   try {
-    const { userId, content, location } = req.body;
-    const currentDate = new Date();
+    const { senderId, recipientIds, content, type, conversationId } = req.body;
 
-    const post = await Post.create({
-      id: uuidv4(),
-      userId,
+    const message = await Message.create({
+      messageId: uuidv4(),
+      senderId,
+      recipientIds,
       content,
-      location,
-      time: currentDate.toLocaleTimeString(),
-      date: currentDate.toLocaleDateString(),
+      type,
+      conversationId,
     });
 
-    res.status(201).json(post);
+    res.status(201).json(message);
   } catch (error) {
-    console.error('Error creating post:', error);
+    console.error('Error creating message:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 };
 
-exports.updatePost = async (req, res) => {
+exports.updateMessage = async (req, res) => {
   try {
-    const { id } = req.params;
-    const { content, location } = req.body;
-    const currentDate = new Date();
+    const { messageId } = req.params;
+    const { content, readStatus } = req.body;
 
-    const updatedPost = await Post.findByIdAndUpdate(
-      id,
-      {
-        content,
-        location,
-        time: currentDate.toLocaleTimeString(),
-        date: currentDate.toLocaleDateString(),
-      },
+    const updatedMessage = await Message.findOneAndUpdate(
+      { messageId },
+      { content, readStatus },
       { new: true }
     );
 
-    if (!updatedPost) {
-      return res.status(404).json({ error: 'Post not found' });
+    if (!updatedMessage) {
+      return res.status(404).json({ error: 'Message not found' });
     }
 
-    res.status(200).json(updatedPost);
+    res.status(200).json(updatedMessage);
   } catch (error) {
-    console.error('Error updating post:', error);
+    console.error('Error updating message:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 };
 
-exports.deletePost = async (req, res) => {
+exports.deleteMessage = async (req, res) => {
   try {
-    const { id } = req.params;
+    const { messageId } = req.params;
 
-    const deletedPost = await Post.findByIdAndDelete(id);
+    const deletedMessage = await Message.findOneAndDelete({ messageId });
 
-    if (!deletedPost) {
-      return res.status(404).json({ error: 'Post not found' });
+    if (!deletedMessage) {
+      return res.status(404).json({ error: 'Message not found' });
     }
 
     res.status(204).end();
   } catch (error) {
-    console.error('Error deleting post:', error);
+    console.error('Error deleting message:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 };

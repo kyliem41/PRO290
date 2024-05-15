@@ -1,11 +1,4 @@
-version: "3.1"
-
-networks:
-  Pro290_network:
-    external: false
-
 services:
-
   Traefik:
     image: traefik:latest
     container_name: traefik
@@ -56,7 +49,7 @@ services:
     #   - "traefik.http.services.postservice.loadbalancer.server.port=8080"
 
   Consul:
-    image: hashicorp/consul:1.12.0
+    image: hashicorp/consul:latest
     container_name: consul
     command: "agent -dev -client=0.0.0.0"
     ports:
@@ -68,20 +61,40 @@ services:
       - 'traefik.consulcatalog.connect=true'
     restart: unless-stopped
 
+  RabbitMQ:
+    image: rabbitmq
+    container_name: rabbitmq
+    networks:
+      - Pro290_network
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+
   UserService:
-    image: user_service:latest
-    build:
-      context: ./user_service
-      dockerfile: /dockerfile
+    image: user_service
+    build: /user_service
     environment:
       - API_ADDRESS=0.0.0.0
       - USER_URL=postgres://David:Password123@userdatabase:5432/users
       - IMAGE_URL=postgres://David:Password123@imagedatabase:5432/images
       - SECRET_KEY=idkmanwhatdoyouwantfromme
+      - RABBIT_URL=amqp://rabbitmq
     networks:
       - Pro290_network
     depends_on:
       - Consul
+    restart: unless-stopped
+
+  RabbitConsumer:
+    image: rabbit_consumer
+    build: /consumer
+    environment:
+      - EMAIL=zomhorsethompson2656@gmail.com
+      - PASSWORD=zkzb vevz esul frjt 
+      - RABBIT_URL=amqp://rabbitmq
+    networks:
+      - Pro290_network
+    restart: unless-stopped
 
   UserDatabase:
     image: postgres
@@ -95,16 +108,45 @@ services:
       POSTGRES_DB: users
     networks:
       - Pro290_network
-
-  ImageDatabase:
-    image: postgres
-    container_name: imagedatabase
-    hostname: imagedatabase
+  
+  pgadmin4:
+    image: dpage/pgadmin4
+    container_name: pgadmin
     ports:
-      - "5433:5432"
+      - "5050:80"
     environment:
-      POSTGRES_USER: David
-      POSTGRES_PASSWORD: Password123
-      POSTGRES_DB: images
+      PGADMIN_DEFAULT_EMAIL: admin@example.com
+      PGADMIN_DEFAULT_PASSWORD: admin_password
     networks:
       - Pro290_network
+
+  MessageService:
+    container_name: messageservice
+    build: ./messageservicejs
+    image: messageservice:latest
+    networks:
+      - Pro290_network
+    ports:
+      - "6002:6002"
+    depends_on:
+      - MongoDBPosts
+      - Consul
+
+  MongoDBMessages:
+    container_name: MongoDBMessages
+    image: mongo:latest
+    restart: always
+    hostname: MongoDBMessages
+    command: mongod --port 27018
+    ports:
+      - "27018:27018"
+    networks:
+      - Pro290_network
+
+networks:
+  Pro290_network:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.25.0.0/16

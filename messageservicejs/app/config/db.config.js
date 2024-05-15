@@ -1,4 +1,4 @@
 module.exports = {
-  url: "mongodb://MongoDBPosts:27017/message_db",
+  url: "mongodb://MongoDBMessages:27018/message_db",
   secrettoken: "idkmanwhatdoyouwantfromme"
 };

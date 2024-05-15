@@ -7,7 +7,7 @@ const consul = new Consul({
 });
 
 const serviceName = 'message-service';
-const servicePort = process.env.PORT || 8080;
+const servicePort = process.env.PORT || 6002;
 const uuid = uuidv4();
 
 const serviceConfig = {
@@ -22,7 +22,7 @@ const serviceConfig = {
   tags: [
     'traefik.enable=true',
     'traefik.http.routers.messageservice.rule=PathPrefix(`/api/messages`)',
-    'traefik.http.services.messageservice.loadbalancer.server.port=8080'
+    'traefik.http.services.messageservice.loadbalancer.server.port=6002'
   ],
 };
 

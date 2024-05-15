@@ -29,10 +29,10 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // routes
-require("./app/routes/post.routes.js")(app);
+require("./app/routes/message.routes.js")(app);
 
 // set port, listen for requests
-const port = process.env.PORT || 8080;
+const port = process.env.PORT || 6002;
 app.listen(port, () => {
   console.log(`Server is running on port ${port}.`);
   console.log(`http://localhost:${port}`);
