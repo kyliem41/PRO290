@@ -15,9 +15,13 @@ class _LocationPostsColumnState extends State<LocationPostsColumn> {
       children: [
         AppBar(
           automaticallyImplyLeading: false,
-          title: const Text('Location'),
+          title: const Text('Location',
+              style: TextStyle(
+                  fontSize: 28,
+                  fontWeight: FontWeight.bold,
+                  color: Color.fromRGBO(0, 121, 107, 1))),
           centerTitle: true,
-          backgroundColor: Theme.of(context).highlightColor,
+          backgroundColor: Colors.teal.shade100,
         ),
         SizedBox(height: 20),
         ListView.builder(

@@ -15,7 +15,11 @@ class _PostsColumnState extends State<PostsColumn> {
       children: [
         AppBar(
           automaticallyImplyLeading: false,
-          title: const Text('Following'),
+          title: const Text('Following',
+              style: TextStyle(
+                  fontSize: 28,
+                  fontWeight: FontWeight.bold,
+                  color: Color.fromRGBO(0, 121, 107, 1))),
           centerTitle: true,
           backgroundColor: Colors.teal.shade100,
         ),

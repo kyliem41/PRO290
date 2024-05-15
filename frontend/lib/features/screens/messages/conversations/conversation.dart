@@ -67,8 +67,10 @@ class _ChatColumnState extends State<ChatColumn> {
                   children: <Widget>[
                     Text(
                       'Conversations',
-                      style:
-                          TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
+                      style: TextStyle(
+                          fontSize: 32,
+                          fontWeight: FontWeight.bold,
+                          color: Color.fromRGBO(0, 121, 107, 1)),
                     ),
                     Container(
                       padding:
@@ -82,10 +84,11 @@ class _ChatColumnState extends State<ChatColumn> {
                         children: <Widget>[
                           SizedBox(width: 2),
                           IconButton(
+                            //TODOS: add new convo
                             onPressed: () {},
                             icon: Icon(Icons.add),
                             tooltip: 'New Conversation',
-                            color: Colors.blue,
+                            color: Color.fromRGBO(0, 121, 107, 1),
                           ),
                         ],
                       ),

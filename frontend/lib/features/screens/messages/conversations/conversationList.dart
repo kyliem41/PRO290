@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/features/screens/messages/messages/messageColumn.dart';
 
 class ConversationList extends StatefulWidget {
   String name;
@@ -22,7 +23,16 @@ class _ConversationListState extends State<ConversationList> {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () {},
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) {
+              return MessageColumn();
+            },
+          ),
+        );
+      },
       child: Container(
         height: 80,
         padding: EdgeInsets.only(left: 16, right: 16, top: 10, bottom: 10),

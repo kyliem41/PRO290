@@ -8,14 +8,15 @@ class NotificationColumn extends StatelessWidget {
       children: [
         AppBar(
           automaticallyImplyLeading: false,
-          title: const Text('Notifications:'),
+          title: const Text('Notifications', style:
+                          TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: Color.fromRGBO(0, 121, 107, 1))),
           backgroundColor: Theme.of(context).cardColor,
           actions: <Widget>[
             IconButton(
               onPressed: () {},
               icon: Icon(Icons.arrow_forward_ios_rounded),
               tooltip: 'Hide Notifications',
-              color: Colors.blue,
+              color: Color.fromRGBO(0, 121, 107, 1),
             ),
           ],
         ),

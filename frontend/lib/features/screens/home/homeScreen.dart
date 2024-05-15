@@ -27,7 +27,8 @@ class _MyHomePageState extends State<MyHomePage> {
         page = MessagesPage();
         break;
       case 3:
-        page = SearchPage();
+        page = Placeholder();
+        // page = SearchPage();
         break;
       case 4:
         page = ProfilePage();

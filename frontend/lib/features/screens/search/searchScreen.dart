@@ -1,42 +1,31 @@
-import 'package:flutter/material.dart';
+// import 'package:flutter/material.dart';
+// import 'package:frontend/features/screens/search/customAppBar.dart';
 
-class SearchPage extends StatefulWidget {
-  @override
-  State<SearchPage> createState() => _SearchPageState();
-}
-
-class _SearchPageState extends State<SearchPage> {
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: ListView(
-        children: [
-          SizedBox(height: 30),
-          Text('SEARCH'),
-        ],
-      ),
-    );
-  }
-}
-
-// class Search extends StatelessWidget {
+// class SearchPage extends StatelessWidget {
 //   @override
 //   Widget build(BuildContext context) {
-//     return Stack(
-//       children: [
-//         AppBar(
-//           automaticallyImplyLeading: false,
-//           title: const Text('Search:'),
-//           backgroundColor: Theme.of(context).cardColor,
-//           actions: <Widget>[
-//             IconButton(
-//               onPressed: () {},
-//               icon: Icon(Icons.arrow_forward_ios_rounded),
-//               tooltip: 'Search',
+//     return Scaffold(
+//         appBar: customAppBar(),
+//         Padding(
+//           padding: EdgeInsets.only(top: 16, left: 16, right: 16),
+//           child: TextField(
+//             decoration: InputDecoration(
+//               hintText: "search",
+//               hintStyle: TextStyle(color: Colors.grey.shade600),
+//               prefixIcon: Icon(
+//                 Icons.search,
+//                 color: Colors.grey.shade600,
+//                 size: 20,
+//               ),
+//               filled: true,
+//               fillColor: Colors.grey.shade100,
+//               contentPadding: EdgeInsets.all(8),
+//               enabledBorder: OutlineInputBorder(
+//                   borderRadius: BorderRadius.circular(20),
+//                   borderSide: BorderSide(color: Colors.grey.shade100)),
 //             ),
-//           ],
+//           ),
 //         ),
-//       ],
 //     );
 //   }
 // }
