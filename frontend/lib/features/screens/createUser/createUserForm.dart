@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:frontend/features/screens/createUser/createUser.dart';
 import 'package:frontend/features/screens/home/homeScreen.dart';
-import 'package:frontend/features/screens/login/password/email/getEmail.dart';
+import 'package:frontend/features/screens/login/loginScreen.dart';
+import 'package:frontend/main.dart';
 
-class LogInForm extends StatelessWidget {
-  const LogInForm({
+class createUserForm extends StatelessWidget {
+  const createUserForm({
     super.key,
   });
 
@@ -26,7 +26,7 @@ class LogInForm extends StatelessWidget {
         ),
         child: Container(
           width: 900,
-          height: 350,
+          height: 600,
           padding: EdgeInsets.all(20),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -36,6 +36,17 @@ class LogInForm extends StatelessWidget {
                   prefixIcon: Icon(Icons.person_outline_outlined),
                   labelText: AutofillHints.username,
                   hintText: 'username',
+                  border: OutlineInputBorder(),
+                ),
+              ),
+              SizedBox(height: 35),
+              const DOBInput(),
+              SizedBox(height: 35),
+              TextFormField(
+                decoration: InputDecoration(
+                  prefixIcon: Icon(Icons.email_outlined),
+                  labelText: AutofillHints.email,
+                  hintText: 'email',
                   border: OutlineInputBorder(),
                 ),
               ),
@@ -51,34 +62,32 @@ class LogInForm extends StatelessWidget {
                     icon: Icon(Icons.remove_red_eye_sharp),
                   ),
                 ),
-                obscureText: true,
               ),
-              const SizedBox(height: 30),
-              Align(
-                alignment: Alignment.centerRight,
-                child: TextButton(
-                  onPressed: () {
-                    Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => GetEmail(),
-                      ),
-                    );
-                  },
-                  child: Text('Forgot Password?'),
+              SizedBox(height: 35),
+              TextFormField(
+                decoration: InputDecoration(
+                  prefixIcon: Icon(Icons.fingerprint),
+                  labelText: AutofillHints.password,
+                  hintText: 'confirm password',
+                  border: OutlineInputBorder(),
+                  suffixIcon: IconButton(
+                    onPressed: null,
+                    icon: Icon(Icons.remove_red_eye_sharp),
+                  ),
                 ),
               ),
+              const SizedBox(height: 30),
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
                     onPressed: () {
-                      //TODOS: if login successful, if not give error message
-                      Navigator.pushReplacement(
+                      //TODOS: if creation successful, if not give error message
+                      Navigator.push(
                         context,
                         MaterialPageRoute(builder: (context) => MyHomePage()),
                       );
                     },
-                    child: Text('LOG IN')),
+                    child: Text('SIGN UP')),
               ),
               SizedBox(height: 20),
               Center(
@@ -86,16 +95,16 @@ class LogInForm extends StatelessWidget {
                   onPressed: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => CreateUserPage()),
+                      MaterialPageRoute(builder: (context) => LogInPage()),
                     );
                   },
                   child: Text.rich(
                     TextSpan(
-                      text: "Don't have an account?",
+                      text: "Already have an account?",
                       style: Theme.of(context).textTheme.bodySmall,
                       children: [
                         TextSpan(
-                          text: ' Sign up!',
+                          text: ' Log In!',
                           style: TextStyle(color: Colors.blue),
                         ),
                       ],
@@ -106,6 +115,46 @@ class LogInForm extends StatelessWidget {
             ],
           ),
         ),
+      ),
+    );
+  }
+}
+
+class DOBInput extends StatefulWidget {
+  const DOBInput({Key? key}) : super(key: key);
+
+  @override
+  _DOBInputState createState() => _DOBInputState();
+}
+
+class _DOBInputState extends State<DOBInput> {
+  DateTime? _selectedDate;
+
+  @override
+  Widget build(BuildContext context) {
+    return TextFormField(
+      decoration: InputDecoration(
+        prefixIcon: Icon(Icons.calendar_today),
+        labelText: 'DOB',
+        hintText: 'date of birth',
+        border: OutlineInputBorder(),
+      ),
+      readOnly: true,
+      onTap: () async {
+        final pickedDate = await showDatePicker(
+          context: context,
+          initialDate: DateTime.now(),
+          firstDate: DateTime(1960),
+          lastDate: DateTime(2050),
+        );
+        if (pickedDate != null && pickedDate != _selectedDate) {
+          setState(() {
+            _selectedDate = pickedDate;
+          });
+        }
+      },
+      controller: TextEditingController(
+        text: _selectedDate != null ? _selectedDate.toString() : '',
       ),
     );
   }

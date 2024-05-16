@@ -1,13 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:frontend/features/screens/login/loginForm.dart';
+import 'package:frontend/features/screens/login/password/pass/forgotPassForm.dart';
 
-class LogInPage extends StatelessWidget {
-  const LogInPage({Key? key}) : super(key: key);
+class ForgotPass extends StatelessWidget {
+  const ForgotPass({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
-
     return SafeArea(
       child: Scaffold(
         backgroundColor: Colors.teal.shade100,
@@ -19,10 +17,10 @@ class LogInPage extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('Welcome back!',
+                Text('Hello!',
                     style: Theme.of(context).textTheme.headlineLarge),
                 SizedBox(height: 20),
-                const LogInForm(),
+                const ForgotPassForm(),
               ],
             ),
           ),
