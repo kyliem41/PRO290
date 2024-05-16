@@ -21,15 +21,12 @@ class _MyHomePageState extends State<MyHomePage> {
         page = GenerateHomePage();
         break;
       case 1:
-      // page = Placeholder();
         page = LocationPage();
         break;
       case 2:
-      // page = Placeholder();
         page = MessagesPage();
         break;
       case 3:
-        // page = Placeholder();
         page = SearchPage();
         break;
       case 4:

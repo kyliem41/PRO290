@@ -24,14 +24,14 @@ class EmailVerifyForm extends StatelessWidget {
         ),
         child: Container(
           width: 900,
-          height: 200,
+          height: 180,
           padding: EdgeInsets.all(20),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               TextFormField(
                 decoration: InputDecoration(
-                  prefixIcon: Icon(Icons.fingerprint),
+                  prefixIcon: Icon(Icons.numbers_rounded),
                   labelText: AutofillHints.oneTimeCode,
                   hintText: 'code',
                   border: OutlineInputBorder(),
@@ -47,7 +47,7 @@ class EmailVerifyForm extends StatelessWidget {
                         MaterialPageRoute(builder: (context) => ForgotPass()),
                       );
                     },
-                    child: Text('SEND CODE')),
+                    child: Text('SUBMIT')),
               ),
             ],
           ),
