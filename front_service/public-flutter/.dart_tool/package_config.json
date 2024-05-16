@@ -44,8 +44,20 @@
       "languageVersion": "2.12"
     },
     {
+      "name": "file",
+      "rootUri": "file:///C:/Users/David/AppData/Local/Pub/Cache/hosted/pub.dev/file-7.0.0",
+      "packageUri": "lib/",
+      "languageVersion": "3.0"
+    },
+    {
       "name": "flutter",
       "rootUri": "file:///C:/Users/David/Downloads/flutter/flutter/packages/flutter",
+      "packageUri": "lib/",
+      "languageVersion": "3.2"
+    },
+    {
+      "name": "flutter_driver",
+      "rootUri": "file:///C:/Users/David/Downloads/flutter/flutter/packages/flutter_driver",
       "packageUri": "lib/",
       "languageVersion": "3.2"
     },
@@ -58,6 +70,12 @@
     {
       "name": "flutter_test",
       "rootUri": "file:///C:/Users/David/Downloads/flutter/flutter/packages/flutter_test",
+      "packageUri": "lib/",
+      "languageVersion": "3.2"
+    },
+    {
+      "name": "fuchsia_remote_debug_protocol",
+      "rootUri": "file:///C:/Users/David/Downloads/flutter/flutter/packages/fuchsia_remote_debug_protocol",
       "packageUri": "lib/",
       "languageVersion": "3.2"
     },
@@ -116,6 +134,18 @@
       "languageVersion": "3.0"
     },
     {
+      "name": "platform",
+      "rootUri": "file:///C:/Users/David/AppData/Local/Pub/Cache/hosted/pub.dev/platform-3.1.4",
+      "packageUri": "lib/",
+      "languageVersion": "3.0"
+    },
+    {
+      "name": "process",
+      "rootUri": "file:///C:/Users/David/AppData/Local/Pub/Cache/hosted/pub.dev/process-5.0.2",
+      "packageUri": "lib/",
+      "languageVersion": "3.0"
+    },
+    {
       "name": "provider",
       "rootUri": "file:///C:/Users/David/AppData/Local/Pub/Cache/hosted/pub.dev/provider-6.1.2",
       "packageUri": "lib/",
@@ -152,6 +182,12 @@
       "languageVersion": "2.18"
     },
     {
+      "name": "sync_http",
+      "rootUri": "file:///C:/Users/David/AppData/Local/Pub/Cache/hosted/pub.dev/sync_http-0.3.1",
+      "packageUri": "lib/",
+      "languageVersion": "2.12"
+    },
+    {
       "name": "term_glyph",
       "rootUri": "file:///C:/Users/David/AppData/Local/Pub/Cache/hosted/pub.dev/term_glyph-1.2.1",
       "packageUri": "lib/",
@@ -176,13 +212,19 @@
       "languageVersion": "3.0"
     },
     {
+      "name": "webdriver",
+      "rootUri": "file:///C:/Users/David/AppData/Local/Pub/Cache/hosted/pub.dev/webdriver-3.0.3",
+      "packageUri": "lib/",
+      "languageVersion": "2.18"
+    },
+    {
       "name": "frontend",
       "rootUri": "../",
       "packageUri": "lib/",
       "languageVersion": "3.1"
     }
   ],
-  "generated": "2024-05-16T16:04:22.725276Z",
+  "generated": "2024-05-16T16:15:46.532552Z",
   "generator": "pub",
   "generatorVersion": "3.3.4"
 }
