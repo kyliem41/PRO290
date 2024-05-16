@@ -15,9 +15,13 @@ class _LocationPostsColumnState extends State<LocationPostsColumn> {
       children: [
         AppBar(
           automaticallyImplyLeading: false,
-          title: const Text('Location'),
+          title: const Text('Location',
+              style: TextStyle(
+                  fontSize: 28,
+                  fontWeight: FontWeight.bold,
+                  color: Color.fromRGBO(0, 121, 107, 1))),
           centerTitle: true,
-          backgroundColor: Theme.of(context).highlightColor,
+          backgroundColor: Colors.teal.shade100,
         ),
         SizedBox(height: 20),
         ListView.builder(
@@ -76,57 +80,59 @@ class AddPost extends StatelessWidget {
         child: Material(
           color: Colors.transparent,
           child: Center(
-            child: SingleChildScrollView(
-              child: Padding(
-                padding: const EdgeInsets.all(20),
-                child: DecoratedBox(
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(10),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.grey.withOpacity(0.5),
-                        spreadRadius: 3,
-                        blurRadius: 5,
-                        offset: Offset(0, 3),
-                      ),
-                    ],
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.all(20),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          children: [
-                            IconButton(
-                              onPressed: onRemove,
-                              icon: Icon(Icons.close),
-                            ),
-                          ],
-                        ),
-                        TextFormField(
-                          decoration: InputDecoration(
-                            prefixIcon: Icon(Icons.arrow_forward_ios_rounded),
-                            labelText: 'new post',
-                            hintText: "what's on your mind?",
-                            border: OutlineInputBorder(),
-                          ),
-                        ),
-                        SizedBox(height: 35),
-                        SizedBox(
-                          width: 200,
-                          child: ElevatedButton(
-                            onPressed: () {},
-                            child: Text('ADD'),
-                          ),
+            child: ListView(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(20),
+                  child: DecoratedBox(
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(10),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.grey.withOpacity(0.5),
+                          spreadRadius: 3,
+                          blurRadius: 5,
+                          offset: Offset(0, 3),
                         ),
                       ],
                     ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(20),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              IconButton(
+                                onPressed: onRemove,
+                                icon: Icon(Icons.close),
+                              ),
+                            ],
+                          ),
+                          TextFormField(
+                            decoration: InputDecoration(
+                              prefixIcon: Icon(Icons.arrow_forward_ios_rounded),
+                              labelText: 'new post',
+                              hintText: "what's on your mind?",
+                              border: OutlineInputBorder(),
+                            ),
+                          ),
+                          SizedBox(height: 35),
+                          SizedBox(
+                            width: 200,
+                            child: ElevatedButton(
+                              onPressed: () {},
+                              child: Text('ADD'),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
                   ),
                 ),
-              ),
+              ],
             ),
           ),
         ),

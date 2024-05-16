@@ -1,3 +1,4 @@
 {
-    "dotnet.defaultSolution": "frontend.sln"
+    "dotnet.defaultSolution": "frontend.sln",
+    "discord.enabled": false
 }

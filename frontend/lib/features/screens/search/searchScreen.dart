@@ -1,42 +1,30 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
+import 'package:frontend/features/screens/home/notifications/notification.dart';
+import 'package:frontend/features/screens/home/notifications/notificationsColumn.dart';
+import 'package:frontend/features/screens/search/customAppBar.dart';
+import 'package:frontend/features/screens/search/searchResultsColumn.dart';
 
-class SearchPage extends StatefulWidget {
-  @override
-  State<SearchPage> createState() => _SearchPageState();
-}
-
-class _SearchPageState extends State<SearchPage> {
+class SearchPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: ListView(
+      child: Row(
         children: [
-          SizedBox(height: 30),
-          Text('SEARCH'),
+          Expanded(
+            child: Container(
+              child: SearchResultsColumn(),
+            ),
+          ),
+          SizedBox(
+            width: MediaQuery.of(context).size.width * 0.25,
+            child: Container(
+              color: Colors.white,
+              child: NotificationColumn(),
+            ),
+          )
         ],
       ),
     );
   }
 }
-
-// class Search extends StatelessWidget {
-//   @override
-//   Widget build(BuildContext context) {
-//     return Stack(
-//       children: [
-//         AppBar(
-//           automaticallyImplyLeading: false,
-//           title: const Text('Search:'),
-//           backgroundColor: Theme.of(context).cardColor,
-//           actions: <Widget>[
-//             IconButton(
-//               onPressed: () {},
-//               icon: Icon(Icons.arrow_forward_ios_rounded),
-//               tooltip: 'Search',
-//             ),
-//           ],
-//         ),
-//       ],
-//     );
-//   }
-// }

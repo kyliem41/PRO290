@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/features/screens/createUser/createUser.dart';
 import 'package:frontend/features/screens/home/homeScreen.dart';
-import 'package:frontend/main.dart';
+import 'package:frontend/features/screens/login/password/email/getEmail.dart';
 
 class LogInForm extends StatelessWidget {
   const LogInForm({
@@ -57,19 +57,28 @@ class LogInForm extends StatelessWidget {
               Align(
                 alignment: Alignment.centerRight,
                 child: TextButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => GetEmail(),
+                      ),
+                    );
+                  },
                   child: Text('Forgot Password?'),
                 ),
               ),
               SizedBox(
                 width: double.infinity,
-                child: ElevatedButton(onPressed: () {
-                  //TODOS: if login successful, if not give error message
-                    Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(builder: (context) => MyHomePage()),
-                    );
-                }, child: Text('LOG IN')),
+                child: ElevatedButton(
+                    onPressed: () {
+                      //TODOS: if login successful, if not give error message
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(builder: (context) => MyHomePage()),
+                      );
+                    },
+                    child: Text('LOG IN')),
               ),
               SizedBox(height: 20),
               Center(
