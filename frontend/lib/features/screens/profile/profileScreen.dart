@@ -1,22 +1,25 @@
 import 'package:flutter/material.dart';
-import 'package:frontend/features/screens/home/homeGenerator.dart';
-import 'package:frontend/features/screens/location/locationScreen.dart';
-import 'package:frontend/features/screens/messages/messages/messageScreen.dart';
+import 'package:frontend/features/screens/profile/profileColumn.dart';
 
-class ProfilePage extends StatefulWidget {
-  @override
-  State<ProfilePage> createState() => _ProfilePageState();
-}
-
-class _ProfilePageState extends State<ProfilePage> {
-
+class ProfilePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: ListView(
+      child: Row(
         children: [
-          SizedBox(height: 30),
-          Text('PROFILE'),
+          Expanded(
+            child: Container(
+              color: Colors.teal.shade100,
+              child: ProfileColumn(),
+            ),
+          ),
+          SizedBox(
+            width: MediaQuery.of(context).size.width * 0.2,
+            child: Container(
+              color: Colors.white,
+              // child: Column(),
+            ),
+          )
         ],
       ),
     );

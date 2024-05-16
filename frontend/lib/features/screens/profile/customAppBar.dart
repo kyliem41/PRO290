@@ -4,19 +4,14 @@ AppBar customAppBar() {
   return AppBar(
     automaticallyImplyLeading: false,
     elevation: 0,
-    backgroundColor: Color.fromRGBO(0, 121, 107, 1),
+    // backgroundColor: Color.fromRGBO(0, 121, 107, 1),
+    backgroundColor: Colors.transparent,
     flexibleSpace: SafeArea(
       child: Container(
         padding: EdgeInsets.only(right: 16),
         child: Row(
           children: <Widget>[
             SizedBox(width: 10),
-            CircleAvatar(
-              backgroundImage: NetworkImage(
-                  "<https://randomuser.me/api/portraits/men/5.jpg>"),
-              maxRadius: 20,
-            ),
-            SizedBox(width: 12),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,

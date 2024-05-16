@@ -22,6 +22,7 @@ class MyApp extends StatelessWidget {
           useMaterial3: true,
           colorScheme: ColorScheme.fromSeed(
               seedColor: Colors.teal), //seedColor: Colors.deepOrange
+          dividerColor: Colors.black,
         ),
         debugShowCheckedModeBanner: false,
         home: MyIndexPage(),
