@@ -1,0 +1,29 @@
+# Use the official Node.js image as a base image
+FROM node:alpine
+
+# Set the working directory in the container
+WORKDIR /app
+
+# Copy package.json and package-lock.json files to the container
+COPY package*.json ./
+
+# Install dependencies for the Node.js application
+RUN npm install
+
+# Copy the application files to the container
+COPY routes ./routes
+
+# COPY dal ./dal
+COPY app.js .
+
+# Create a directory for the public files (if needed)
+RUN mkdir public
+
+# Copy the built Flutter web files to the container
+COPY public-flutter/build/web/ ./public
+
+# Expose port 8002 to the outside world
+EXPOSE 8002
+
+# Run npm start to start the Node.js application
+CMD ["npm", "start"]
