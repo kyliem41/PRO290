@@ -117,11 +117,13 @@ class AddPost extends StatelessWidget {
                               labelText: 'new post',
                               hintText: "what's on your mind?",
                               border: OutlineInputBorder(),
+                              filled: true,
+                              fillColor: Colors.white,
                             ),
                           ),
                           SizedBox(height: 35),
                           SizedBox(
-                            width: 200,
+                            width: 170,
                             child: ElevatedButton(
                               onPressed: () {},
                               child: Text('ADD'),

@@ -4,8 +4,7 @@ AppBar customAppBar() {
   return AppBar(
     automaticallyImplyLeading: false,
     elevation: 0,
-    // backgroundColor: Color.fromRGBO(0, 121, 107, 1),
-    backgroundColor: Colors.transparent,
+    backgroundColor: Color.fromRGBO(0, 121, 107, 1),
     flexibleSpace: SafeArea(
       child: Container(
         padding: EdgeInsets.only(right: 16),
@@ -16,17 +15,7 @@ AppBar customAppBar() {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  Text(
-                    "Kriss Benwat",
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
-                  ),
-                  SizedBox(height: 6),
-                  Text(
-                    "Online",
-                    style: TextStyle(color: Colors.grey.shade50, fontSize: 13),
-                  ),
-                ],
+                children: <Widget>[],
               ),
             ),
           ],

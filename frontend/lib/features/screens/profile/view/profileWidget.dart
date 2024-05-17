@@ -1,14 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:frontend/features/screens/profile/editIconWidget.dart';
+import 'package:frontend/features/screens/profile/view/editIconWidget.dart';
 
 class ProfileWidget extends StatelessWidget {
   final String imagePath;
   final VoidCallback onEditClicked;
+  final bool isEdit;
 
   const ProfileWidget({
     Key? key,
     required this.imagePath,
     required this.onEditClicked,
+    this.isEdit = false,
   }) : super(key: key);
 
   @override
@@ -23,11 +25,11 @@ class ProfileWidget extends StatelessWidget {
             bottom: 0,
             right: 0,
             child: EditIcon(
-              color: color, 
+              color: color,
               onEditClicked: () {
-              //Navigator.push(context, )
-            },
-          ),
+                //Navigator.push(context, )
+              },
+            ),
           ),
         ],
       ),
