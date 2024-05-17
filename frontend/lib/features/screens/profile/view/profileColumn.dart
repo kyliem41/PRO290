@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:frontend/features/screens/profile/customAppBar.dart';
-import 'package:frontend/features/screens/profile/numbersWidget.dart';
-import 'package:frontend/features/screens/profile/profileWidget.dart';
+import 'package:frontend/features/screens/profile/edit/editProfileScreen.dart';
+import 'package:frontend/features/screens/profile/view/customAppBar.dart';
+import 'package:frontend/features/screens/profile/view/numbersWidget.dart';
+import 'package:frontend/features/screens/profile/view/profileWidget.dart';
 import 'package:frontend/models/userModel.dart';
 
 class ProfileColumn extends StatefulWidget {
@@ -22,15 +23,18 @@ class _ProfileColumnState extends State<ProfileColumn> {
       backgroundColor: Colors.teal[100],
       appBar: customAppBar(),
       body: ListView(
+        padding: EdgeInsets.only(top: 60),
         physics: BouncingScrollPhysics(),
         children: [
           ProfileWidget(
-            imagePath: user.imagePath,
-            // onClicked: () async {},
-            onEditClicked: () {
-              print('clicked :)');
-            }
-          ),
+              imagePath: user.imagePath,
+              onEditClicked: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => EditProfilePage(),
+                  ),
+                );
+              }),
           SizedBox(height: 24),
           buildName(user),
           SizedBox(height: 24),
@@ -51,13 +55,13 @@ class _ProfileColumnState extends State<ProfileColumn> {
           const SizedBox(height: 4),
           Text(
             user.email,
-            style: TextStyle(color: Colors.grey),
+            style: TextStyle(color: Colors.grey[600]),
           )
         ],
       );
 
   Widget buildAbout(Users user) => Container(
-    padding: EdgeInsets.symmetric(horizontal: 48),
+        padding: EdgeInsets.symmetric(horizontal: 48),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
