@@ -26,7 +26,7 @@ class _ProfileColumnState extends State<ProfileColumn> {
         children: [
           ProfileWidget(
             imagePath: user.imagePath,
-            onClicked: () async {},
+            // onClicked: () async {},
             onEditClicked: () {
               print('clicked :)');
             }
