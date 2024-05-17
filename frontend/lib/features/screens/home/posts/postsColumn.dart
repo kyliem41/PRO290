@@ -86,7 +86,7 @@ class AddPost extends StatelessWidget {
                   padding: const EdgeInsets.all(20),
                   child: DecoratedBox(
                     decoration: BoxDecoration(
-                      color: Colors.white,
+                      color: Color.fromARGB(238, 136, 207, 182),
                       borderRadius: BorderRadius.circular(10),
                       boxShadow: [
                         BoxShadow(
@@ -117,11 +117,13 @@ class AddPost extends StatelessWidget {
                               labelText: 'new post',
                               hintText: "what's on your mind?",
                               border: OutlineInputBorder(),
+                              filled: true,
+                              fillColor: Colors.white,
                             ),
                           ),
                           SizedBox(height: 35),
                           SizedBox(
-                            width: 200,
+                            width: 170,
                             child: ElevatedButton(
                               onPressed: () {},
                               child: Text('ADD'),

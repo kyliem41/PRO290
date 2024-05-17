@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/features/screens/login/loginScreen.dart';
 
 class ForgotPassForm extends StatelessWidget {
   const ForgotPassForm({
@@ -62,7 +63,7 @@ class ForgotPassForm extends StatelessWidget {
                   //TODOS: if login successful, if not give error message
                     Navigator.pushReplacement(
                       context,
-                      MaterialPageRoute(builder: (context) => Placeholder()),
+                      MaterialPageRoute(builder: (context) => LogInPage()),
                     );
                 }, child: Text('SUBMIT')),
               ),
