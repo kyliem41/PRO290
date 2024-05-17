@@ -16,7 +16,7 @@ class _ProfileColumnState extends State<ProfileColumn> {
         username: 'johndoe',
         email: 'johndoe@gmail.com',
         bio: 'swell of a guy',
-        imagePath: '../images/john.jfif');
+        imagePath: 'assets/images/john.png');
 
     return Scaffold(
       backgroundColor: Colors.teal[100],
@@ -27,6 +27,9 @@ class _ProfileColumnState extends State<ProfileColumn> {
           ProfileWidget(
             imagePath: user.imagePath,
             onClicked: () async {},
+            onEditClicked: () {
+              print('clicked :)');
+            }
           ),
           SizedBox(height: 24),
           buildName(user),
