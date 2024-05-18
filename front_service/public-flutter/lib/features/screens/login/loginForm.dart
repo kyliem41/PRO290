@@ -2,13 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:frontend/features/screens/createUser/createUser.dart';
 import 'package:frontend/features/screens/home/homeScreen.dart';
 import 'package:frontend/features/screens/login/password/email/getEmail.dart';
+import 'package:frontend/scripts/login.dart';
 
 class LogInForm extends StatelessWidget {
-  const LogInForm({
+  LogInForm({
     super.key,
   });
+  final TextEditingController _usernameController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  final loginService = LoginService();
 
   @override
+  
   Widget build(BuildContext context) {
     return Form(
       child: DecoratedBox(
@@ -32,6 +37,7 @@ class LogInForm extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               TextFormField(
+                controller: _usernameController,
                 decoration: InputDecoration(
                   prefixIcon: Icon(Icons.person_outline_outlined),
                   labelText: AutofillHints.username,
@@ -41,6 +47,7 @@ class LogInForm extends StatelessWidget {
               ),
               SizedBox(height: 35),
               TextFormField(
+                controller: _passwordController,
                 decoration: InputDecoration(
                   prefixIcon: Icon(Icons.fingerprint),
                   labelText: AutofillHints.password,
@@ -71,12 +78,16 @@ class LogInForm extends StatelessWidget {
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
-                    onPressed: () {
+                    onPressed: () async {
                       //TODOS: if login successful, if not give error message
-                      Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(builder: (context) => MyHomePage()),
-                      );
+                      print("clicked");
+                      bool isLoggedIn = await loginService.login(_usernameController.text, _passwordController.text);
+                      if (isLoggedIn) {
+                        print("logedin");
+                      }
+                      else{
+                        print("failed");
+                      }
                     },
                     child: Text('LOG IN')),
               ),
@@ -102,7 +113,7 @@ class LogInForm extends StatelessWidget {
                     ),
                   ),
                 ),
-              )
+              ) 
             ],
           ),
         ),

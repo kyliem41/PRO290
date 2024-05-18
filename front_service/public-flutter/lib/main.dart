@@ -88,7 +88,7 @@ class GeneratorPage extends StatelessWidget {
                 onPressed: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => const LogInPage()),
+                    MaterialPageRoute(builder: (context) => LogInPage()),
                   );
                 },
                 child: Text('SIGN IN'),
