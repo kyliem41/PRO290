@@ -86,7 +86,7 @@ class AddPost extends StatelessWidget {
                   padding: const EdgeInsets.all(20),
                   child: DecoratedBox(
                     decoration: BoxDecoration(
-                      color: Colors.white,
+                      color: Color.fromARGB(238, 136, 207, 182),
                       borderRadius: BorderRadius.circular(10),
                       boxShadow: [
                         BoxShadow(

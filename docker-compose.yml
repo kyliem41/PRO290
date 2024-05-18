@@ -14,12 +14,39 @@ services:
     ports:
       - 80:80
       - 8081:8081
+      - 8080:8080
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       # - ./traefik.yaml:/etc/traefik/traefik.yaml
     networks:
       - Pro290_network
     restart: always
+
+  MongoDBPosts:
+    container_name: MongoDBPosts
+    image: mongo:latest
+    restart: always
+    hostname: MongoDBPosts
+    ports:
+      - "27017:27017"
+    networks:
+      - Pro290_network
+
+  PostService:
+    container_name: postservice
+    build: ./postservicejs
+    image: postservice:latest
+    networks:
+      - Pro290_network
+    ports:
+      - "6001:8080"
+    depends_on:
+      - MongoDBPosts
+      - Consul
+    # labels:
+    #   - "traefik.enable=true"
+    #   - "traefik.http.routers.postservice.rule=Host(`postservice.localhost`)"
+    #   - "traefik.http.services.postservice.loadbalancer.server.port=8080"
 
   Consul:
     image: hashicorp/consul:latest
@@ -50,8 +77,8 @@ services:
       - API_ADDRESS=0.0.0.0
       - USER_URL=postgres://David:Password123@userdatabase:5432/users
       - IMAGE_URL=postgres://David:Password123@imagedatabase:5432/images
+      - SECRET_KEY=idkmanwhatdoyouwantfromme
       - RABBIT_URL=amqp://rabbitmq
-      - SECRET_KEY=idkmanwhatdoyouwantfrommeDav
     networks:
       - Pro290_network
     depends_on:
@@ -81,7 +108,7 @@ services:
       POSTGRES_DB: users
     networks:
       - Pro290_network
-
+  
   pgadmin4:
     image: dpage/pgadmin4
     container_name: pgadmin
@@ -93,6 +120,56 @@ services:
     networks:
       - Pro290_network
 
+  MessageService:
+    container_name: messageservice
+    build: ./messageservicejs
+    image: messageservice:latest
+    networks:
+      - Pro290_network
+    ports:
+      - "6002:6002"
+    depends_on:
+      - MongoDBPosts
+      - Consul
+
+  MongoDBMessages:
+    container_name: MongoDBMessages
+    image: mongo:latest
+    restart: always
+    hostname: MongoDBMessages
+    command: mongod --port 27018
+    ports:
+      - "27018:27018"
+    networks:
+      - Pro290_network
+
+  # FrontService:
+  #   image: front_service
+  #   build: /front_service
+  #   environment:
+  #     - HOST=0.0.0.0  
+  #   networks:
+  #     - Pro290_network
+  #   depends_on:
+  #     - Consul
+
+  FrontEnd:
+    container_name: frontend
+    image: frontend:latest
+    build: ./frontend
+    networks:
+      - Pro290_network
+    ports:
+      - "8088:8088"
+    depends_on:
+      - UserService
+      - PostService
+      - MessageService
+    # labels:
+    #   - "traefik.enable=true"
+    #   - "traefik.http.routers.frontend.rule=Host(`frontend.localhost`)"
+    #   - "traefik.http.services.frontend.loadbalancer.server.port=3000"
+
 networks:
   Pro290_network:
     driver: bridge
@@ -101,4 +178,3 @@ networks:
       config:
         - subnet: 172.25.0.0/16
 
-        
