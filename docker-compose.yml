@@ -143,28 +143,28 @@ services:
     networks:
       - Pro290_network
 
-  # FrontService:
-  #   image: front_service
-  #   build: /front_service
-  #   environment:
-  #     - HOST=0.0.0.0  
-  #   networks:
-  #     - Pro290_network
-  #   depends_on:
-  #     - Consul
-
-  FrontEnd:
-    container_name: frontend
-    image: frontend:latest
-    build: ./frontend
+  FrontService:
+    image: front_service
+    build: /front_service
+    environment:
+      - HOST=0.0.0.0  
     networks:
       - Pro290_network
-    ports:
-      - "8088:8088"
     depends_on:
-      - UserService
-      - PostService
-      - MessageService
+      - Consul
+
+  # FrontEnd:
+  #   container_name: frontend
+  #   image: frontend:latest
+  #   build: ./frontend
+  #   networks:
+  #     - Pro290_network
+  #   ports:
+  #     - "8088:8088"
+  #   depends_on:
+  #     - UserService
+  #     - PostService
+  #     - MessageService
     # labels:
     #   - "traefik.enable=true"
     #   - "traefik.http.routers.frontend.rule=Host(`frontend.localhost`)"

@@ -8,10 +8,18 @@ const app = express()
 const PORT = 8002
 const HOST = process.env.HOST || '127.0.0.1'
 
+const setJavaScriptContentType = (req, res, next) => {
+    if (req.url.endsWith('.js')) {
+        res.set('Content-Type', 'application/javascript');
+    }
+    next();
+};
+
 app.use(logger('dev'))
 app.use(express.json())
 app.use(express.urlencoded({ extended: false }))
 app.use(cookieParser())
+app.use(setJavaScriptContentType); 
 app.use(express.static(path.join(__dirname, 'public')))
 
 const page_controller = require('./routes/index.js')
