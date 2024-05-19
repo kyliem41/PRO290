@@ -20,7 +20,7 @@ COPY app.js .
 RUN mkdir public
 
 # Copy the built Flutter web files to the container
-COPY public-flutter/build/web/ ./public
+COPY public_flutter/build/web/ ./public
 
 # Expose port 8002 to the outside world
 EXPOSE 8002
