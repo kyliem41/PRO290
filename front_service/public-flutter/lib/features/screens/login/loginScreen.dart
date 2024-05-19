@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:frontend/features/screens/login/loginForm.dart';
 
 class LogInPage extends StatelessWidget {
-  const LogInPage({Key? key}) : super(key: key);
+  LogInPage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -22,7 +22,7 @@ class LogInPage extends StatelessWidget {
                 Text('Welcome back!',
                     style: Theme.of(context).textTheme.headlineLarge),
                 SizedBox(height: 20),
-                const LogInForm(),
+                LogInForm(),
               ],
             ),
           ),

@@ -143,15 +143,15 @@ services:
     networks:
       - Pro290_network
 
-  # FrontService:
-  #   image: front_service
-  #   build: /front_service
-  #   environment:
-  #     - HOST=0.0.0.0  
-  #   networks:
-  #     - Pro290_network
-  #   depends_on:
-  #     - Consul
+  FrontService:
+    image: front_service
+    build: /front_service
+    environment:
+      - HOST=0.0.0.0  
+    networks:
+      - Pro290_network
+    depends_on:
+      - Consul
 
   # FrontEnd:
   #   container_name: frontend
@@ -165,10 +165,10 @@ services:
   #     - UserService
   #     - PostService
   #     - MessageService
-  #   # labels:
-  #   #   - "traefik.enable=true"
-  #   #   - "traefik.http.routers.frontend.rule=Host(`frontend.localhost`)"
-  #   #   - "traefik.http.services.frontend.loadbalancer.server.port=3000"
+    # labels:
+    #   - "traefik.enable=true"
+    #   - "traefik.http.routers.frontend.rule=Host(`frontend.localhost`)"
+    #   - "traefik.http.services.frontend.loadbalancer.server.port=3000"
 
 networks:
   Pro290_network:
