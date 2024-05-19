@@ -132,7 +132,8 @@ class AddPost extends StatelessWidget {
                           SizedBox(
                             width: 170,
                             child: ElevatedButton(
-                              onPressed: () {
+                              onPressed: () async {
+                                // Claude, this is where I want to create the post
                                 final title = _titleController.text;
                                 final body = _bodyController.text;
                                 await _postService.createPost(title, body);

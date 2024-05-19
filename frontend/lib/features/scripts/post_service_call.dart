@@ -21,26 +21,27 @@ class PostService {
     }
   }
 
-  Future<void> createPost(String title, String body) async {
-    try {
-      final response = await http.post(
-        Uri.parse(apiUrl),
-        headers: <String, String>{
-          'Content-Type': 'application/json; charset=UTF-8',
-        },
-        body: jsonEncode(<String, String>{
-          'title': title,
-          'body': body,
-        }),
-      );
+  Future<void> createPost(String title, String content) async {
+  try {
+    final response = await http.post(
+      Uri.parse(apiUrl),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode(<String, dynamic>{
+        'userId': 'user123', // Replace with the actual user ID
+        'content': content,
+        'location': 'Sample Location', // Replace with the actual location
+      }),
+    );
 
-      if (response.statusCode == 201) {
-        print('Post created successfully');
-      } else {
-        print('Request failed with status: ${response.statusCode}');
-      }
-    } catch (error) {
-      print('Error: $error');
+    if (response.statusCode == 201) {
+      print('Post created successfully');
+    } else {
+      print('Request failed with status: ${response.statusCode}');
     }
+  } catch (error) {
+    print('Error: $error');
+  }
   }
 }
