@@ -14,6 +14,12 @@ class createUserForm extends StatelessWidget {
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _passwordConfirmationController = TextEditingController();
 
+  DateTime? _selectedDOB;
+
+  void _handleDOBSelected(DateTime? selectedDate) {
+    _selectedDOB = selectedDate;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Form(
@@ -94,10 +100,11 @@ class createUserForm extends StatelessWidget {
                       print("click");
                       String usernameError = await validateUsername(_usernameController.text);
                       String emailError = await validateEmail(_emailController.text);
-                      String password_error = validatePassword(_passwordController.text, _passwordConfirmationController.text);
+                      String passwordError = validatePassword(_passwordController.text, _passwordConfirmationController.text);
+                      print(_dobController.text);
                       print(usernameError);
                       print(emailError);
-                      print(password_error);
+                      print(passwordError);
                       //TODOS: if creation successful, if not give error message
                       // Navigator.push(
                       //   context,
@@ -146,6 +153,26 @@ class DOBInput extends StatefulWidget {
 
 class _DOBInputState extends State<DOBInput> {
   DateTime? _selectedDate;
+  final _dobController = TextEditingController(); 
+
+
+  @override
+  void initState() {
+    super.initState();
+    _dobController.addListener(_updateControllerText); // Add this line
+  }
+
+  @override
+  void dispose() {
+    _dobController.dispose(); // Add this line
+    super.dispose();
+  }
+
+  void _updateControllerText() {
+    // This method is called whenever the controller text changes
+    // You can perform any additional logic here if needed
+  }
+
 
   @override
   Widget build(BuildContext context) {
