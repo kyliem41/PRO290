@@ -14,12 +14,6 @@ class createUserForm extends StatelessWidget {
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _passwordConfirmationController = TextEditingController();
 
-  DateTime? _selectedDOB;
-
-  void _handleDOBSelected(DateTime? selectedDate) {
-    _selectedDOB = selectedDate;
-  }
-
   @override
   Widget build(BuildContext context) {
     return Form(
@@ -101,7 +95,7 @@ class createUserForm extends StatelessWidget {
                       String usernameError = await validateUsername(_usernameController.text);
                       String emailError = await validateEmail(_emailController.text);
                       String passwordError = validatePassword(_passwordController.text, _passwordConfirmationController.text);
-                      print(_dobController.text);
+                      // createAccount(_usernameController.text, "", _emailController.text, _passwordConfirmationController.text);
                       print(usernameError);
                       print(emailError);
                       print(passwordError);
@@ -153,27 +147,6 @@ class DOBInput extends StatefulWidget {
 
 class _DOBInputState extends State<DOBInput> {
   DateTime? _selectedDate;
-  final _dobController = TextEditingController(); 
-
-
-  @override
-  void initState() {
-    super.initState();
-    _dobController.addListener(_updateControllerText); // Add this line
-  }
-
-  @override
-  void dispose() {
-    _dobController.dispose(); // Add this line
-    super.dispose();
-  }
-
-  void _updateControllerText() {
-    // This method is called whenever the controller text changes
-    // You can perform any additional logic here if needed
-  }
-
-
   @override
   Widget build(BuildContext context) {
     return TextFormField(
@@ -191,6 +164,7 @@ class _DOBInputState extends State<DOBInput> {
           firstDate: DateTime(1960),
           lastDate: DateTime(2050),
         );
+
         if (pickedDate != null && pickedDate != _selectedDate) {
           setState(() {
             _selectedDate = pickedDate;
