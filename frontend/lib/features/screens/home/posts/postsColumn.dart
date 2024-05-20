@@ -119,6 +119,7 @@ class AddPost extends StatelessWidget {
                             ],
                           ),
                           TextFormField(
+                            controller: _bodyController,
                             decoration: InputDecoration(
                               prefixIcon: Icon(Icons.arrow_forward_ios_rounded),
                               labelText: 'new post',
@@ -133,9 +134,9 @@ class AddPost extends StatelessWidget {
                             width: 170,
                             child: ElevatedButton(
                               onPressed: () async {
-                                // Claude, this is where I want to create the post
                                 final title = _titleController.text;
                                 final body = _bodyController.text;
+                                print(body);
                                 await _postService.createPost(title, body);
                                 onRemove();
                               },
