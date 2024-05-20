@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/features/screens/home/posts/post.dart';
+import 'package:frontend/features/scripts/post_service_call.dart';
 
 class PostsColumn extends StatefulWidget {
   @override
@@ -7,6 +8,8 @@ class PostsColumn extends StatefulWidget {
 }
 
 class _PostsColumnState extends State<PostsColumn> {
+  final PostService _postService = PostService();
+
   OverlayEntry? _overlayEntry;
 
   @override
@@ -67,6 +70,10 @@ class AddPostOverlayEntry {
 
 class AddPost extends StatelessWidget {
   final VoidCallback onRemove;
+  final PostService _postService = PostService();
+  final TextEditingController _titleController = TextEditingController();
+  final TextEditingController _bodyController = TextEditingController();
+
   AddPost(this.onRemove);
 
   @override
@@ -125,7 +132,12 @@ class AddPost extends StatelessWidget {
                           SizedBox(
                             width: 170,
                             child: ElevatedButton(
-                              onPressed: () {},
+                              onPressed: () {
+                                final title = _titleController.text;
+                                final body = _bodyController.text;
+                                await _postService.createPost(title, body);
+                                onRemove();
+                              },
                               child: Text('ADD'),
                             ),
                           ),
