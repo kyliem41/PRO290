@@ -1,5 +1,7 @@
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:geolocator/geolocator.dart';
+
 
 class PostService {
   static const String apiUrl = 'http://localhost:80/api/posts';
@@ -21,10 +23,12 @@ class PostService {
     }
   }
 
-  Future<void> createPost(String title, String content) async {
+  Future<void> createPost(String content) async {
   try {
     // final token = await _getToken(); // Retrieve the token from storage or authentication service
-    final token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6ImYzMTQ2OTQxLWZmZWUtNGQ0My1hMmVmLTE3MmEyNmFlMzJjMyIsImV4cCI6MTcxNjI1ODMxNn0.7uJaQhTjzcGZbrImygYjxdaLurTTDt_XdSBW-bWsM_M";
+    final token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6ImYzMTQ2OTQxLWZmZWUtNGQ0My1hMmVmLTE3MmEyNmFlMzJjMyIsImV4cCI6MTcxNjM5MzM4M30.Bgfw5ulbI82_-u2YCA8fo7eVV-IcpS-niVeby5ObYn4";
+
+    Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
 
     final response = await http.post(
       Uri.parse(apiUrl),
@@ -34,15 +38,15 @@ class PostService {
       },
       body: jsonEncode(<String, dynamic>{
         'userId': 'user123', // Replace with the actual user ID
-        'content': content,
-        'location': 'Sample Location', // Replace with the actual location
+        'content': "hard conded content",
+        'position': position.toJson(),
       }),
     );
 
     if (response.statusCode == 201) {
       print('Post created successfully');
     } else {
-      print('Request failed with status: ${response.statusCode} + $content');
+      print('Request failed with status: ${response.statusCode} + $content + $position');
     }
   } catch (error) {
     print('Error: $error');

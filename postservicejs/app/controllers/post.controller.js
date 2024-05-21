@@ -40,7 +40,7 @@ exports.createPost = async (req, res) => {
       id: uuidv4(),
       userId,
       content,
-      location,
+      position,
       time: currentDate.toLocaleTimeString(),
       date: currentDate.toLocaleDateString(),
     });

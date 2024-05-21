@@ -1,3 +1,6 @@
+const { FLOAT } = require("sequelize");
+const { Json } = require("sequelize/lib/utils");
+
 module.exports = mongoose => {
     const postSchema = mongoose.Schema(
       {
@@ -14,8 +17,9 @@ module.exports = mongoose => {
           type: String,
           required: true
         },
-        location: {
-          type: String,
+        position: {
+          type: Map,
+          of: String,
           required: true
         },
         time: {

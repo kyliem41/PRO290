@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/features/screens/home/posts/post.dart';
 import 'package:frontend/features/scripts/post_service_call.dart';
+import 'package:geolocator/geolocator.dart';
 
 class PostsColumn extends StatefulWidget {
   @override
@@ -71,8 +72,33 @@ class AddPostOverlayEntry {
 class AddPost extends StatelessWidget {
   final VoidCallback onRemove;
   final PostService _postService = PostService();
-  final TextEditingController _titleController = TextEditingController();
   final TextEditingController _bodyController = TextEditingController();
+
+  Future<Position> _determinePosition() async {
+    bool serviceEnabled;
+    LocationPermission permission;
+
+    serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      return Future.error('Location services are disabled.');
+    }
+
+    permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.deniedForever) {
+      return Future.error(
+          'Location permissions are permanently denied, we cannot request permissions.');
+    }
+
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission != LocationPermission.whileInUse &&
+          permission != LocationPermission.always) {
+        return Future.error('Location permissions are denied');
+      }
+    }
+
+    return await Geolocator.getCurrentPosition();
+  }
 
   AddPost(this.onRemove);
 
@@ -134,10 +160,12 @@ class AddPost extends StatelessWidget {
                             width: 170,
                             child: ElevatedButton(
                               onPressed: () async {
-                                final title = _titleController.text;
                                 final body = _bodyController.text;
                                 print(body);
-                                await _postService.createPost(title, body);
+                                // if (body.isEmpty) {
+                                //   return;
+                                // }
+                                await _postService.createPost(body);
                                 onRemove();
                               },
                               child: Text('ADD'),
