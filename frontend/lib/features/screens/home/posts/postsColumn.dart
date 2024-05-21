@@ -79,8 +79,8 @@ class AddPost extends StatefulWidget {
 
 class _AddPostState extends State<AddPost> {
   // final PostService _postService = PostService();
-  final TextEditingController _titleController = TextEditingController();
-  final TextEditingController _bodyController = TextEditingController();
+  final _titleController = TextEditingController();
+  final _bodyController = TextEditingController();
 
   @override
   void dispose() {
@@ -140,6 +140,11 @@ class _AddPostState extends State<AddPost> {
                               filled: true,
                               fillColor: Colors.white,
                             ),
+                            onChanged: (value) {
+                              setState(() {
+                                _bodyController.text = value;
+                              });
+                            },
                           ),
                           SizedBox(height: 35),
                           SizedBox(
