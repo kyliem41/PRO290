@@ -3,10 +3,31 @@ import 'package:frontend/features/screens/home/homeScreen.dart';
 import 'package:frontend/features/screens/login/loginScreen.dart';
 import 'package:frontend/main.dart';
 
-class createUserForm extends StatelessWidget {
-  const createUserForm({
-    super.key,
-  });
+class createUserForm extends StatefulWidget {
+  // final VoidCallback onRemove;
+
+  @override
+  _createUserFormState createState() => _createUserFormState();
+}
+
+class _createUserFormState extends State<createUserForm> {
+  final _usernameController = TextEditingController();
+  final _emailController = TextEditingController();
+  final _passController = TextEditingController();
+  final _repassController = TextEditingController();
+
+  @override
+  void dispose() {
+    _usernameController.dispose();
+    _emailController.dispose();
+    _passController.dispose();
+    _repassController.dispose();
+    super.dispose();
+  }
+
+  // const createUserForm({
+  //   super.key,
+  // });
 
   @override
   Widget build(BuildContext context) {
@@ -38,6 +59,11 @@ class createUserForm extends StatelessWidget {
                   hintText: 'username',
                   border: OutlineInputBorder(),
                 ),
+                onChanged: (value) {
+                  setState(() {
+                    _usernameController.text = value;
+                  });
+                },
               ),
               SizedBox(height: 35),
               const DOBInput(),
@@ -49,6 +75,11 @@ class createUserForm extends StatelessWidget {
                   hintText: 'email',
                   border: OutlineInputBorder(),
                 ),
+                onChanged: (value) {
+                  setState(() {
+                    _emailController.text = value;
+                  });
+                },
               ),
               SizedBox(height: 35),
               TextFormField(
@@ -62,6 +93,11 @@ class createUserForm extends StatelessWidget {
                     icon: Icon(Icons.remove_red_eye_sharp),
                   ),
                 ),
+                onChanged: (value) {
+                  setState(() {
+                    _passController.text = value;
+                  });
+                },
               ),
               SizedBox(height: 35),
               TextFormField(
@@ -75,6 +111,11 @@ class createUserForm extends StatelessWidget {
                     icon: Icon(Icons.remove_red_eye_sharp),
                   ),
                 ),
+                onChanged: (value) {
+                  setState(() {
+                    _repassController.text = value;
+                  });
+                },
               ),
               const SizedBox(height: 30),
               SizedBox(
@@ -129,7 +170,7 @@ class DOBInput extends StatefulWidget {
 
 class _DOBInputState extends State<DOBInput> {
   DateTime? _selectedDate;
-  late TextEditingController _controller;
+  final _dateController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -151,14 +192,12 @@ class _DOBInputState extends State<DOBInput> {
         if (pickedDate != null && pickedDate != _selectedDate) {
           setState(() {
             _selectedDate = pickedDate;
-            _controller.text = _selectedDate.toString();
+            _dateController.text = _selectedDate.toString();
+            print('date: $pickedDate');
           });
         }
       },
-      // controller: TextEditingController(
-      //   text: _selectedDate != null ? _selectedDate.toString() : '',
-      // ),
-      controller: _controller,
+      controller: _dateController,
     );
   }
 }
