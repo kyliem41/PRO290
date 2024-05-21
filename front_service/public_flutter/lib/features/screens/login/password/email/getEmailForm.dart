@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/features/screens/login/password/email/emailVerify.dart';
+import 'package:frontend/scripts/login.dart';
 
 class GetEmailForm extends StatelessWidget {
-  const GetEmailForm({
+  GetEmailForm({
     super.key,
   });
+
+  final TextEditingController _emailController = TextEditingController();
+  final loginService = LoginService();
 
   @override
   Widget build(BuildContext context) {
@@ -30,6 +34,7 @@ class GetEmailForm extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               TextFormField(
+                controller: _emailController,
                 decoration: InputDecoration(
                   prefixIcon: Icon(Icons.fingerprint),
                   labelText: AutofillHints.email,
@@ -41,11 +46,13 @@ class GetEmailForm extends StatelessWidget {
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
-                    onPressed: () {
-                      Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(builder: (context) => EmailVerify()),
-                      );
+                    onPressed: () async {
+                      if(await loginService.doesEmailExist(_emailController.text)){
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(builder: (context) => EmailVerify()),
+                        );
+                      }
                     },
                     child: Text('SEND CODE')),
               ),

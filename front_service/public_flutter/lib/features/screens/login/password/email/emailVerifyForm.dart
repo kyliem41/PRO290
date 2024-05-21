@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/features/screens/login/password/pass/forgotPass.dart';
+import 'package:frontend/scripts/login.dart';
 
 class EmailVerifyForm extends StatelessWidget {
-  const EmailVerifyForm({
+  EmailVerifyForm({
     super.key,
   });
 
