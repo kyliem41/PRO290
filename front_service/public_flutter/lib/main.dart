@@ -2,29 +2,44 @@ import 'package:english_words/english_words.dart';
 import 'package:flutter/material.dart';
 import 'package:frontend/features/screens/createUser/createUser.dart';
 import 'package:frontend/features/screens/login/loginScreen.dart';
+import 'package:frontend/features/screens/home/homeScreen.dart';
 import 'package:provider/provider.dart';
+import 'package:frontend/scripts/session_check.dart';
 // import 'package:form_field_validator/form_field_validator.dart';
 
 void main() {
   runApp(MyApp());
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+final navigatorKey = GlobalKey<NavigatorState>();
 
+class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
       create: (context) => MyAppState(),
       child: MaterialApp(
+        navigatorKey: navigatorKey,
         title: 'Yapper',
         theme: ThemeData(
           useMaterial3: true,
-          colorScheme: ColorScheme.fromSeed(
-              seedColor: Colors.teal), //seedColor: Colors.deepOrange
+          colorScheme: ColorScheme.fromSeed(seedColor: Colors.teal),
         ),
         debugShowCheckedModeBanner: false,
-        home: MyIndexPage(),
+        home: FutureBuilder<bool>(
+          future: hasValidSession(),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return CircularProgressIndicator();
+            } else if (snapshot.hasError) {
+              return Text('Error: ${snapshot.error}');
+            } else if (snapshot.hasData && snapshot.data!) {
+              return MyHomePage();
+            } else {
+              return MyIndexPage();
+            }
+          },
+        ),
       ),
     );
   }
