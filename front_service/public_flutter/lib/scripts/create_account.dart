@@ -1,6 +1,8 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'dart:io';
+import 'dart:html' as html;
+
 
 Future<String> validateUsername(String username) async {
   final response = await http.get(Uri.parse('http://localhost:80/user/get/username/$username'));
@@ -12,7 +14,6 @@ Future<String> validateUsername(String username) async {
     return "email is already linked to an existing account";
 }
 
-//needs to also check if email exists
 Future<String> validateEmail(String email) async {
   RegExp expression = RegExp(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$');
 
@@ -42,7 +43,7 @@ String validatePassword(String password, String confirmationPassword){
   return "Passwords don't match";
 }
 
-Future<void> createAccount(String username, String dob, String email, String password, File file) async {
+Future<int> createAccount(String username, String dob, String email, String password) async {
   var uri = Uri.parse('http://localhost:80/user/post');
   var request = http.MultipartRequest('POST', uri);
 
@@ -51,24 +52,15 @@ Future<void> createAccount(String username, String dob, String email, String pas
   request.fields['email'] = email;
   request.fields['password'] = password;
 
-  var fileStream = http.ByteStream(file.openRead());
-  var length = await file.length();
-  var multipartFile = http.MultipartFile(
-    "TempFile<'r>", // This should match the server's expected parameter name
-    fileStream,
-    length,
-    filename: file.path.split('/').last,
-  );
-  request.files.add(multipartFile);
-
   var response = await request.send();
 
-  if (response.statusCode == 200) {
+  if (response.statusCode == 201) {
     var responseBody = await response.stream.bytesToString();
-    print('Response: $responseBody');
-    // Handle successful response
+    html.window.localStorage["auth_token"] = responseBody;
+    print("Response body: $responseBody");
   } else {
     print('Failed to create account: ${response.statusCode}');
-    // Handle error response
   }
+
+  return response.statusCode;
 }

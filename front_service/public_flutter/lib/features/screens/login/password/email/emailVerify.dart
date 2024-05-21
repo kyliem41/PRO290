@@ -20,7 +20,7 @@ class EmailVerify extends StatelessWidget {
                 Text('Verify Email!',
                     style: Theme.of(context).textTheme.headlineLarge),
                 SizedBox(height: 20),
-                const GetEmailForm(),
+                GetEmailForm(),
               ],
             ),
           ),

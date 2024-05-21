@@ -91,19 +91,29 @@ class createUserForm extends StatelessWidget {
                 width: double.infinity,
                 child: ElevatedButton(
                     onPressed: () async {
-                      print("click");
+                      //TODOS: if creation successful, if not give error message
                       String usernameError = await validateUsername(_usernameController.text);
+                      if (usernameError.isEmpty) {
+                        String emailError = await validateEmail(_emailController.text);
+                        if (emailError.isEmpty) {
+                          String passwordError = validatePassword(_passwordController.text, _passwordConfirmationController.text);
+                          if (passwordError.isEmpty) {
+                            int statusCode = await createAccount(_usernameController.text, "", _emailController.text, _passwordConfirmationController.text);
+                            if (statusCode == 201) {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(builder: (context) => MyHomePage()),
+                              );
+                            }
+                          }
+                        }
+                      }
                       String emailError = await validateEmail(_emailController.text);
                       String passwordError = validatePassword(_passwordController.text, _passwordConfirmationController.text);
-                      // createAccount(_usernameController.text, "", _emailController.text, _passwordConfirmationController.text);
+                      
                       print(usernameError);
                       print(emailError);
                       print(passwordError);
-                      //TODOS: if creation successful, if not give error message
-                      // Navigator.push(
-                      //   context,
-                      //   MaterialPageRoute(builder: (context) => MyHomePage()),
-                      // );
                     },
                     child: Text('SIGN UP')),
               ),
