@@ -129,6 +129,7 @@ class DOBInput extends StatefulWidget {
 
 class _DOBInputState extends State<DOBInput> {
   DateTime? _selectedDate;
+  late TextEditingController _controller;
 
   @override
   Widget build(BuildContext context) {
@@ -150,12 +151,14 @@ class _DOBInputState extends State<DOBInput> {
         if (pickedDate != null && pickedDate != _selectedDate) {
           setState(() {
             _selectedDate = pickedDate;
+            _controller.text = _selectedDate.toString();
           });
         }
       },
-      controller: TextEditingController(
-        text: _selectedDate != null ? _selectedDate.toString() : '',
-      ),
+      // controller: TextEditingController(
+      //   text: _selectedDate != null ? _selectedDate.toString() : '',
+      // ),
+      controller: _controller,
     );
   }
 }

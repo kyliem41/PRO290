@@ -8,7 +8,7 @@ class PostsColumn extends StatefulWidget {
 }
 
 class _PostsColumnState extends State<PostsColumn> {
-  final PostService _postService = PostService();
+  // final PostService _postService = PostService();
 
   OverlayEntry? _overlayEntry;
 
@@ -68,13 +68,26 @@ class AddPostOverlayEntry {
   }
 }
 
-class AddPost extends StatelessWidget {
+class AddPost extends StatefulWidget {
   final VoidCallback onRemove;
-  final PostService _postService = PostService();
+
+  AddPost(this.onRemove);
+
+  @override
+  _AddPostState createState() => _AddPostState();
+}
+
+class _AddPostState extends State<AddPost> {
+  // final PostService _postService = PostService();
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _bodyController = TextEditingController();
 
-  AddPost(this.onRemove);
+  @override
+  void dispose() {
+    _titleController.dispose();
+    _bodyController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -113,7 +126,7 @@ class AddPost extends StatelessWidget {
                             mainAxisAlignment: MainAxisAlignment.end,
                             children: [
                               IconButton(
-                                onPressed: onRemove,
+                                onPressed: widget.onRemove,
                                 icon: Icon(Icons.close),
                               ),
                             ],
@@ -132,11 +145,12 @@ class AddPost extends StatelessWidget {
                           SizedBox(
                             width: 170,
                             child: ElevatedButton(
-                              onPressed: () {
+                              onPressed: () async {
                                 final title = _titleController.text;
                                 final body = _bodyController.text;
-                                await _postService.createPost(title, body);
-                                onRemove();
+                                // await _postService.createPost(title, body);
+                                print('text: $body');
+                                // widget.onRemove();
                               },
                               child: Text('ADD'),
                             ),
