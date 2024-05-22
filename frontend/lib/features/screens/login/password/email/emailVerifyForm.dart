@@ -1,10 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/features/screens/login/password/pass/forgotPass.dart';
 
-class EmailVerifyForm extends StatelessWidget {
-  const EmailVerifyForm({
-    super.key,
-  });
+class EmailVerifyForm extends StatefulWidget {
+  @override
+  _EmailVerifyFormState createState() => _EmailVerifyFormState();
+}
+
+class _EmailVerifyFormState extends State<EmailVerifyForm> {
+  final _codeController = TextEditingController();
+
+  @override
+  void dispose() {
+    _codeController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -36,6 +45,12 @@ class EmailVerifyForm extends StatelessWidget {
                   hintText: 'code',
                   border: OutlineInputBorder(),
                 ),
+                onChanged: (value) {
+                  setState(() {
+                    _codeController.text = value;
+                    print('code: $value');
+                  });
+                },
               ),
               SizedBox(height: 35),
               SizedBox(

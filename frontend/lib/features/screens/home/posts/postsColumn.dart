@@ -8,8 +8,6 @@ class PostsColumn extends StatefulWidget {
 }
 
 class _PostsColumnState extends State<PostsColumn> {
-  // final PostService _postService = PostService();
-
   OverlayEntry? _overlayEntry;
 
   @override
@@ -79,14 +77,25 @@ class AddPost extends StatefulWidget {
 
 class _AddPostState extends State<AddPost> {
   // final PostService _postService = PostService();
-  final _titleController = TextEditingController();
+  // final _titleController = TextEditingController();
   final _bodyController = TextEditingController();
+  String _postContent = '';
 
   @override
   void dispose() {
-    _titleController.dispose();
+    // _titleController.dispose();
     _bodyController.dispose();
     super.dispose();
+  }
+
+  void _submitPost() {
+    if (_bodyController.text.isNotEmpty) {
+      setState(() {
+        _postContent = _bodyController.text;
+      });
+      _bodyController.clear();
+      print('post: $_postContent');
+    }
   }
 
   @override
@@ -140,26 +149,33 @@ class _AddPostState extends State<AddPost> {
                               filled: true,
                               fillColor: Colors.white,
                             ),
-                            onChanged: (value) {
-                              setState(() {
-                                _bodyController.text = value;
-                              });
+                            onFieldSubmitted: (value) {
+                              _bodyController.text = value;
+                              _submitPost();
                             },
                           ),
                           SizedBox(height: 35),
                           SizedBox(
                             width: 170,
                             child: ElevatedButton(
-                              onPressed: () async {
-                                final title = _titleController.text;
-                                final body = _bodyController.text;
-                                // await _postService.createPost(title, body);
-                                print('text: $body');
-                                // widget.onRemove();
-                              },
+                              // onPressed: () async {
+                              //   final body = _bodyController.text;
+                              //   // await _postService.createPost(title, body);
+                              //   print('text: $body');
+                              //   // widget.onRemove();
+                              // },
+                              onPressed: _submitPost,
                               child: Text('ADD'),
                             ),
                           ),
+                          _postContent.isNotEmpty
+                              ? Text(
+                                  'Submitted Post: $_postContent',
+                                  style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold),
+                                )
+                              : Container(),
                         ],
                       ),
                     ),

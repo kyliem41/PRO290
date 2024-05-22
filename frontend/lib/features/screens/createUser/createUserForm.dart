@@ -1,11 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/features/screens/home/homeScreen.dart';
 import 'package:frontend/features/screens/login/loginScreen.dart';
-import 'package:frontend/main.dart';
 
 class createUserForm extends StatefulWidget {
-  // final VoidCallback onRemove;
-
   @override
   _createUserFormState createState() => _createUserFormState();
 }
@@ -24,10 +21,6 @@ class _createUserFormState extends State<createUserForm> {
     _repassController.dispose();
     super.dispose();
   }
-
-  // const createUserForm({
-  //   super.key,
-  // });
 
   @override
   Widget build(BuildContext context) {
@@ -62,6 +55,7 @@ class _createUserFormState extends State<createUserForm> {
                 onChanged: (value) {
                   setState(() {
                     _usernameController.text = value;
+                    print('user: $value');
                   });
                 },
               ),
@@ -78,6 +72,7 @@ class _createUserFormState extends State<createUserForm> {
                 onChanged: (value) {
                   setState(() {
                     _emailController.text = value;
+                    print('email: $value');
                   });
                 },
               ),
@@ -96,6 +91,7 @@ class _createUserFormState extends State<createUserForm> {
                 onChanged: (value) {
                   setState(() {
                     _passController.text = value;
+                    print('pass: $value');
                   });
                 },
               ),
@@ -114,6 +110,7 @@ class _createUserFormState extends State<createUserForm> {
                 onChanged: (value) {
                   setState(() {
                     _repassController.text = value;
+                    print('repass: $value');
                   });
                 },
               ),
