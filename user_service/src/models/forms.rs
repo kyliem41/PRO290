@@ -4,7 +4,7 @@ use rocket::fs::TempFile;
 use tempfile::NamedTempFile;
 
 #[derive(FromForm)]
-pub struct UserForm<'r> {
+pub struct UserForm {
     pub username: String,
     pub email: String,
     pub password: String,

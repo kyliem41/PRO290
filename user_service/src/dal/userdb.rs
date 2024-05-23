@@ -60,17 +60,12 @@ impl UserDB {
         let query = self.client.prepare("SELECT * FROM users WHERE username = $1").await?;
         let row = self.client.query_one(&query, &[&username]).await?;
     
-        let user = User {
-            id: row.get("id"),
+        let user = PublicUser {
             username: row.get("username"),
-            email: row.get("email"),
-            password: row.get("password"),
-            dob: row.get("dob"),
             pfp: row.get("pfp"),
             bio: row.get("bio"),
             followers: row.get("followers"),
             following: row.get("following"),
-            verified: row.get("verified")
         };
     
         let json_value = serde_json::to_value(&user)?;
@@ -115,7 +110,6 @@ impl UserDB {
         let users: Vec<PublicUser> = rows.iter()
             .map(|row| {
                 PublicUser {
-                    id: row.get("id"),
                     username: row.get("username"),
                     pfp: row.get("pfp"),
                     bio: row.get("bio"),

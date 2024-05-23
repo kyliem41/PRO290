@@ -24,7 +24,7 @@ const EXPERIATION_ONE_HOUR: i64 = 3600;
 
 //post a user to the datbase takes in form data
 #[post("/post", data = "<user_form>")]
-pub async fn post_user(user_form: Form<UserForm<'_>>) -> status::Custom<String> {
+pub async fn post_user(user_form: Form<UserForm>) -> status::Custom<String> {
     //init user properties
     let user_data: UserForm = user_form.into_inner();
     let user_id: String = utils::generate_uuid().to_string();
@@ -50,21 +50,25 @@ pub async fn post_user(user_form: Form<UserForm<'_>>) -> status::Custom<String> 
     }
 
     //attempt to save pfp
-    if let Err(err) = image::save_image(&image_id, user_data.pfp) {
-        println!("{}", err);
-        return status::Custom(Status::InternalServerError, "Error storing image to file".to_string())
-    }
+    // if let Err(err) = image::save_image(&image_id, user_data.pfp) {
+    //     println!("{}", err);
+    //     return status::Custom(Status::InternalServerError, "Error storing image to file".to_string())
+    // }
 
     //hash password and create user object
     let hash: String = utils::hash_password(user_data.password);
-    let user: User = User::new(user_id.clone(), user_data.username, user_data.email, hash, user_data.dob, image_id, user_data.bio, user_data.followers, user_data.following, false);
+    let user: User = User::new(user_id.clone(), user_data.username, user_data.email, hash, user_data.dob, image_id, "".to_string(), Vec::new(), Vec::new(), false);
 
     //save user in database
     match db.create_user(user.clone()).await {
         Ok(_) => {
-            if let Ok(verification_token) = utils::create_jwt(user_id, EXPERIATION_ONE_HOUR) {
+            if let Ok(verification_token) = utils::create_jwt(user_id.clone(), EXPERIATION_ONE_HOUR) {
                 let message = format!("Click this link to verifiy you account localhost:80/user/verify/{}", verification_token);
                 producer::send_queue(message, user.email, "Yapper Verification".to_string(), "email_queue");
+            }
+
+            if let Ok(auth_token) = utils::create_jwt(user_id, EXPERIATION_ONE_DAY) {
+                return status::Custom(Status::Created, auth_token)
             }
 
             return status::Custom(Status::Created, "".to_string())
