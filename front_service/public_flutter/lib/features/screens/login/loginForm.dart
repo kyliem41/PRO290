@@ -3,6 +3,7 @@ import 'package:frontend/features/screens/createUser/createUser.dart';
 import 'package:frontend/features/screens/home/homeScreen.dart';
 import 'package:frontend/features/screens/login/password/email/getEmail.dart';
 import 'package:frontend/scripts/login.dart';
+import 'package:frontend/scripts/search.dart';
 
 class LogInForm extends StatelessWidget {
   LogInForm({

@@ -4,10 +4,10 @@ import 'dart:html' as html;
 
 Future<bool> hasValidSession() async {
   String? token = html.window.localStorage["auth_token"];
-  print("Token: $token");
+  print("here Token: $token");
 
   if (token != null) {
-    final response = await http.get(Uri.parse('http://localhost:80/user/token/verify/$token'));
+    final response = await http.get(Uri.parse('http://localhost:80/user/verify/token/$token'));
     if (response.statusCode == 200) {
       return true;
     }
