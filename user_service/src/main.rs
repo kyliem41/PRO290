@@ -74,7 +74,11 @@ fn rocket() -> _ {
             user_routes::verify_user,
             user_routes::update_user,
             user_routes::update_pfp,
-            user_routes::unfollow_user
+            user_routes::unfollow_user,
+            user_routes::verify_jwt,
+            user_routes::get_user_by_username,
+            user_routes::search,
+            user_routes::does_email_exist
         ]);
 
     //check if service is in testing or needs to be registered

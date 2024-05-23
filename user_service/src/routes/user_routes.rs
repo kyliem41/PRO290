@@ -1,3 +1,4 @@
+use amiquip::Return;
 use rocket::figment::util;
 use uuid::Uuid;
 use rocket::serde::json::{Json, Value};
@@ -6,6 +7,7 @@ use rocket::response::status;
 use rocket::form::Form;
 use crate::models::user::User;
 use crate::models::forms::{UserForm, ImageForm};
+use crate::models::public_user::PublicUser;
 use crate::models::login::Login;
 use crate::models::update::Update;
 use crate::models::producer;
@@ -222,6 +224,61 @@ pub async fn get_user_by_id(id: String) -> status::Custom<Value>{
     }
 }
 
+#[get("/search/<username>")]
+pub async fn search(username: String) -> status::Custom<Value> {
+    let db = match UserDB::new().await {
+        Ok(db) => db,
+        Err(err) => {
+            println!("{}", err);
+            let response_json = json!({"message": "Error creating connection to database"});
+            return status::Custom(Status::InternalServerError, response_json)
+        }
+    };
+
+    match db.search_users(&username).await {
+        Ok(users) => {
+            if users.is_empty() {
+                let response_json = json!({"message": "No users found"});
+                return status::Custom(Status::NotFound, response_json)
+            }
+
+            let json = serde_json::to_value(users).unwrap();
+            return status::Custom(Status::Ok, json)
+        }
+        Err(err) => {
+            println!("{err}");
+            let response_json = json!({"message": "Error finding users"});
+            return status::Custom(Status::InternalServerError, response_json)
+        }
+    }
+}
+
+#[get("/check/email/<email>")]
+pub async fn does_email_exist(email: String) -> Status {
+    let db = match UserDB::new().await {
+        Ok(db) => db,
+        Err(err) => {
+            println!("{}", err);
+            let response_json = json!({"message": "Error creating connection to database"});
+            return Status::InternalServerError
+        }
+    };
+
+    match db.does_field_exist("email", &email).await {
+        Ok(exists) => {
+            if exists {
+                return Status::Ok
+            }
+
+            return Status::NotFound
+        },
+        Err(err) => {
+            println!("{err}");
+            return Status::InternalServerError
+        }
+    }
+}
+
 #[get("/get/username/<username>")]
 pub async fn get_user_by_username(username: String) -> status::Custom<Value> {
     //create instance of database
@@ -264,6 +321,15 @@ pub async fn get_pfp(token: String) -> Option<NamedFile> {
     }
 
     None
+}
+
+#[get("/verify/token/<token>")]
+pub fn verify_jwt(token: String) -> Status {
+    if let Ok(id) = utils::verify_jwt(&token) {
+        return Status::Ok
+    }
+
+    return Status::BadRequest
 }
 
 /*

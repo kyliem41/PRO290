@@ -4,6 +4,7 @@ use crate::models::update::{self, Update};
 use rocket::{form, serde::json::{Json, Value}};
 use serde_json::json;
 use crate::models::user::{self, User};
+use crate::models::public_user::PublicUser;
 use std::env;
 use std::str::FromStr; // Added FromStr
 
@@ -105,6 +106,28 @@ impl UserDB {
     
         Some(row.get(0))
     }
+
+    pub async fn search_users(&self, username: &String) -> Result<Vec<PublicUser>, Box<dyn std::error::Error>> {
+        let pattern = format!("%{}%", username);
+        let statement = self.client.prepare("SELECT id, username, pfp, bio, followers, following FROM users WHERE username LIKE $1").await?;
+        let rows = self.client.query(&statement, &[&pattern]).await?;
+
+        let users: Vec<PublicUser> = rows.iter()
+            .map(|row| {
+                PublicUser {
+                    id: row.get("id"),
+                    username: row.get("username"),
+                    pfp: row.get("pfp"),
+                    bio: row.get("bio"),
+                    followers: row.get("followers"),
+                    following: row.get("following"),
+                }
+            })
+            .collect();
+
+        Ok(users)
+    }
+
 
     pub async fn update_column(&self, id: &str, update: Update) -> Result<(), Box<dyn std::error::Error>> {
         let query: String = format!("UPDATE users SET {} = ${} WHERE id = ${}", update.column, 1, 2);
