@@ -9,10 +9,10 @@ pub struct UserForm<'r> {
     pub email: String,
     pub password: String,
     pub dob: String,
-    pub pfp: TempFile<'r>,
-    pub bio: String,
-    pub followers: Vec<String>,
-    pub following: Vec<String>,
+    // pub pfp: TempFile<'r>,
+    // pub bio: String,
+    // pub followers: Vec<String>,
+    // pub following: Vec<String>,
 }
 
 #[derive(FromForm)]
