@@ -22,7 +22,7 @@ class CreateUserPage extends StatelessWidget {
                 Text('Welcome!',
                     style: Theme.of(context).textTheme.headlineLarge),
                 SizedBox(height: 20),
-                const createUserForm(),
+                createUserForm(),
               ],
             ),
           ),

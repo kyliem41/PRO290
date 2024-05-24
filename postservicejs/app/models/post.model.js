@@ -1,5 +1,3 @@
-const { FLOAT } = require("sequelize");
-const { Json } = require("sequelize/lib/utils");
 
 module.exports = mongoose => {
     const postSchema = mongoose.Schema(

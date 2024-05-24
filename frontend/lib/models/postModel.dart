@@ -46,4 +46,14 @@ class Post {
       'updatedAt': updatedAt,
     };
   }
+
+  static List<Post> fromListJson(List<dynamic> json) {
+
+    List<Post> posts = [];
+    for (var post in json) {
+      posts.add(Post.fromJson(post));
+    }
+    print(posts);
+    return posts;
+  }
 }

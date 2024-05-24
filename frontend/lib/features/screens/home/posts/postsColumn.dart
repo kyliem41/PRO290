@@ -9,7 +9,7 @@ class PostsColumn extends StatefulWidget {
 }
 
 class _PostsColumnState extends State<PostsColumn> {
-  final PostService _postService = PostService();
+  // final PostService _postService = PostService();
 
   OverlayEntry? _overlayEntry;
 
@@ -69,7 +69,7 @@ class AddPostOverlayEntry {
   }
 }
 
-class AddPost extends StatelessWidget {
+class AddPost extends StatefulWidget {
   final VoidCallback onRemove;
   final PostService _postService = PostService();
   final TextEditingController _bodyController = TextEditingController();
@@ -101,6 +101,23 @@ class AddPost extends StatelessWidget {
   }
 
   AddPost(this.onRemove);
+
+  @override
+  _AddPostState createState() => _AddPostState();
+}
+
+class _AddPostState extends State<AddPost> {
+  // final PostService _postService = PostService();
+  final _titleController = TextEditingController();
+  final _bodyController = TextEditingController();
+  final _postService = PostService();
+
+  @override
+  void dispose() {
+    _titleController.dispose();
+    _bodyController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -139,7 +156,7 @@ class AddPost extends StatelessWidget {
                             mainAxisAlignment: MainAxisAlignment.end,
                             children: [
                               IconButton(
-                                onPressed: onRemove,
+                                onPressed: widget.onRemove,
                                 icon: Icon(Icons.close),
                               ),
                             ],
@@ -154,6 +171,11 @@ class AddPost extends StatelessWidget {
                               filled: true,
                               fillColor: Colors.white,
                             ),
+                            onChanged: (value) {
+                              setState(() {
+                                _bodyController.text = value;
+                              });
+                            },
                           ),
                           SizedBox(height: 35),
                           SizedBox(
@@ -165,8 +187,7 @@ class AddPost extends StatelessWidget {
                                 // if (body.isEmpty) {
                                 //   return;
                                 // }
-                                await _postService.createPost(body);
-                                onRemove();
+                                await PostService.createPost(body);
                               },
                               child: Text('ADD'),
                             ),

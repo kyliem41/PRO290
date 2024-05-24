@@ -33,7 +33,7 @@ exports.findPostByUserId = async (req, res) => {
 
 exports.createPost = async (req, res) => {
   try {
-    const { userId, content, location } = req.body;
+    const { userId, content, position } = req.body;
     const currentDate = new Date();
 
     const post = await Post.create({

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 class Post extends StatelessWidget {
+
+  
   @override
   Widget build(BuildContext context) {
     return SizedBox(
@@ -22,7 +24,7 @@ class Post extends StatelessWidget {
             ),
             Expanded(
               child: SizedBox(
-                child: _postContent("User", "Handle", "Text"),
+                child: _postContent("testid", "test content"),
               ),
             ),
           ],
@@ -32,8 +34,9 @@ class Post extends StatelessWidget {
   }
 }
 
-Widget _postContent(String user, String userHandle, String text) {
+Widget _postContent(String userid, String text) {
   //final DateTime time = new DateTime(2024);
+  // String user, String userHandle, 
   String time = "01/05/05";
   String location = "im right here";
 
@@ -48,12 +51,12 @@ Widget _postContent(String user, String userHandle, String text) {
             children: <Widget>[
               Row(
                 children: <Widget>[
-                  Text(user,
+                  Text(userid,
                       style: TextStyle(
                           color: Colors.black, fontWeight: FontWeight.bold)),
                   Container(
                     margin: EdgeInsets.only(left: 5),
-                    child: Text(" " + userHandle + " " + location + " " + time,
+                    child: Text(" " + userid + " " + location + " " + time,
                         style: TextStyle(
                             color: Color.fromARGB(197, 189, 189, 189))),
                   ),

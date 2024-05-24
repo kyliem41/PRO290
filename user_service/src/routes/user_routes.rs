@@ -402,3 +402,4 @@ pub async fn unfollow_user(token: String, followed_id: String) -> status::Custom
         }
     }
 }
+
