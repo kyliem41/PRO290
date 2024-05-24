@@ -7,103 +7,115 @@ import 'package:geolocator/geolocator.dart';
 import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart';
 import 'package:frontend/models/postModel.dart';
 
-
 class PostService {
   static const String apiUrl = 'http://localhost:80/api/posts';
   static const String secret = 'idkmanwhatdoyouwantfromme';
 
-//   Future<List<dynamic>> fetchPosts() async {
-//     try {
-//       final response = await http.get(Uri.parse(apiUrl));
-
-//       if (response.statusCode == 200) {
-//         final jsonData = json.decode(response.body);
-//         return jsonData;
-//       } else {
-//         print('Request failed with status: ${response.statusCode}');
-//         return [];
-//       }
-//     } catch (error) {
-//       print('Error: $error');
-//       return [];
-//     }
-//   }
-
   static Future<void> createPost(String content) async {
-  try {
-    //final token = html.window.localStorage["auth_token"];
-    final token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6ImI3Yjg4NDkzLTIxYjctNDRmYS1hYTIxLTQyMjdmMGY5NTM5ZSIsImV4cCI6MTcxNjQ4MTAwM30.DYwRLOV2GfpG7fv0FbzW1wrgcreINW2ncCA97jvXpF0";
+    try {
+      String? token = html.window.localStorage["auth_token"];
+      if (token == null) {
+        return;
+      }
 
-    Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
-    Map<String, dynamic> map = position.toJson();
+      Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+      Map<String, dynamic> map = position.toJson();
 
-    final response = await http.post(
-      Uri.parse(apiUrl),
-      headers: <String, String>{
-        'Content-Type': 'application/json; charset=UTF-8',
-        'Authorization': 'Bearer $token', // Include the token in the Authorization header
-      },
-      body: jsonEncode(<String, dynamic>{
-        'userId':  await _getUserId(), 
-        'content': "hard conded content",
-        'position': map,
-      }),
-    );
+      final response = await http.post(
+        Uri.parse(apiUrl),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+          'Authorization': 'Bearer $token',
+        },
+        body: jsonEncode(<String, dynamic>{
+          'userId': await _getUserId(),
+          'content': "hard coded content",
+          'position': map,
+          'token': token,
+        }),
+      );
 
-    if (response.statusCode == 201) {
-      print('Post created successfully');
-    } else {
-      print('Request failed with status: ${response.statusCode} + $content');
-      print(position.toJson());
+      if (response.statusCode == 201) {
+        print('Post created successfully');
+      } else {
+        print('Request failed with status: ${response.statusCode} + $content');
+        print(position.toJson());
+      }
+    } catch (error) {
+      print('Error: $error');
     }
-  } catch (error) {
-    print('Error: $error');
   }
-}
 
-// Future<String> _getToken() async {
-//   final prefs = await SharedPreferences.getInstance();
-//   final token = prefs.getString('token');
-//   return token ?? '';
-// }
+  static FutureOr<String> _getUserId() async {
 
-static FutureOr<String> _getUserId() async {
-  String? token = html.window.localStorage["auth_token"];
-  if (token == null) {
+    String? token = html.window.localStorage["auth_token"];
+
+    if (token == null) {
+      return '';
+    }
+
+    try {
+      final jwt = JWT.verify(token, SecretKey(secret));
+      final userId = jwt.payload['id'];
+      return userId;
+    } catch (e) {
+      print('Error decoding JWT token: $e');
+    }
     return '';
   }
 
-try {
-  // Decode the JWT token
-  final jwt = JWT.verify(token, SecretKey(secret));
+  static Future<List<Post>> getAllPosts() async {
 
-  // Extract the user ID from the token's payload
-  final userId = jwt.payload['id'];
-
-  // Use the user ID as needed
-  return userId;
-} catch (e) {
-  print('Error decoding JWT token: $e');
-}
-// should never reach here
- return ''; 
-}
-
-static Future<List<Post>> getAllPosts() async {
-  try {
-    final response = await http.get(Uri.parse(apiUrl));
-
-    if (response.statusCode == 200) {
-      final jsonData = json.decode(response.body);
-      return Post.fromListJson(jsonData);
-    } else {
-      print('Request failed with status: ${response.statusCode}');
-      return Future.error('Request failed with status: ${response.statusCode}');
+    String? token = html.window.localStorage["auth_token"];
+    if (token == null) {
+      return Future.error('No token found');
     }
-  } catch (error) {
-    print('Error: $error');
-    return Future.error('Error: $error');
-  }
-}
+    try {
+      final response = await http.get(
+        Uri.parse(apiUrl),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+          'Authorization': 'Bearer $token',
+        },
+      );
 
+      if (response.statusCode == 200) {
+        final jsonData = json.decode(response.body);
+        return Post.fromListJson(jsonData);
+      } else {
+        print('Request failed with status: ${response.statusCode}');
+        return Future.error('Request failed with status: ${response.statusCode}');
+      }
+    } catch (error) {
+      print('Error: $error');
+      return Future.error('Error: $error');
+    }
+  }
+
+  static Future<List<Post>> getPostByUserId(String userId) async {
+
+  String? token = html.window.localStorage["auth_token"];
+
+
+    try {
+      final response = await http.get(
+        Uri.parse('$apiUrl/userId/$userId'),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+          'Authorization': 'Bearer $token',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final jsonData = json.decode(response.body);
+        return Post.fromListJson(jsonData);
+      } else {
+        print('Request failed with status: ${response.statusCode}');
+        return Future.error('Request failed with status: ${response.statusCode}');
+      }
+    } catch (error) {
+      print('Error: $error');
+      return Future.error('Error: $error');
+    }
+  }
 }
