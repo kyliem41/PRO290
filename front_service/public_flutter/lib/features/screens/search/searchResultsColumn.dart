@@ -63,7 +63,20 @@ class _SearchResultsColumnState extends State<SearchResultsColumn> {
   }
 }
 
-class SearchBar extends StatelessWidget {
+class SearchBar extends StatefulWidget {
+  @override
+  _SearchBarState createState() => _SearchBarState();
+}
+
+class _SearchBarState extends State<SearchBar> {
+  final _controller = TextEditingController();
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return SizedBox(
@@ -85,6 +98,12 @@ class SearchBar extends StatelessWidget {
                 borderRadius: BorderRadius.circular(20),
                 borderSide: BorderSide(color: Colors.grey.shade100)),
           ),
+          onChanged: (value) {
+            setState(() {
+              _controller.text = value;
+              print('search: $value');
+            });
+          },
         ),
       ),
     );

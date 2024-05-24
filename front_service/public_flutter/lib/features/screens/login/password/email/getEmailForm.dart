@@ -1,14 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/features/screens/login/password/email/emailVerify.dart';
-import 'package:frontend/scripts/login.dart';
 
-class GetEmailForm extends StatelessWidget {
-  GetEmailForm({
-    super.key,
-  });
+class GetEmailForm extends StatefulWidget {
+  @override
+  _GetEmailFormState createState() => _GetEmailFormState();
+}
 
-  final TextEditingController _emailController = TextEditingController();
-  final loginService = LoginService();
+class _GetEmailFormState extends State<GetEmailForm> {
+  final _emailController = TextEditingController();
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -34,25 +39,28 @@ class GetEmailForm extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               TextFormField(
-                controller: _emailController,
                 decoration: InputDecoration(
                   prefixIcon: Icon(Icons.fingerprint),
                   labelText: AutofillHints.email,
                   hintText: 'email',
                   border: OutlineInputBorder(),
                 ),
+                onChanged: (value) {
+                  setState(() {
+                    _emailController.text = value;
+                    print('email: $value');
+                  });
+                },
               ),
               SizedBox(height: 35),
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
-                    onPressed: () async {
-                      if(await loginService.doesEmailExist(_emailController.text)){
-                        Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(builder: (context) => EmailVerify()),
-                        );
-                      }
+                    onPressed: () {
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(builder: (context) => EmailVerify()),
+                      );
                     },
                     child: Text('SEND CODE')),
               ),

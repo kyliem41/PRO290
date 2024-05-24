@@ -1,9 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/features/screens/login/loginScreen.dart';
 
-class ForgotPassForm extends StatelessWidget {
-  const ForgotPassForm({
-    super.key,
-  });
+class ForgotPassForm extends StatefulWidget {
+  @override
+  _ForgotPassFormState createState() => _ForgotPassFormState();
+}
+
+class _ForgotPassFormState extends State<ForgotPassForm> {
+  final _passController = TextEditingController();
+  final _repassController = TextEditingController();
+
+  @override
+  void dispose() {
+    _passController.dispose();
+    _repassController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -40,6 +52,12 @@ class ForgotPassForm extends StatelessWidget {
                   ),
                 ),
                 obscureText: true,
+                onChanged: (value) {
+                  setState(() {
+                    _passController.text = value;
+                    print('pass: $value');
+                  });
+                },
               ),
               SizedBox(height: 35),
               TextFormField(
@@ -54,6 +72,12 @@ class ForgotPassForm extends StatelessWidget {
                   ),
                 ),
                 obscureText: true,
+                onChanged: (value) {
+                  setState(() {
+                    _repassController.text = value;
+                    print('repass: $value');
+                  });
+                },
               ),
               const SizedBox(height: 30),
               SizedBox(
@@ -62,7 +86,7 @@ class ForgotPassForm extends StatelessWidget {
                   //TODOS: if login successful, if not give error message
                     Navigator.pushReplacement(
                       context,
-                      MaterialPageRoute(builder: (context) => Placeholder()),
+                      MaterialPageRoute(builder: (context) => LogInPage()),
                     );
                 }, child: Text('SUBMIT')),
               ),

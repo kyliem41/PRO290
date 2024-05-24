@@ -1,11 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/features/screens/login/password/pass/forgotPass.dart';
-import 'package:frontend/scripts/login.dart';
 
-class EmailVerifyForm extends StatelessWidget {
-  EmailVerifyForm({
-    super.key,
-  });
+class EmailVerifyForm extends StatefulWidget {
+  @override
+  _EmailVerifyFormState createState() => _EmailVerifyFormState();
+}
+
+class _EmailVerifyFormState extends State<EmailVerifyForm> {
+  final _codeController = TextEditingController();
+
+  @override
+  void dispose() {
+    _codeController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -25,18 +33,24 @@ class EmailVerifyForm extends StatelessWidget {
         ),
         child: Container(
           width: 900,
-          height: 200,
+          height: 180,
           padding: EdgeInsets.all(20),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               TextFormField(
                 decoration: InputDecoration(
-                  prefixIcon: Icon(Icons.fingerprint),
+                  prefixIcon: Icon(Icons.numbers_rounded),
                   labelText: AutofillHints.oneTimeCode,
                   hintText: 'code',
                   border: OutlineInputBorder(),
                 ),
+                onChanged: (value) {
+                  setState(() {
+                    _codeController.text = value;
+                    print('code: $value');
+                  });
+                },
               ),
               SizedBox(height: 35),
               SizedBox(
@@ -48,7 +62,7 @@ class EmailVerifyForm extends StatelessWidget {
                         MaterialPageRoute(builder: (context) => ForgotPass()),
                       );
                     },
-                    child: Text('SEND CODE')),
+                    child: Text('SUBMIT')),
               ),
             ],
           ),

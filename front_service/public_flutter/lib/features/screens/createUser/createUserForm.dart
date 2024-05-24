@@ -1,18 +1,36 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/features/screens/home/homeScreen.dart';
 import 'package:frontend/features/screens/login/loginScreen.dart';
-import 'package:frontend/main.dart';
-import 'package:frontend/scripts/create_account.dart';
+import 'package:frontend/features/scripts/create_account.dart';
 
-class createUserForm extends StatelessWidget {
-  createUserForm({
-    super.key,
-  });
-  final TextEditingController _usernameController = TextEditingController();
-  final TextEditingController _dobController = TextEditingController();
-  final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _passwordConfirmationController = TextEditingController();
+class CreateUserForm extends StatefulWidget {
+  @override
+  _CreateUserFormState createState() => _CreateUserFormState();
+}
+
+class _CreateUserFormState extends State<CreateUserForm> {
+  final _usernameController = TextEditingController();
+  final _emailController = TextEditingController();
+  final _passController = TextEditingController();
+  final _repassController = TextEditingController();
+  final GlobalKey<_DOBInputState> _dobKey = GlobalKey<_DOBInputState>();
+
+  @override
+  void dispose() {
+    _usernameController.dispose();
+    _emailController.dispose();
+    _passController.dispose();
+    _repassController.dispose();
+    super.dispose();
+  }
+
+  bool get userValid {
+    return _usernameController.text.isNotEmpty &&
+        _emailController.text.isNotEmpty &&
+        _passController.text.isNotEmpty &&
+        _repassController.text.isNotEmpty &&
+        _passController.text == _repassController.text;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -47,7 +65,7 @@ class createUserForm extends StatelessWidget {
                 ),
               ),
               SizedBox(height: 35),
-              const DOBInput(),
+              DOBInput(key: _dobKey),
               SizedBox(height: 35),
               TextFormField(
                 controller: _emailController,
@@ -60,7 +78,7 @@ class createUserForm extends StatelessWidget {
               ),
               SizedBox(height: 35),
               TextFormField(
-                controller: _passwordController,
+                controller: _passController,
                 decoration: InputDecoration(
                   prefixIcon: Icon(Icons.fingerprint),
                   labelText: AutofillHints.password,
@@ -74,14 +92,14 @@ class createUserForm extends StatelessWidget {
               ),
               SizedBox(height: 35),
               TextFormField(
-                controller: _passwordConfirmationController,
+                controller: _repassController,
                 decoration: InputDecoration(
                   prefixIcon: Icon(Icons.fingerprint),
                   labelText: AutofillHints.password,
                   hintText: 'confirm password',
                   border: OutlineInputBorder(),
                   suffixIcon: IconButton(
-                    onPressed: null,
+                    onPressed: () {},
                     icon: Icon(Icons.remove_red_eye_sharp),
                   ),
                 ),
@@ -90,32 +108,38 @@ class createUserForm extends StatelessWidget {
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
-                    onPressed: () async {
-                      //TODOS: if creation successful, if not give error message
-                      String usernameError = await validateUsername(_usernameController.text);
-                      if (usernameError.isEmpty) {
-                        String emailError = await validateEmail(_emailController.text);
-                        if (emailError.isEmpty) {
-                          String passwordError = validatePassword(_passwordController.text, _passwordConfirmationController.text);
-                          if (passwordError.isEmpty) {
-                            int statusCode = await createAccount(_usernameController.text, "", _emailController.text, _passwordConfirmationController.text);
-                            if (statusCode == 201) {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(builder: (context) => MyHomePage()),
-                              );
-                            }
+                  onPressed: () async {
+                    String error = await validateUsername(_usernameController.text);
+                    if (error.isEmpty) {
+                      error = await validateEmail(_emailController.text);
+                      if (error.isEmpty) {
+                        error = validatePassword(_passController.text, _repassController.text);
+                        if (error.isEmpty) {
+                          DateTime? dob = _dobKey.currentState?._selectedDate;
+                          if (await createAccount(_usernameController.text, dob.toString(), _emailController.text, _passController.text)) {                   
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (context) => MyHomePage()),
+                            );
                           }
                         }
                       }
-                      String emailError = await validateEmail(_emailController.text);
-                      String passwordError = validatePassword(_passwordController.text, _passwordConfirmationController.text);
-                      
-                      print(usernameError);
-                      print(emailError);
-                      print(passwordError);
-                    },
-                    child: Text('SIGN UP')),
+                    }
+
+                    if (error.isNotEmpty) {
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return AlertDialog(
+                            content: Text(error),
+                            contentTextStyle: TextStyle(color: Colors.blue),
+                          );
+                        },
+                      );
+                    }
+                  },
+                  child: Text('SIGN UP'),
+                ),
               ),
               SizedBox(height: 20),
               Center(
@@ -139,7 +163,7 @@ class createUserForm extends StatelessWidget {
                     ),
                   ),
                 ),
-              )
+              ),
             ],
           ),
         ),
@@ -157,9 +181,18 @@ class DOBInput extends StatefulWidget {
 
 class _DOBInputState extends State<DOBInput> {
   DateTime? _selectedDate;
+  final _dateController = TextEditingController();
+
+  @override
+  void dispose() {
+    _dateController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return TextFormField(
+      controller: _dateController,
       decoration: InputDecoration(
         prefixIcon: Icon(Icons.calendar_today),
         labelText: 'DOB',
@@ -174,16 +207,14 @@ class _DOBInputState extends State<DOBInput> {
           firstDate: DateTime(1960),
           lastDate: DateTime(2050),
         );
-
         if (pickedDate != null && pickedDate != _selectedDate) {
           setState(() {
             _selectedDate = pickedDate;
+            _dateController.text = _selectedDate.toString().split(' ')[0];
+            print('date: $pickedDate');
           });
         }
       },
-      controller: TextEditingController(
-        text: _selectedDate != null ? _selectedDate.toString() : '',
-      ),
     );
   }
 }

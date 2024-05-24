@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/features/screens/messages/conversations/conversationList.dart';
 import 'package:frontend/models/chatUsersModel.dart';
-import 'package:frontend/scripts/conversation.dart';
 
 class ChatColumn extends StatefulWidget {
   @override
@@ -85,12 +84,8 @@ class _ChatColumnState extends State<ChatColumn> {
                         children: <Widget>[
                           SizedBox(width: 2),
                           IconButton(
-                            //TODOS: add new convo find username of person who you want to start a converstaion with 
-                            onPressed: () async {
-                              //get from user
-                              String username = "david2";
-                              print( await getUser(username));
-                            },
+                            //TODOS: add new convo
+                            onPressed: () {},
                             icon: Icon(Icons.add),
                             tooltip: 'New Conversation',
                             color: Color.fromRGBO(0, 121, 107, 1),

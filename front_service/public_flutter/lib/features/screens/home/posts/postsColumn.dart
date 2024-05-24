@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/features/screens/home/posts/post.dart';
+import 'package:frontend/features/scripts/post_service_call.dart';
 
 class PostsColumn extends StatefulWidget {
   @override
@@ -65,9 +66,37 @@ class AddPostOverlayEntry {
   }
 }
 
-class AddPost extends StatelessWidget {
+class AddPost extends StatefulWidget {
   final VoidCallback onRemove;
+
   AddPost(this.onRemove);
+
+  @override
+  _AddPostState createState() => _AddPostState();
+}
+
+class _AddPostState extends State<AddPost> {
+  // final PostService _postService = PostService();
+  // final _titleController = TextEditingController();
+  final _bodyController = TextEditingController();
+  String _postContent = '';
+
+  @override
+  void dispose() {
+    // _titleController.dispose();
+    _bodyController.dispose();
+    super.dispose();
+  }
+
+  void _submitPost() {
+    if (_bodyController.text.isNotEmpty) {
+      setState(() {
+        _postContent = _bodyController.text;
+      });
+      _bodyController.clear();
+      print('post: $_postContent');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -86,7 +115,7 @@ class AddPost extends StatelessWidget {
                   padding: const EdgeInsets.all(20),
                   child: DecoratedBox(
                     decoration: BoxDecoration(
-                      color: Colors.white,
+                      color: Color.fromARGB(238, 136, 207, 182),
                       borderRadius: BorderRadius.circular(10),
                       boxShadow: [
                         BoxShadow(
@@ -106,7 +135,7 @@ class AddPost extends StatelessWidget {
                             mainAxisAlignment: MainAxisAlignment.end,
                             children: [
                               IconButton(
-                                onPressed: onRemove,
+                                onPressed: widget.onRemove,
                                 icon: Icon(Icons.close),
                               ),
                             ],
@@ -117,16 +146,36 @@ class AddPost extends StatelessWidget {
                               labelText: 'new post',
                               hintText: "what's on your mind?",
                               border: OutlineInputBorder(),
+                              filled: true,
+                              fillColor: Colors.white,
                             ),
+                            onFieldSubmitted: (value) {
+                              _bodyController.text = value;
+                              _submitPost();
+                            },
                           ),
                           SizedBox(height: 35),
                           SizedBox(
-                            width: 200,
+                            width: 170,
                             child: ElevatedButton(
-                              onPressed: () {},
+                              // onPressed: () async {
+                              //   final body = _bodyController.text;
+                              //   // await _postService.createPost(title, body);
+                              //   print('text: $body');
+                              //   // widget.onRemove();
+                              // },
+                              onPressed: _submitPost,
                               child: Text('ADD'),
                             ),
                           ),
+                          _postContent.isNotEmpty
+                              ? Text(
+                                  'Submitted Post: $_postContent',
+                                  style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold),
+                                )
+                              : Container(),
                         ],
                       ),
                     ),

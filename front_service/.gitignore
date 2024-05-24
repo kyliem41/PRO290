@@ -1,2 +1,4 @@
 node_modules
-public-flutter\build\web
+public_flutter\build\web
+public_flutter\depreciated_lib
+frontend

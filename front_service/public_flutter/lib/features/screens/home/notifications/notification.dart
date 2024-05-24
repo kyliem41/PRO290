@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/features/screens/home/posts/post.dart';
 
 class Notifications extends StatelessWidget {
   @override
@@ -40,7 +41,7 @@ Widget _notificationContent(String user, String userHandle, String text) {
     child: ListView(
       children: [
         Container(
-          margin: EdgeInsets.only(top: 10),
+          margin: EdgeInsets.only(left: 10),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisAlignment: MainAxisAlignment.start,
@@ -70,17 +71,38 @@ Widget _notificationContent(String user, String userHandle, String text) {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
-                    Row(
-                      children: <Widget>[
-                        Icon(Icons.favorite_border, color: Colors.black),
-                        Container(
-                          margin: EdgeInsets.only(left: 3),
-                          child:
-                              Text("15", style: TextStyle(color: Colors.black)),
-                        ),
-                      ],
+                    HoverableIcon(
+                      icon: Icons.message_rounded,
+                      label: "15",
+                      hintText: "Comments",
+                      onTap: () {
+                        print('Comments icon clicked');
+                      },
                     ),
-                    Icon(Icons.share, color: Colors.black),
+                    HoverableIcon(
+                      icon: Icons.repeat,
+                      label: "15",
+                      hintText: "Reposts",
+                      onTap: () {
+                        print('Repeat icon clicked');
+                      },
+                    ),
+                    HoverableIcon(
+                      icon: Icons.favorite_border,
+                      label: "15",
+                      hintText: "Likes",
+                      onTap: () {
+                        print('Like icon clicked');
+                      },
+                    ),
+                    HoverableIcon(
+                      icon: Icons.share,
+                      label: "",
+                      hintText: "Share",
+                      onTap: () {
+                        print('Share icon clicked');
+                      },
+                    ),
                   ],
                 ),
               ),

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/features/screens/messages/messages/customAppBar.dart';
 import 'package:frontend/models/chatMeessageModel.dart';
-import 'package:frontend/scripts/message.dart';
 
 class MessageColumn extends StatefulWidget {
   @override
@@ -19,6 +18,28 @@ class _MessageColumnState extends State<MessageColumn> {
     ChatMessage(
         messageContent: "Is there any thing wrong?", messageType: "sender"),
   ];
+
+  final _controller = TextEditingController();
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  void _sendMessage() {
+    if (_controller.text.isNotEmpty) {
+      setState(() {
+        messages.add(
+          ChatMessage(
+            messageContent: _controller.text,
+            messageType: "sender",
+          ),
+        );
+      });
+      _controller.clear();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -103,23 +124,21 @@ class _MessageColumnState extends State<MessageColumn> {
                             borderSide:
                                 BorderSide(color: Colors.grey.shade100)),
                       ),
+                      onSubmitted: (value) => _sendMessage(),
                     ),
                   ),
                   SizedBox(
                     width: 15,
                   ),
                   FloatingActionButton(
-                    //here
-                    onPressed: () async {
-                      print(await sendMessage("3f145f08-e447-4bc8-995a-d10000cff49b", "7db64d06-9acd-45f7-90e6-1708801e5ab7", "this is a test", "text", "7db64d06-9acd-45f7-90e6-1708801e5ab7"));
-                    },
+                    onPressed: _sendMessage,
+                    backgroundColor: Color.fromRGBO(0, 121, 107, 1),
+                    elevation: 0,
                     child: Icon(
                       Icons.send,
                       color: Colors.white,
                       size: 18,
                     ),
-                    backgroundColor: Color.fromRGBO(0, 121, 107, 1),
-                    elevation: 0,
                   ),
                 ],
               ),

@@ -1,10 +1,11 @@
 import 'package:english_words/english_words.dart';
 import 'package:flutter/material.dart';
-import 'package:frontend/features/screens/createUser/createUser.dart';
-import 'package:frontend/features/screens/login/loginScreen.dart';
-import 'package:frontend/features/screens/home/homeScreen.dart';
+import 'features/screens/createUser/createUser.dart';
+import 'features/screens/login/loginScreen.dart';
+import 'features/screens/home/homeScreen.dart';
 import 'package:provider/provider.dart';
-import 'package:frontend/scripts/session_check.dart';
+import 'package:frontend/features/scripts/session_check.dart';
+// import 'scripts/session_check.dart';
 // import 'package:form_field_validator/form_field_validator.dart';
 
 void main() {
