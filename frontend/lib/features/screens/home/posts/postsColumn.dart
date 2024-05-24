@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/features/screens/home/posts/post.dart';
 import 'package:frontend/features/scripts/post_service_call.dart';
+import 'package:geolocator/geolocator.dart';
 
 class PostsColumn extends StatefulWidget {
   @override
@@ -68,6 +69,34 @@ class AddPostOverlayEntry {
 
 class AddPost extends StatefulWidget {
   final VoidCallback onRemove;
+  final PostService _postService = PostService();
+  final TextEditingController _bodyController = TextEditingController();
+
+  Future<Position> _determinePosition() async {
+    bool serviceEnabled;
+    LocationPermission permission;
+
+    serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      return Future.error('Location services are disabled.');
+    }
+
+    permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.deniedForever) {
+      return Future.error(
+          'Location permissions are permanently denied, we cannot request permissions.');
+    }
+
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission != LocationPermission.whileInUse &&
+          permission != LocationPermission.always) {
+        return Future.error('Location permissions are denied');
+      }
+    }
+
+    return await Geolocator.getCurrentPosition();
+  }
 
   AddPost(this.onRemove);
 
@@ -79,7 +108,7 @@ class _AddPostState extends State<AddPost> {
   // final PostService _postService = PostService();
   // final _titleController = TextEditingController();
   final _bodyController = TextEditingController();
-  String _postContent = '';
+  final _postService = PostService();
 
   @override
   void dispose() {
@@ -141,6 +170,7 @@ class _AddPostState extends State<AddPost> {
                             ],
                           ),
                           TextFormField(
+                            controller: _bodyController,
                             decoration: InputDecoration(
                               prefixIcon: Icon(Icons.arrow_forward_ios_rounded),
                               labelText: 'new post',
@@ -158,13 +188,14 @@ class _AddPostState extends State<AddPost> {
                           SizedBox(
                             width: 170,
                             child: ElevatedButton(
-                              // onPressed: () async {
-                              //   final body = _bodyController.text;
-                              //   // await _postService.createPost(title, body);
-                              //   print('text: $body');
-                              //   // widget.onRemove();
-                              // },
-                              onPressed: _submitPost,
+                              onPressed: () async {
+                                final body = _bodyController.text;
+                                print(body);
+                                // if (body.isEmpty) {
+                                //   return;
+                                // }
+                                await PostService.createPost(body);
+                              },
                               child: Text('ADD'),
                             ),
                           ),
