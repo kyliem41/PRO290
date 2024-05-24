@@ -199,33 +199,29 @@ pub fn health() -> String {
 }
 
 //TODO this should be an auth token instead of sending a user id
-#[get("/get/id/<id>")]
-pub async fn get_user_by_id(id: String) -> status::Custom<Value>{
-    match Uuid::parse_str(&id) {
-        Ok(_) => {
-            let db = match UserDB::new().await {
-                Ok(db) => db,
-                Err(err) => {
-                    println!("{}", err);
-                    let response_json = json!({"message": "Error creating connection to database"});
-                    return status::Custom(Status::InternalServerError, response_json)
-                }
-            }; 
 
-            if let Ok (user_json) = db.get_user_with_id(id).await {
-                return status::Custom(Status::Ok, user_json)
+#[get("/get/<token>")]
+pub async fn get_user(token: String) -> status::Custom<Value>{
+    if let Ok(id) = utils::verify_jwt(&token) {
+        let db = match UserDB::new().await {
+            Ok(db) => db,
+            Err(err) => {
+                println!("{}", err);
+                let response_json = json!({"message": "Error creating connection to database"});
+                return status::Custom(Status::InternalServerError, response_json)
             }
+        }; 
 
-            //i think 404 should be here
-            let response_json = json!({"message": "User not found"});
-            status::Custom(Status::BadRequest, response_json)
-        },
-        Err(err) => {
-            println!("{}", err);
-            let response_json = json!({"message": "invalid id"});
-            status::Custom(Status::BadRequest, response_json)
+        if let Ok (user_json) = db.get_user_with_id(id).await {
+            return status::Custom(Status::Ok, user_json)
         }
+
+        let response_json = json!({"message": "User not found"});
+        return status::Custom(Status::NotFound, response_json)
     }
+
+    let response_json = json!({"message": "invalid auth token"});
+    return status::Custom(Status::BadRequest, response_json)
 }
 
 #[get("/search/<username>")]

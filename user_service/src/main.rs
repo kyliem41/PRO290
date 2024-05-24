@@ -66,7 +66,7 @@ fn rocket() -> _ {
         .mount("/user", routes![
             user_routes::health,
             user_routes::post_user,
-            user_routes::get_user_by_id,
+            user_routes::get_user,
             user_routes::delete_user,
             user_routes::login,
             user_routes::follow_user,
