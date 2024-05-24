@@ -30,7 +30,7 @@ class UploadIcon extends StatelessWidget {
               all: 8,
               color: color,
               child: Icon(
-                Icons.upload_file_rounded,
+                Icons.add_a_photo_rounded,
                 color: Colors.white,
                 size: 20,
               )),
