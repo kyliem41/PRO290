@@ -10,7 +10,7 @@ class GenerateHomePage extends StatelessWidget {
         children: [
           Expanded(
             child: Container(
-              child: PostsColumn(),
+              // child: PostsColumn(),
             ),
           ),
           SizedBox(
