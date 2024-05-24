@@ -1,6 +1,11 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:frontend/features/screens/messages/messages/customAppBar.dart';
-import 'package:frontend/models/chatMeessageModel.dart';
+import 'package:frontend/features/scripts/messageService.dart';
+import 'package:frontend/features/scripts/userService.dart';
+import 'package:frontend/models/chatMessageModel.dart';
+import 'package:frontend/models/chatUsersModel.dart';
 
 class MessageColumn extends StatefulWidget {
   @override
@@ -8,37 +13,63 @@ class MessageColumn extends StatefulWidget {
 }
 
 class _MessageColumnState extends State<MessageColumn> {
-  List<ChatMessage> messages = [
-    ChatMessage(messageContent: "Hello, Will", messageType: "receiver"),
-    ChatMessage(messageContent: "How have you been?", messageType: "receiver"),
-    ChatMessage(
-        messageContent: "Hey Kriss, I am doing fine dude. wbu?",
-        messageType: "sender"),
-    ChatMessage(messageContent: "ehhhh, doing OK.", messageType: "receiver"),
-    ChatMessage(
-        messageContent: "Is there any thing wrong?", messageType: "sender"),
-  ];
-
+  List<ChatMessage> messages = [];
+  ChatUsers? sender;
+  List<ChatUsers> recipients = [];
   final _controller = TextEditingController();
+  final MessageService messageService = MessageService();
+  final UserService userService = UserService();
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUsersAndMessages();
+  }
+
+  void _loadUsersAndMessages() async {
+    try {
+      ChatUsers sender = await userService.getSender();
+      List<ChatUsers> recipients = await userService.getRecipients();
+      List<ChatMessage> loadedMessages = await messageService.getMessages();
+
+      setState(() {
+        sender = sender;
+        recipients = recipients;
+        messages = loadedMessages;
+      });
+    } catch (e) {
+      print('Error loading messages: $e');
+    }
+  }
+
+  void _sendMessage() async {
+    if (_controller.text.isNotEmpty &&
+        sender != null &&
+        recipients.isNotEmpty) {
+      ChatMessage newMessage = ChatMessage(
+          messageId: '',
+          senderId: sender!.userId.toString(),
+          recipientIds: recipients.map((r) => r.userId.toString()).toList(),
+          content: _controller.text,
+          messageType: 'text',
+          conversationId: '');
+
+      try {
+        ChatMessage message = await messageService.createMessage(newMessage);
+        setState(() {
+          messages.add(message);
+        });
+        _controller.clear();
+      } catch (e) {
+        print('Error creating message: $e');
+      }
+    }
+  }
 
   @override
   void dispose() {
     _controller.dispose();
     super.dispose();
-  }
-
-  void _sendMessage() {
-    if (_controller.text.isNotEmpty) {
-      setState(() {
-        messages.add(
-          ChatMessage(
-            messageContent: _controller.text,
-            messageType: "sender",
-          ),
-        );
-      });
-      _controller.clear();
-    }
   }
 
   @override
@@ -70,7 +101,7 @@ class _MessageColumnState extends State<MessageColumn> {
                     ),
                     padding: EdgeInsets.all(16),
                     child: Text(
-                      messages[index].messageContent,
+                      messages[index].content,
                       style: TextStyle(fontSize: 15, color: Colors.black),
                     ),
                   ),
@@ -108,6 +139,7 @@ class _MessageColumnState extends State<MessageColumn> {
                   ),
                   Expanded(
                     child: TextField(
+                      controller: _controller,
                       decoration: InputDecoration(
                         hintText: "Write message...",
                         hintStyle: TextStyle(color: Colors.grey.shade600),
