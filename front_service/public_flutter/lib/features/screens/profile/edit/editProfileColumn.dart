@@ -4,6 +4,7 @@ import 'package:frontend/features/screens/profile/edit/editProfileWidget.dart';
 import 'package:frontend/features/screens/profile/edit/textFieldWidget.dart';
 import 'package:frontend/models/userModel.dart';
 import 'package:frontend/features/scripts/get_user.dart';
+import 'package:frontend/features/scripts/update_user.dart';
 
 class EditProfileColumn extends StatefulWidget {
   @override
@@ -14,6 +15,14 @@ class _EditProfileColumnState extends State<EditProfileColumn> {
   final _userController = TextEditingController();
   final _emailController = TextEditingController();
   final _bioController = TextEditingController();
+
+  @override
+  void dispose() {
+    _userController.dispose();
+    _emailController.dispose();
+    _bioController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -27,6 +36,10 @@ class _EditProfileColumnState extends State<EditProfileColumn> {
         } else {
           Users? user = snapshot.data;
           if (user != null) {
+            _userController.text = user.username;
+            _emailController.text = user.email;
+            _bioController.text = user.bio;
+
             return Scaffold(
               backgroundColor: Colors.teal[100],
               appBar: customAppBar(),
@@ -35,7 +48,10 @@ class _EditProfileColumnState extends State<EditProfileColumn> {
                 physics: BouncingScrollPhysics(),
                 children: [
                   EditProfileWidget(
-                      imagePath: user.pfp, isEdit: true, onUploadClicked: () {}),
+                    imagePath: user.pfp,
+                    isEdit: true,
+                    onUploadClicked: () {},
+                  ),
                   SizedBox(height: 24),
                   TextFieldWidget(
                     label: 'username',
@@ -68,8 +84,10 @@ class _EditProfileColumnState extends State<EditProfileColumn> {
                   SizedBox(
                     width: 50,
                     child: ElevatedButton(
-                      onPressed: () {
-                        // SubmitDetails();
+                      onPressed: () async {
+                        updateField(user.username, _userController.text, "username");
+                        updateField(user.email, _emailController.text, "email");
+                        updateField(user.bio, _bioController.text, "bio");
                       },
                       child: Text('SUBMIT'),
                     ),

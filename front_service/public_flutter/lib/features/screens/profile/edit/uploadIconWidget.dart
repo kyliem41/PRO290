@@ -1,5 +1,6 @@
+import 'dart:html' as html;
 import 'package:flutter/material.dart';
-import 'package:file_picker/file_picker.dart';
+import 'package:frontend/features/scripts/update_user.dart';
 
 class UploadIcon extends StatelessWidget {
   final Color color;
@@ -15,11 +16,18 @@ class UploadIcon extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () async {
-        final filePath = await FilePicker.platform.pickFiles();
+        html.FileUploadInputElement uploadInput = html.FileUploadInputElement();
+        uploadInput.accept = 'image/*';
+        uploadInput.click();
 
-        if (filePath != null && filePath.files.isNotEmpty) {
-          onFileSelected(filePath.files.single.path);
-        }
+        uploadInput.onChange.listen((event) {
+          final files = uploadInput.files;
+          if (files != null && files.isNotEmpty) {
+            final file = files[0];
+            updatePfp(file);
+            onFileSelected(file.relativePath);
+          }
+        });
       },
       child: Tooltip(
         message: 'Upload Picture',
@@ -27,13 +35,14 @@ class UploadIcon extends StatelessWidget {
           color: Colors.white,
           all: 3,
           child: buildCircle(
-              all: 8,
-              color: color,
-              child: Icon(
-                Icons.upload_file_rounded,
-                color: Colors.white,
-                size: 20,
-              )),
+            all: 8,
+            color: color,
+            child: Icon(
+              Icons.upload_file_rounded,
+              color: Colors.white,
+              size: 20,
+            ),
+          ),
         ),
       ),
     );

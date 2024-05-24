@@ -5,6 +5,7 @@ import 'package:frontend/features/screens/profile/view/numbersWidget.dart';
 import 'package:frontend/features/screens/profile/view/profileWidget.dart';
 import 'package:frontend/models/userModel.dart';
 import 'package:frontend/features/scripts/get_user.dart';
+import 'dart:typed_data';
 
 class ProfileColumn extends StatelessWidget {
   @override
@@ -25,20 +26,51 @@ class ProfileColumn extends StatelessWidget {
               padding: EdgeInsets.only(top: 60),
               physics: BouncingScrollPhysics(),
               children: [
-                ProfileWidget(
-                  imagePath: user!.pfp,
-                  onEditClicked: () {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (context) => EditProfilePage(),
-                      ),
-                    );
+                FutureBuilder<Uint8List?>(
+                  future: getPfp(),
+                  builder: (context, pfpSnapshot) {
+                    if (pfpSnapshot.connectionState == ConnectionState.waiting) {
+                      return Center(child: CircularProgressIndicator());
+                    } else if (pfpSnapshot.hasError) {
+                      return ProfileWidget(
+                        image: AssetImage('assets/default_pfp.png'),
+                        onEditClicked: () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) => EditProfilePage(),
+                            ),
+                          );
+                        },
+                      );
+                    } else if (pfpSnapshot.hasData && pfpSnapshot.data != null) {
+                      return ProfileWidget(
+                        image: MemoryImage(pfpSnapshot.data!),
+                        onEditClicked: () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) => EditProfilePage(),
+                            ),
+                          );
+                        },
+                      );
+                    } else {
+                      return ProfileWidget(
+                        image: AssetImage('assets/default_pfp.png'),
+                        onEditClicked: () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) => EditProfilePage(),
+                            ),
+                          );
+                        },
+                      );
+                    }
                   },
                 ),
                 SizedBox(height: 24),
-                buildName(user),
+                buildName(user!),
                 SizedBox(height: 24),
-                NumbersWidget(), // Use NumbersWidget without passing user
+                NumbersWidget(),
                 SizedBox(height: 48),
                 buildAbout(user),
               ],

@@ -25,6 +25,11 @@ class _TextFieldWidgetState extends State<TextFieldWidget> {
   void initState() {
     super.initState();
     controller = TextEditingController(text: widget.text);
+
+    // Add listener to the controller to call the onChanged callback
+    controller.addListener(() {
+      widget.onChanged(controller.text);
+    });
   }
 
   @override
