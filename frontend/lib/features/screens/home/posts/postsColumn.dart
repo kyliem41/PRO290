@@ -81,51 +81,51 @@ Future<void> _fetchPosts() async {
 class AddPostOverlayEntry {
   final VoidCallback removeOverlayEntry;
 
-//   AddPostOverlayEntry(this.removeOverlayEntry);
+  AddPostOverlayEntry(this.removeOverlayEntry);
 
-//   OverlayEntry build() {
-//     return OverlayEntry(
-//       builder: (context) => AddPost(removeOverlayEntry),
-//     );
-//   }
-// }
+  OverlayEntry build() {
+    return OverlayEntry(
+      builder: (context) => AddPost(removeOverlayEntry),
+    );
+  }
+}
 
-// class AddPost extends StatefulWidget {
-//   final VoidCallback onRemove;
-//   final PostService _postService = PostService();
-//   final TextEditingController _bodyController = TextEditingController();
+class AddPost extends StatefulWidget {
+  final VoidCallback onRemove;
+  final PostService _postService = PostService();
+  final TextEditingController _bodyController = TextEditingController();
 
-//   Future<Position> _determinePosition() async {
-//     bool serviceEnabled;
-//     LocationPermission permission;
+  Future<Position> _determinePosition() async {
+    bool serviceEnabled;
+    LocationPermission permission;
 
-//     serviceEnabled = await Geolocator.isLocationServiceEnabled();
-//     if (!serviceEnabled) {
-//       return Future.error('Location services are disabled.');
-//     }
+    serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      return Future.error('Location services are disabled.');
+    }
 
-//     permission = await Geolocator.checkPermission();
-//     if (permission == LocationPermission.deniedForever) {
-//       return Future.error(
-//           'Location permissions are permanently denied, we cannot request permissions.');
-//     }
+    permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.deniedForever) {
+      return Future.error(
+          'Location permissions are permanently denied, we cannot request permissions.');
+    }
 
-//     if (permission == LocationPermission.denied) {
-//       permission = await Geolocator.requestPermission();
-//       if (permission != LocationPermission.whileInUse &&
-//           permission != LocationPermission.always) {
-//         return Future.error('Location permissions are denied');
-//       }
-//     }
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission != LocationPermission.whileInUse &&
+          permission != LocationPermission.always) {
+        return Future.error('Location permissions are denied');
+      }
+    }
 
-//     return await Geolocator.getCurrentPosition();
-//   }
+    return await Geolocator.getCurrentPosition();
+  }
 
-//   AddPost(this.onRemove);
+  AddPost(this.onRemove);
 
-//   @override
-//   _AddPostState createState() => _AddPostState();
-// }
+  @override
+  _AddPostState createState() => _AddPostState();
+}
 
 // Creates a new post
 class _AddPostState extends State<AddPost> {
