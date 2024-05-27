@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/features/screens/home/posts/post.dart';
+import 'package:frontend/features/screens/home/posts/postsColumn.dart';
 
 class LocationPostsColumn extends StatefulWidget {
   @override
@@ -65,9 +66,34 @@ class AddPostOverlayEntry {
   }
 }
 
-class AddPost extends StatelessWidget {
+class AddPost extends StatefulWidget {
   final VoidCallback onRemove;
+
   AddPost(this.onRemove);
+
+  @override
+  _AddPostState createState() => _AddPostState();
+}
+
+class _AddPostState extends State<AddPost> {
+  final _controller = TextEditingController();
+  String _postContent = '';
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  void _submitPost() {
+    if (_controller.text.isNotEmpty) {
+      setState(() {
+        _postContent = _controller.text;
+      });
+      _controller.clear();
+      print('post: $_postContent');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -86,7 +112,7 @@ class AddPost extends StatelessWidget {
                   padding: const EdgeInsets.all(20),
                   child: DecoratedBox(
                     decoration: BoxDecoration(
-                      color: Colors.white,
+                      color: Color.fromARGB(238, 136, 207, 182),
                       borderRadius: BorderRadius.circular(10),
                       boxShadow: [
                         BoxShadow(
@@ -106,7 +132,7 @@ class AddPost extends StatelessWidget {
                             mainAxisAlignment: MainAxisAlignment.end,
                             children: [
                               IconButton(
-                                onPressed: onRemove,
+                                onPressed: widget.onRemove,
                                 icon: Icon(Icons.close),
                               ),
                             ],
@@ -118,15 +144,24 @@ class AddPost extends StatelessWidget {
                               hintText: "what's on your mind?",
                               border: OutlineInputBorder(),
                             ),
+                            onChanged: (value) => _submitPost(),
                           ),
                           SizedBox(height: 35),
                           SizedBox(
                             width: 200,
                             child: ElevatedButton(
-                              onPressed: () {},
+                              onPressed: _submitPost,
                               child: Text('ADD'),
                             ),
                           ),
+                          _postContent.isNotEmpty
+                              ? Text(
+                                  'Submitted Post: $_postContent',
+                                  style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold),
+                                )
+                              : Container(),
                         ],
                       ),
                     ),

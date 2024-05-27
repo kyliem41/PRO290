@@ -2,18 +2,31 @@ import 'package:flutter/material.dart';
 import 'package:frontend/features/screens/createUser/createUser.dart';
 import 'package:frontend/features/screens/home/homeScreen.dart';
 import 'package:frontend/features/screens/login/password/email/getEmail.dart';
-import 'package:frontend/scripts/login.dart';
+import 'package:frontend/features/scripts/login.dart';
 
-class LogInForm extends StatelessWidget {
-  LogInForm({
-    super.key,
-  });
-  final TextEditingController _usernameController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
+class LogInForm extends StatefulWidget {
+  @override
+  _LogInFormState createState() => _LogInFormState();
+}
+
+class _LogInFormState extends State<LogInForm> {
+  final _usernameController = TextEditingController();
+  final _passController = TextEditingController();
   final loginService = LoginService();
 
   @override
-  
+  void dispose() {
+    _usernameController.dispose();
+    _passController.dispose();
+    super.dispose();
+  }
+
+  bool get userValid {
+    return _usernameController.text.isNotEmpty &&
+        _passController.text.isNotEmpty;
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Form(
       child: DecoratedBox(
@@ -44,10 +57,16 @@ class LogInForm extends StatelessWidget {
                   hintText: 'username',
                   border: OutlineInputBorder(),
                 ),
+                // onChanged: (value) {
+                //   setState(() {
+                //     _usernameController.text = value;
+                //     print('user: $value');
+                //   });
+                // },
               ),
               SizedBox(height: 35),
               TextFormField(
-                controller: _passwordController,
+                controller: _passController,
                 decoration: InputDecoration(
                   prefixIcon: Icon(Icons.fingerprint),
                   labelText: AutofillHints.password,
@@ -59,6 +78,12 @@ class LogInForm extends StatelessWidget {
                   ),
                 ),
                 obscureText: true,
+                // onChanged: (value) {
+                //   setState(() {
+                //     _passController.text = value;
+                //     print('pass: $value');
+                //   });
+                // },
               ),
               const SizedBox(height: 30),
               Align(
@@ -79,16 +104,22 @@ class LogInForm extends StatelessWidget {
                 width: double.infinity,
                 child: ElevatedButton(
                     onPressed: () async {
-                      //TODOS: if login successful, if not give error message / add regex
-                      bool isLoggedIn = await loginService.login(_usernameController.text, _passwordController.text);
-                      if (isLoggedIn) {
-                        Navigator.pushReplacement(
+                      //TODOS: if login successful, if not give error message
+                      if (await loginService.login(_usernameController.text, _passController.text)) {
+                        Navigator.push(
                           context,
                           MaterialPageRoute(builder: (context) => MyHomePage()),
                         );
-                      }
-                      else{
-                        
+                      } else {
+                        showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return AlertDialog(
+                                content: Text(
+                                    'Invalid username or password please try again'),
+                                contentTextStyle: TextStyle(color: Colors.blue),
+                              );
+                            });
                       }
                     },
                     child: Text('LOG IN')),
@@ -115,7 +146,7 @@ class LogInForm extends StatelessWidget {
                     ),
                   ),
                 ),
-              ) 
+              )
             ],
           ),
         ),

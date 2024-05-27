@@ -1,3 +1,4 @@
+use amiquip::Return;
 use rocket::figment::util;
 use uuid::Uuid;
 use rocket::serde::json::{Json, Value};
@@ -6,6 +7,7 @@ use rocket::response::status;
 use rocket::form::Form;
 use crate::models::user::User;
 use crate::models::forms::{UserForm, ImageForm};
+use crate::models::public_user::PublicUser;
 use crate::models::login::Login;
 use crate::models::update::Update;
 use crate::models::producer;
@@ -22,7 +24,7 @@ const EXPERIATION_ONE_HOUR: i64 = 3600;
 
 //post a user to the datbase takes in form data
 #[post("/post", data = "<user_form>")]
-pub async fn post_user(user_form: Form<UserForm<'_>>) -> status::Custom<String> {
+pub async fn post_user(user_form: Form<UserForm>) -> status::Custom<String> {
     //init user properties
     let user_data: UserForm = user_form.into_inner();
     let user_id: String = utils::generate_uuid().to_string();
@@ -48,21 +50,25 @@ pub async fn post_user(user_form: Form<UserForm<'_>>) -> status::Custom<String> 
     }
 
     //attempt to save pfp
-    if let Err(err) = image::save_image(&image_id, user_data.pfp) {
-        println!("{}", err);
-        return status::Custom(Status::InternalServerError, "Error storing image to file".to_string())
-    }
+    // if let Err(err) = image::save_image(&image_id, user_data.pfp) {
+    //     println!("{}", err);
+    //     return status::Custom(Status::InternalServerError, "Error storing image to file".to_string())
+    // }
 
     //hash password and create user object
     let hash: String = utils::hash_password(user_data.password);
-    let user: User = User::new(user_id.clone(), user_data.username, user_data.email, hash, user_data.dob, image_id, user_data.bio, user_data.followers, user_data.following, false);
+    let user: User = User::new(user_id.clone(), user_data.username, user_data.email, hash, user_data.dob, image_id, "".to_string(), Vec::new(), Vec::new(), false);
 
     //save user in database
     match db.create_user(user.clone()).await {
         Ok(_) => {
-            if let Ok(verification_token) = utils::create_jwt(user_id, EXPERIATION_ONE_HOUR) {
+            if let Ok(verification_token) = utils::create_jwt(user_id.clone(), EXPERIATION_ONE_HOUR) {
                 let message = format!("Click this link to verifiy you account localhost:80/user/verify/{}", verification_token);
                 producer::send_queue(message, user.email, "Yapper Verification".to_string(), "email_queue");
+            }
+
+            if let Ok(auth_token) = utils::create_jwt(user_id, EXPERIATION_ONE_DAY) {
+                return status::Custom(Status::Created, auth_token)
             }
 
             return status::Custom(Status::Created, "".to_string())
@@ -193,31 +199,82 @@ pub fn health() -> String {
 }
 
 //TODO this should be an auth token instead of sending a user id
-#[get("/get/id/<id>")]
-pub async fn get_user_by_id(id: String) -> status::Custom<Value>{
-    match Uuid::parse_str(&id) {
-        Ok(_) => {
-            let db = match UserDB::new().await {
-                Ok(db) => db,
-                Err(err) => {
-                    println!("{}", err);
-                    let response_json = json!({"message": "Error creating connection to database"});
-                    return status::Custom(Status::InternalServerError, response_json)
-                }
-            }; 
 
-            if let Ok (user_json) = db.get_user_with_id(id).await {
-                return status::Custom(Status::Ok, user_json)
+#[get("/get/<token>")]
+pub async fn get_user(token: String) -> status::Custom<Value>{
+    if let Ok(id) = utils::verify_jwt(&token) {
+        let db = match UserDB::new().await {
+            Ok(db) => db,
+            Err(err) => {
+                println!("{}", err);
+                let response_json = json!({"message": "Error creating connection to database"});
+                return status::Custom(Status::InternalServerError, response_json)
             }
+        }; 
 
-            //i think 404 should be here
-            let response_json = json!({"message": "User not found"});
-            status::Custom(Status::BadRequest, response_json)
-        },
+        if let Ok (user_json) = db.get_user_with_id(id).await {
+            return status::Custom(Status::Ok, user_json)
+        }
+
+        let response_json = json!({"message": "User not found"});
+        return status::Custom(Status::NotFound, response_json)
+    }
+
+    let response_json = json!({"message": "invalid auth token"});
+    return status::Custom(Status::BadRequest, response_json)
+}
+
+#[get("/search/<username>")]
+pub async fn search(username: String) -> status::Custom<Value> {
+    let db = match UserDB::new().await {
+        Ok(db) => db,
         Err(err) => {
             println!("{}", err);
-            let response_json = json!({"message": "invalid id"});
-            status::Custom(Status::BadRequest, response_json)
+            let response_json = json!({"message": "Error creating connection to database"});
+            return status::Custom(Status::InternalServerError, response_json)
+        }
+    };
+
+    match db.search_users(&username).await {
+        Ok(users) => {
+            if users.is_empty() {
+                let response_json = json!({"message": "No users found"});
+                return status::Custom(Status::NotFound, response_json)
+            }
+
+            let json = serde_json::to_value(users).unwrap();
+            return status::Custom(Status::Ok, json)
+        }
+        Err(err) => {
+            println!("{err}");
+            let response_json = json!({"message": "Error finding users"});
+            return status::Custom(Status::InternalServerError, response_json)
+        }
+    }
+}
+
+#[get("/check/email/<email>")]
+pub async fn does_email_exist(email: String) -> Status {
+    let db = match UserDB::new().await {
+        Ok(db) => db,
+        Err(err) => {
+            println!("{}", err);
+            let response_json = json!({"message": "Error creating connection to database"});
+            return Status::InternalServerError
+        }
+    };
+
+    match db.does_field_exist("email", &email).await {
+        Ok(exists) => {
+            if exists {
+                return Status::Ok
+            }
+
+            return Status::NotFound
+        },
+        Err(err) => {
+            println!("{err}");
+            return Status::InternalServerError
         }
     }
 }
@@ -264,6 +321,15 @@ pub async fn get_pfp(token: String) -> Option<NamedFile> {
     }
 
     None
+}
+
+#[get("/verify/token/<token>")]
+pub fn verify_jwt(token: String) -> Status {
+    if let Ok(id) = utils::verify_jwt(&token) {
+        return Status::Ok
+    }
+
+    return Status::BadRequest
 }
 
 /*

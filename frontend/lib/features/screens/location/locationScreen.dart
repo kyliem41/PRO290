@@ -11,7 +11,7 @@ class LocationPage extends StatelessWidget {
           Expanded(
             child: Container(
               color: Colors.teal.shade100,
-              child: LocationPostsColumn(),
+              // child: LocationPostsColumn(),
             ),
           ),
           SizedBox(

@@ -8,27 +8,27 @@ class LocationPostsColumn extends StatefulWidget {
   _LocationPostsColumnState createState() => _LocationPostsColumnState();
 }
 
-class _LocationPostsColumnState extends State<LocationPostsColumn> {
-  OverlayEntry? _overlayEntry;
-  List<PostModel.Post> _posts = [];
+// class _LocationPostsColumnState extends State<LocationPostsColumn> {
+//   OverlayEntry? _overlayEntry;
+//   List<PostModel.Post> _posts = [];
 
-  @override
-void initState() {
-  super.initState();
-  _fetchPosts();
-}
+//   @override
+// void initState() {
+//   super.initState();
+//   _fetchPosts();
+// }
 
-Future<void> _fetchPosts() async {
-  try {
-    List<PostModel.Post> posts = await postService.PostService.getAllPosts();
-    setState(() {
-      _posts = posts;
-    });
-  } catch (error) {
-    // Handle error
-    print('Error fetching posts: $error');
-  }
-}
+// Future<void> _fetchPosts() async {
+//   try {
+//     List<PostModel.Post> posts = await postService.PostService.getAllPosts();
+//     setState(() {
+//       _posts = posts;
+//     });
+//   } catch (error) {
+//     // Handle error
+//     print('Error fetching posts: $error');
+//   }
+// }
 
   @override
   Widget build(BuildContext context) {
@@ -66,98 +66,132 @@ Future<void> _fetchPosts() async {
     );
   }
 
-  void removeOverlayEntry() {
-    if (_overlayEntry != null) {
-      _overlayEntry!.remove();
-      _overlayEntry = null;
-    }
-  }
-}
+//   void removeOverlayEntry() {
+//     if (_overlayEntry != null) {
+//       _overlayEntry!.remove();
+//       _overlayEntry = null;
+//     }
+//   }
+// }
 
-class AddPostOverlayEntry {
-  final VoidCallback removeOverlayEntry;
+// class AddPostOverlayEntry {
+//   final VoidCallback removeOverlayEntry;
 
-  AddPostOverlayEntry(this.removeOverlayEntry);
+//   AddPostOverlayEntry(this.removeOverlayEntry);
 
-  OverlayEntry build() {
-    return OverlayEntry(
-      builder: (context) => AddPost(removeOverlayEntry),
-    );
-  }
-}
+//   OverlayEntry build() {
+//     return OverlayEntry(
+//       builder: (context) => AddPost(removeOverlayEntry),
+//     );
+//   }
+// }
 
-class AddPost extends StatelessWidget {
-  final VoidCallback onRemove;
-  AddPost(this.onRemove);
+// class AddPost extends StatefulWidget {
+//   final VoidCallback onRemove;
 
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Container(
-        constraints: BoxConstraints(
-          maxWidth: 800,
-          maxHeight: 500,
-        ),
-        child: Material(
-          color: Colors.transparent,
-          child: Center(
-            child: ListView(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.all(20),
-                  child: DecoratedBox(
-                    decoration: BoxDecoration(
-                      color: Color.fromARGB(238, 136, 207, 182),
-                      borderRadius: BorderRadius.circular(10),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.grey.withOpacity(0.5),
-                          spreadRadius: 3,
-                          blurRadius: 5,
-                          offset: Offset(0, 3),
-                        ),
-                      ],
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(20),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            children: [
-                              IconButton(
-                                onPressed: onRemove,
-                                icon: Icon(Icons.close),
-                              ),
-                            ],
-                          ),
-                          TextFormField(
-                            decoration: InputDecoration(
-                              prefixIcon: Icon(Icons.arrow_forward_ios_rounded),
-                              labelText: 'new post',
-                              hintText: "what's on your mind?",
-                              border: OutlineInputBorder(),
-                            ),
-                          ),
-                          SizedBox(height: 35),
-                          SizedBox(
-                            width: 200,
-                            child: ElevatedButton(
-                              onPressed: () {},
-                              child: Text('ADD'),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
+//   AddPost(this.onRemove);
+
+//   @override
+//   _AddPostState createState() => _AddPostState();
+// }
+
+// class _AddPostState extends State<AddPost> {
+//   final _controller = TextEditingController();
+//   String _postContent = '';
+
+//   @override
+//   void dispose() {
+//     _controller.dispose();
+//     super.dispose();
+//   }
+
+//   void _submitPost() {
+//     if (_controller.text.isNotEmpty) {
+//       setState(() {
+//         _postContent = _controller.text;
+//       });
+//       _controller.clear();
+//       print('post: $_postContent');
+//     }
+//   }
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return Center(
+//       child: Container(
+//         constraints: BoxConstraints(
+//           maxWidth: 800,
+//           maxHeight: 500,
+//         ),
+//         child: Material(
+//           color: Colors.transparent,
+//           child: Center(
+//             child: ListView(
+//               children: [
+//                 Padding(
+//                   padding: const EdgeInsets.all(20),
+//                   child: DecoratedBox(
+//                     decoration: BoxDecoration(
+//                       color: Color.fromARGB(238, 136, 207, 182),
+//                       borderRadius: BorderRadius.circular(10),
+//                       boxShadow: [
+//                         BoxShadow(
+//                           color: Colors.grey.withOpacity(0.5),
+//                           spreadRadius: 3,
+//                           blurRadius: 5,
+//                           offset: Offset(0, 3),
+//                         ),
+//                       ],
+//                     ),
+//                     child: Padding(
+//                       padding: const EdgeInsets.all(20),
+//                       child: Column(
+//                         crossAxisAlignment: CrossAxisAlignment.end,
+//                         children: [
+//                           Row(
+//                             mainAxisAlignment: MainAxisAlignment.end,
+//                             children: [
+//                               IconButton(
+//                                 onPressed: widget.onRemove,
+//                                 icon: Icon(Icons.close),
+//                               ),
+//                             ],
+//                           ),
+//                           TextFormField(
+//                             decoration: InputDecoration(
+//                               prefixIcon: Icon(Icons.arrow_forward_ios_rounded),
+//                               labelText: 'new post',
+//                               hintText: "what's on your mind?",
+//                               border: OutlineInputBorder(),
+//                             ),
+//                             onChanged: (value) => _submitPost(),
+//                           ),
+//                           SizedBox(height: 35),
+//                           SizedBox(
+//                             width: 200,
+//                             child: ElevatedButton(
+//                               onPressed: _submitPost,
+//                               child: Text('ADD'),
+//                             ),
+//                           ),
+//                           _postContent.isNotEmpty
+//                               ? Text(
+//                                   'Submitted Post: $_postContent',
+//                                   style: TextStyle(
+//                                       fontSize: 16,
+//                                       fontWeight: FontWeight.bold),
+//                                 )
+//                               : Container(),
+//                         ],
+//                       ),
+//                     ),
+//                   ),
+//                 ),
+//               ],
+//             ),
+//           ),
+//         ),
+//       ),
+//     );
+//   }
+// }

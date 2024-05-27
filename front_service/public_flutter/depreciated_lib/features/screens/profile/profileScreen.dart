@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:frontend/features/screens/home/homeGenerator.dart';
-import 'package:frontend/features/screens/location/locationScreen.dart';
-import 'package:frontend/features/screens/messages/messages/messageScreen.dart';
+import '../home/homeGenerator.dart';
+import '../location/locationScreen.dart';
+import '../messages/messages/messageScreen.dart';
 
 class ProfilePage extends StatefulWidget {
   @override

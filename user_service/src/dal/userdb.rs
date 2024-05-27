@@ -4,6 +4,7 @@ use crate::models::update::{self, Update};
 use rocket::{form, serde::json::{Json, Value}};
 use serde_json::json;
 use crate::models::user::{self, User};
+use crate::models::public_user::PublicUser;
 use std::env;
 use std::str::FromStr; // Added FromStr
 
@@ -59,17 +60,12 @@ impl UserDB {
         let query = self.client.prepare("SELECT * FROM users WHERE username = $1").await?;
         let row = self.client.query_one(&query, &[&username]).await?;
     
-        let user = User {
-            id: row.get("id"),
+        let user = PublicUser {
             username: row.get("username"),
-            email: row.get("email"),
-            password: row.get("password"),
-            dob: row.get("dob"),
             pfp: row.get("pfp"),
             bio: row.get("bio"),
             followers: row.get("followers"),
             following: row.get("following"),
-            verified: row.get("verified")
         };
     
         let json_value = serde_json::to_value(&user)?;
@@ -105,6 +101,27 @@ impl UserDB {
     
         Some(row.get(0))
     }
+
+    pub async fn search_users(&self, username: &String) -> Result<Vec<PublicUser>, Box<dyn std::error::Error>> {
+        let pattern = format!("%{}%", username);
+        let statement = self.client.prepare("SELECT id, username, pfp, bio, followers, following FROM users WHERE username LIKE $1").await?;
+        let rows = self.client.query(&statement, &[&pattern]).await?;
+
+        let users: Vec<PublicUser> = rows.iter()
+            .map(|row| {
+                PublicUser {
+                    username: row.get("username"),
+                    pfp: row.get("pfp"),
+                    bio: row.get("bio"),
+                    followers: row.get("followers"),
+                    following: row.get("following"),
+                }
+            })
+            .collect();
+
+        Ok(users)
+    }
+
 
     pub async fn update_column(&self, id: &str, update: Update) -> Result<(), Box<dyn std::error::Error>> {
         let query: String = format!("UPDATE users SET {} = ${} WHERE id = ${}", update.column, 1, 2);

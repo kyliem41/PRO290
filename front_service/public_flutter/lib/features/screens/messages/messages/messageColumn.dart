@@ -19,6 +19,28 @@ class _MessageColumnState extends State<MessageColumn> {
         messageContent: "Is there any thing wrong?", messageType: "sender"),
   ];
 
+  final _controller = TextEditingController();
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  void _sendMessage() {
+    if (_controller.text.isNotEmpty) {
+      setState(() {
+        messages.add(
+          ChatMessage(
+            messageContent: _controller.text,
+            messageType: "sender",
+          ),
+        );
+      });
+      _controller.clear();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -102,20 +124,21 @@ class _MessageColumnState extends State<MessageColumn> {
                             borderSide:
                                 BorderSide(color: Colors.grey.shade100)),
                       ),
+                      onSubmitted: (value) => _sendMessage(),
                     ),
                   ),
                   SizedBox(
                     width: 15,
                   ),
                   FloatingActionButton(
-                    onPressed: () {},
+                    onPressed: _sendMessage,
+                    backgroundColor: Color.fromRGBO(0, 121, 107, 1),
+                    elevation: 0,
                     child: Icon(
                       Icons.send,
                       color: Colors.white,
                       size: 18,
                     ),
-                    backgroundColor: Color.fromRGBO(0, 121, 107, 1),
-                    elevation: 0,
                   ),
                 ],
               ),

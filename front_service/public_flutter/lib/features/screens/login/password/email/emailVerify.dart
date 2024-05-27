@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:frontend/features/screens/login/password/email/getEmailForm.dart';
+import 'package:frontend/features/screens/login/password/email/emailVerifyForm.dart';
 
 class EmailVerify extends StatelessWidget {
   const EmailVerify({Key? key}) : super(key: key);
@@ -17,10 +17,10 @@ class EmailVerify extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('Verify Email!',
+                Text('Verify Code!',
                     style: Theme.of(context).textTheme.headlineLarge),
                 SizedBox(height: 20),
-                const GetEmailForm(),
+                EmailVerifyForm(),
               ],
             ),
           ),

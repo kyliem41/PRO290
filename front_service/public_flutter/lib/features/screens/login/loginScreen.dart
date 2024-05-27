@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:frontend/features/screens/login/loginForm.dart';
 
 class LogInPage extends StatelessWidget {
-  LogInPage({Key? key}) : super(key: key);
+  const LogInPage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

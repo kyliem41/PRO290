@@ -3,10 +3,26 @@ import 'package:frontend/features/screens/createUser/createUser.dart';
 import 'package:frontend/features/screens/home/homeScreen.dart';
 import 'package:frontend/features/screens/login/password/email/getEmail.dart';
 
-class LogInForm extends StatelessWidget {
-  const LogInForm({
-    super.key,
-  });
+class LogInForm extends StatefulWidget {
+  @override
+  _LogInFormState createState() => _LogInFormState();
+}
+
+class _LogInFormState extends State<LogInForm> {
+  final _usernameController = TextEditingController();
+  final _passController = TextEditingController();
+
+  @override
+  void dispose() {
+    _usernameController.dispose();
+    _passController.dispose();
+    super.dispose();
+  }
+
+  bool get userValid {
+    return _usernameController.text.isNotEmpty &&
+        _passController.text.isNotEmpty;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -32,15 +48,23 @@ class LogInForm extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               TextFormField(
+                controller: _usernameController,
                 decoration: InputDecoration(
                   prefixIcon: Icon(Icons.person_outline_outlined),
                   labelText: AutofillHints.username,
                   hintText: 'username',
                   border: OutlineInputBorder(),
                 ),
+                // onChanged: (value) {
+                //   setState(() {
+                //     _usernameController.text = value;
+                //     print('user: $value');
+                //   });
+                // },
               ),
               SizedBox(height: 35),
               TextFormField(
+                controller: _passController,
                 decoration: InputDecoration(
                   prefixIcon: Icon(Icons.fingerprint),
                   labelText: AutofillHints.password,
@@ -52,6 +76,12 @@ class LogInForm extends StatelessWidget {
                   ),
                 ),
                 obscureText: true,
+                // onChanged: (value) {
+                //   setState(() {
+                //     _passController.text = value;
+                //     print('pass: $value');
+                //   });
+                // },
               ),
               const SizedBox(height: 30),
               Align(
@@ -73,10 +103,22 @@ class LogInForm extends StatelessWidget {
                 child: ElevatedButton(
                     onPressed: () {
                       //TODOS: if login successful, if not give error message
-                      Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(builder: (context) => MyHomePage()),
-                      );
+                      if (userValid) {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => MyHomePage()),
+                        );
+                      } else {
+                        showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return AlertDialog(
+                                content: Text(
+                                    'Something went wrong. Please try again.'),
+                                contentTextStyle: TextStyle(color: Colors.blue),
+                              );
+                            });
+                      }
                     },
                     child: Text('LOG IN')),
               ),

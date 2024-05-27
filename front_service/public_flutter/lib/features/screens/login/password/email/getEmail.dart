@@ -20,7 +20,7 @@ class GetEmail extends StatelessWidget {
                 Text('Forget Password?',
                     style: Theme.of(context).textTheme.headlineLarge),
                 SizedBox(height: 20),
-                const GetEmailForm(),
+                GetEmailForm(),
               ],
             ),
           ),

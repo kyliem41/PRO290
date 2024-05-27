@@ -71,37 +71,38 @@ Widget _postContent(String user, String userHandle, String text) {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
-                    Row(
-                      children: <Widget>[
-                        Icon(Icons.message_rounded, color: Colors.black),
-                        Container(
-                          margin: EdgeInsets.only(left: 3),
-                          child:
-                              Text("15", style: TextStyle(color: Colors.black)),
-                        ),
-                      ],
+                    HoverableIcon(
+                      icon: Icons.message_rounded,
+                      label: "15",
+                      hintText: "Comments",
+                      onTap: () {
+                        print('Comments icon clicked');
+                      },
                     ),
-                    Row(
-                      children: <Widget>[
-                        Icon(Icons.repeat, color: Colors.black),
-                        Container(
-                          margin: EdgeInsets.only(left: 3),
-                          child:
-                              Text("15", style: TextStyle(color: Colors.black)),
-                        ),
-                      ],
+                    HoverableIcon(
+                      icon: Icons.repeat,
+                      label: "15",
+                      hintText: "Reposts",
+                      onTap: () {
+                        print('Repeat icon clicked');
+                      },
                     ),
-                    Row(
-                      children: <Widget>[
-                        Icon(Icons.favorite_border, color: Colors.black),
-                        Container(
-                          margin: EdgeInsets.only(left: 3),
-                          child:
-                              Text("15", style: TextStyle(color: Colors.black)),
-                        ),
-                      ],
+                    HoverableIcon(
+                      icon: Icons.favorite_border,
+                      label: "15",
+                      hintText: "Likes",
+                      onTap: () {
+                        print('Like icon clicked');
+                      },
                     ),
-                    Icon(Icons.share, color: Colors.black),
+                    HoverableIcon(
+                      icon: Icons.share,
+                      label: "",
+                      hintText: "Share",
+                      onTap: () {
+                        print('Share icon clicked');
+                      },
+                    ),
                   ],
                 ),
               ),
@@ -111,4 +112,61 @@ Widget _postContent(String user, String userHandle, String text) {
       ],
     ),
   );
+}
+
+class HoverableIcon extends StatefulWidget {
+  final IconData icon;
+  final String label;
+  final String hintText;
+  final VoidCallback onTap;
+
+  const HoverableIcon({
+    Key? key,
+    required this.icon,
+    required this.label,
+    required this.hintText,
+    required this.onTap,
+  }) : super(key: key);
+
+  @override
+  _HoverableIconState createState() => _HoverableIconState();
+}
+
+class _HoverableIconState extends State<HoverableIcon> {
+  bool _hovering = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return MouseRegion(
+      onEnter: (_) {
+        setState(() {
+          _hovering = true;
+        });
+      },
+      onExit: (_) {
+        setState(() {
+          _hovering = false;
+        });
+      },
+      cursor: SystemMouseCursors.click,
+      child: GestureDetector(
+        onTap: widget.onTap,
+        child: Tooltip(
+          message: widget.hintText,
+          child: Row(
+            children: <Widget>[
+              Icon(widget.icon, color: _hovering ? Colors.blue : Colors.black),
+              if (widget.label.isNotEmpty)
+                Container(
+                  margin: EdgeInsets.only(left: 3),
+                  child: Text(widget.label,
+                      style: TextStyle(
+                          color: _hovering ? Colors.blue : Colors.black)),
+                ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
 }

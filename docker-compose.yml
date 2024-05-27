@@ -143,15 +143,17 @@ services:
     networks:
       - Pro290_network
 
-  # FrontService:
-  #   image: front_service
-  #   build: /front_service
-  #   environment:
-  #     - HOST=0.0.0.0  
-  #   networks:
-  #     - Pro290_network
-  #   depends_on:
-  #     - Consul
+  FrontService:
+    image: front_service
+    build: /front_service
+    environment:
+      - HOST=0.0.0.0  
+    networks:
+      - Pro290_network
+    depends_on:
+      - Consul
+    restart: unless-stopped
+    
 
   # FrontEnd:
   #   container_name: frontend

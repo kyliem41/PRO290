@@ -1,11 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/features/screens/home/homeScreen.dart';
 import 'package:frontend/features/screens/login/loginScreen.dart';
-import 'package:frontend/main.dart';
 
 class createUserForm extends StatefulWidget {
-  // final VoidCallback onRemove;
-
   @override
   _createUserFormState createState() => _createUserFormState();
 }
@@ -25,9 +22,13 @@ class _createUserFormState extends State<createUserForm> {
     super.dispose();
   }
 
-  // const createUserForm({
-  //   super.key,
-  // });
+  bool get userValid {
+    return _usernameController.text.isNotEmpty &&
+        _emailController.text.isNotEmpty &&
+        _passController.text.isNotEmpty &&
+        _repassController.text.isNotEmpty &&
+        _passController.text == _repassController.text;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -53,36 +54,41 @@ class _createUserFormState extends State<createUserForm> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               TextFormField(
+                controller: _usernameController,
                 decoration: InputDecoration(
                   prefixIcon: Icon(Icons.person_outline_outlined),
                   labelText: AutofillHints.username,
                   hintText: 'username',
                   border: OutlineInputBorder(),
                 ),
-                onChanged: (value) {
-                  setState(() {
-                    _usernameController.text = value;
-                  });
-                },
+                // onChanged: (value) {
+                //   setState(() {
+                //     _usernameController.text = value;
+                //     print('user: $value');
+                //   });
+                // },
               ),
               SizedBox(height: 35),
               const DOBInput(),
               SizedBox(height: 35),
               TextFormField(
+                controller: _emailController,
                 decoration: InputDecoration(
                   prefixIcon: Icon(Icons.email_outlined),
                   labelText: AutofillHints.email,
                   hintText: 'email',
                   border: OutlineInputBorder(),
                 ),
-                onChanged: (value) {
-                  setState(() {
-                    _emailController.text = value;
-                  });
-                },
+                // onChanged: (value) {
+                //   setState(() {
+                //     _emailController.text = value;
+                //     print('email: $value');
+                //   });
+                // },
               ),
               SizedBox(height: 35),
               TextFormField(
+                controller: _passController,
                 decoration: InputDecoration(
                   prefixIcon: Icon(Icons.fingerprint),
                   labelText: AutofillHints.password,
@@ -93,29 +99,32 @@ class _createUserFormState extends State<createUserForm> {
                     icon: Icon(Icons.remove_red_eye_sharp),
                   ),
                 ),
-                onChanged: (value) {
-                  setState(() {
-                    _passController.text = value;
-                  });
-                },
+                // onChanged: (value) {
+                //   setState(() {
+                //     _passController.text = value;
+                //     print('pass: $value');
+                //   });
+                // },
               ),
               SizedBox(height: 35),
               TextFormField(
+                controller: _repassController,
                 decoration: InputDecoration(
                   prefixIcon: Icon(Icons.fingerprint),
                   labelText: AutofillHints.password,
                   hintText: 'confirm password',
                   border: OutlineInputBorder(),
                   suffixIcon: IconButton(
-                    onPressed: null,
+                    onPressed: () {},
                     icon: Icon(Icons.remove_red_eye_sharp),
                   ),
                 ),
-                onChanged: (value) {
-                  setState(() {
-                    _repassController.text = value;
-                  });
-                },
+                // onChanged: (value) {
+                //   setState(() {
+                //     _repassController.text = value;
+                //     print('repass: $value');
+                //   });
+                // },
               ),
               const SizedBox(height: 30),
               SizedBox(
@@ -123,10 +132,22 @@ class _createUserFormState extends State<createUserForm> {
                 child: ElevatedButton(
                     onPressed: () {
                       //TODOS: if creation successful, if not give error message
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => MyHomePage()),
-                      );
+                      if (userValid) {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => MyHomePage()),
+                        );
+                      } else {
+                        showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return AlertDialog(
+                                content: Text(
+                                    'Something went wrong. Please try again.'),
+                                    contentTextStyle: TextStyle(color: Colors.blue),
+                              );
+                            });
+                      }
                     },
                     child: Text('SIGN UP')),
               ),
@@ -173,8 +194,15 @@ class _DOBInputState extends State<DOBInput> {
   final _dateController = TextEditingController();
 
   @override
+  void dispose() {
+    _dateController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return TextFormField(
+      controller: _dateController,
       decoration: InputDecoration(
         prefixIcon: Icon(Icons.calendar_today),
         labelText: 'DOB',
@@ -192,12 +220,12 @@ class _DOBInputState extends State<DOBInput> {
         if (pickedDate != null && pickedDate != _selectedDate) {
           setState(() {
             _selectedDate = pickedDate;
-            _dateController.text = _selectedDate.toString();
+            _dateController.text = _selectedDate.toString().split(' ')[0];
             print('date: $pickedDate');
           });
         }
       },
-      controller: _dateController,
+      // controller: _dateController,
     );
   }
 }

@@ -17,10 +17,10 @@ class ForgotPass extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('Hello!',
+                Text('Reset Password',
                     style: Theme.of(context).textTheme.headlineLarge),
                 SizedBox(height: 20),
-                const ForgotPassForm(),
+                ForgotPassForm(),
               ],
             ),
           ),

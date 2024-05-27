@@ -10,6 +10,18 @@ class EditProfileColumn extends StatefulWidget {
 }
 
 class _EditProfileColumnState extends State<EditProfileColumn> {
+  final _userController = TextEditingController();
+  final _emailController = TextEditingController();
+  final _bioController = TextEditingController();
+
+  @override
+  void dispose() {
+    _userController.dispose();
+    _emailController.dispose();
+    _bioController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     final user = Users(
@@ -26,29 +38,34 @@ class _EditProfileColumnState extends State<EditProfileColumn> {
         physics: BouncingScrollPhysics(),
         children: [
           EditProfileWidget(
-              imagePath: user.imagePath,
-              isEdit: true,
-              onUploadClicked: () {
-                
-              }),
+              imagePath: user.imagePath, isEdit: true, onUploadClicked: () {}),
           SizedBox(height: 24),
           TextFieldWidget(
             label: 'username',
             text: user.username,
-            onChanged: (username) {},
+            onChanged: (username) {
+              _userController.text = username;
+              print('username: $username');
+            },
           ),
           SizedBox(height: 24),
           TextFieldWidget(
             label: 'email',
             text: user.email,
-            onChanged: (email) {},
+            onChanged: (email) {
+              _emailController.text = email;
+              print('email: $email');
+            },
           ),
           SizedBox(height: 24),
           TextFieldWidget(
             label: 'bio',
             text: user.bio,
             maxLines: 5,
-            onChanged: (bio) {},
+            onChanged: (bio) {
+              _bioController.text = bio;
+              print('bio: $bio');
+            },
           ),
           SizedBox(height: 34),
           SizedBox(

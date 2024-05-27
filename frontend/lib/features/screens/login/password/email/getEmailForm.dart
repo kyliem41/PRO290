@@ -1,10 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/features/screens/login/password/email/emailVerify.dart';
 
-class GetEmailForm extends StatelessWidget {
-  const GetEmailForm({
-    super.key,
-  });
+class GetEmailForm extends StatefulWidget {
+  @override
+  _GetEmailFormState createState() => _GetEmailFormState();
+}
+
+class _GetEmailFormState extends State<GetEmailForm> {
+  final _emailController = TextEditingController();
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -36,6 +45,12 @@ class GetEmailForm extends StatelessWidget {
                   hintText: 'email',
                   border: OutlineInputBorder(),
                 ),
+                onChanged: (value) {
+                  setState(() {
+                    _emailController.text = value;
+                    print('email: $value');
+                  });
+                },
               ),
               SizedBox(height: 35),
               SizedBox(

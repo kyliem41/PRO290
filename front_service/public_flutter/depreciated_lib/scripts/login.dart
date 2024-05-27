@@ -38,6 +38,14 @@ class LoginService {
     }
   }
 
+  Future<bool> doesEmailExist(String email) async {
+    final response = await http.get(Uri.parse('http://localhost:80/user/get/email/$email'));
+    if (response.statusCode == 200) {
+      return true;
+    }
+    return false;
+  }
+
   // Future<String> getServiceAddress(String serviceName) async {
   //   // final url = Uri.http(consulHost, '$consulPort/v1/catalog/service/$serviceName');
   //   final url = Uri.http('localhost:80/user/login');
