@@ -28,13 +28,13 @@ class _MessageColumnState extends State<MessageColumn> {
 
   void _loadUsersAndMessages() async {
     try {
-      ChatUsers sender = await userService.getSender();
-      List<ChatUsers> recipients = await userService.getRecipients();
+      // ChatUsers sender = await userService.getSender();
+      // List<ChatUsers> recipients = await userService.getRecipients();
       List<ChatMessage> loadedMessages = await messageService.getMessages();
 
       setState(() {
-        sender = sender;
-        recipients = recipients;
+        // sender = sender;
+        // recipients = recipients;
         messages = loadedMessages;
       });
     } catch (e) {
@@ -48,8 +48,10 @@ class _MessageColumnState extends State<MessageColumn> {
         recipients.isNotEmpty) {
       ChatMessage newMessage = ChatMessage(
           messageId: '',
-          senderId: sender!.userId.toString(),
-          recipientIds: recipients.map((r) => r.userId.toString()).toList(),
+          // senderId: sender!.userId.toString(),
+          senderId: 'senderId',
+          recipientIds: ['recipientId'],
+          // recipientIds: recipients.map((r) => r.userId.toString()).toList(),
           content: _controller.text,
           messageType: 'text',
           conversationId: '');

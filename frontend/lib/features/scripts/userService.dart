@@ -32,7 +32,7 @@ class UserService {
   }
 
   Future<ChatUsers> getSender() async {
-    final response = await http.get(Uri.parse('$baseUrl/sender'));
+    final response = await http.get(Uri.parse('$baseUrl/get/id/sender'));
 
     if (response.statusCode == 200) {
       final Map<String, dynamic> json = jsonDecode(response.body);
@@ -43,7 +43,7 @@ class UserService {
   }
 
   Future<List<ChatUsers>> getRecipients() async {
-    final response = await http.get(Uri.parse('$baseUrl/recipient'));
+    final response = await http.get(Uri.parse('$baseUrl/get/id/recipient'));
 
     if (response.statusCode == 200) {
       List<dynamic> body = jsonDecode(response.body);
