@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:frontend/features/screens/home/posts/post.dart';
 import 'package:frontend/features/scripts/post_service_call.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:frontend/models/postModel.dart' as PostModel;
+import 'package:frontend/features/scripts/post_service_call.dart' as postService;
 
 class PostsColumn extends StatefulWidget {
   @override
@@ -12,6 +14,25 @@ class _PostsColumnState extends State<PostsColumn> {
   // final PostService _postService = PostService();
 
   OverlayEntry? _overlayEntry;
+  List<PostModel.Post> _posts = [];
+
+  @override
+void initState() {
+  super.initState();
+  _fetchPosts();
+}
+
+Future<void> _fetchPosts() async {
+  try {
+    List<PostModel.Post> posts = await postService.PostService.getAllPosts();
+    setState(() {
+      _posts = posts;
+    });
+  } catch (error) {
+    // Handle error
+    print('Error fetching posts: $error');
+  }
+}
 
   @override
   Widget build(BuildContext context) {
@@ -30,17 +51,17 @@ class _PostsColumnState extends State<PostsColumn> {
         SizedBox(height: 20),
         ListView.builder(
           padding: EdgeInsets.only(top: 60, bottom: 20, left: 20, right: 20),
-          itemBuilder: (_, int index) => Post(),
-          itemCount: 10,
-          reverse: false,
+          itemBuilder: (_, int index) => Post(post: _posts[index],), // Post is being called here ajfkjdsafkdsaj
+          itemCount: _posts.length,
+          reverse: true,
         ),
         Positioned(
           bottom: 16.0,
           right: 16.0,
           child: FloatingActionButton(
             onPressed: () {
-              _overlayEntry = AddPostOverlayEntry(removeOverlayEntry).build();
-              Overlay.of(context)?.insert(_overlayEntry!);
+              _overlayEntry = AddPostOverlayEntry(removeOverlayEntry).build(); // here is where post.dart is being called
+              Overlay.of(context)?.insert(_overlayEntry!); 
             },
             child: Icon(Icons.edit_note_rounded),
           ),
@@ -106,6 +127,7 @@ class AddPost extends StatefulWidget {
   _AddPostState createState() => _AddPostState();
 }
 
+// Creates a new post
 class _AddPostState extends State<AddPost> {
   // final PostService _postService = PostService();
   final _titleController = TextEditingController();
@@ -188,6 +210,7 @@ class _AddPostState extends State<AddPost> {
                                 //   return;
                                 // }
                                 await PostService.createPost(body);
+                                widget.onRemove();
                               },
                               child: Text('ADD'),
                             ),

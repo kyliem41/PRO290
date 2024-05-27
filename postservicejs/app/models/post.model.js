@@ -2,11 +2,6 @@
 module.exports = mongoose => {
     const postSchema = mongoose.Schema(
       {
-        id: {
-          type: String,
-          required: true,
-          unique: true
-        },
         userId: {
           type: String,
           required: true
@@ -29,8 +24,12 @@ module.exports = mongoose => {
           required: true
         }
       },
-      { timestamps: true }
+      { timestamps: true, toJSON: { virtuals: true } }
     );
+  
+      postSchema.virtual('id').get(function() {
+        return this._id.toString();
+      });
   
     const Post = mongoose.model("post", postSchema);
     return Post;

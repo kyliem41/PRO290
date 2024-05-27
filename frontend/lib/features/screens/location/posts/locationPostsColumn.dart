@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:frontend/features/screens/home/posts/post.dart' as post_class;
 import 'package:frontend/features/scripts/post_service_call.dart' as postService;
 import 'package:frontend/models/postModel.dart' as PostModel;
+import 'package:frontend/features/screens/location/posts/locationPost.dart';
 
 class LocationPostsColumn extends StatefulWidget {
   @override
@@ -47,12 +47,9 @@ Future<void> _fetchPosts() async {
         SizedBox(height: 20),
         ListView.builder(
           padding: EdgeInsets.only(top: 60, bottom: 20, left: 20, right: 20),
-          itemBuilder: (context, int index){ 
-            final post = _posts[index];
-            return  _postContent(post.userId, post.content);
-          },
+          itemBuilder: (_ , int index) => Post(post: _posts[index],), // Post is being called here
           itemCount: _posts.length, // Change this for each post
-          reverse: false,
+          reverse: true,
         ),
         Positioned(
           bottom: 16.0,

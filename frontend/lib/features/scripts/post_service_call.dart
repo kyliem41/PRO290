@@ -6,6 +6,8 @@ import 'dart:convert';
 import 'package:geolocator/geolocator.dart';
 import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart';
 import 'package:frontend/models/postModel.dart';
+import 'package:frontend/features/scripts/user.dart';
+import 'package:frontend/models/userModel.dart';
 
 class PostService {
   static const String apiUrl = 'http://localhost:80/api/posts';
@@ -13,10 +15,11 @@ class PostService {
 
   static Future<void> createPost(String content) async {
     try {
-      String? token = html.window.localStorage["auth_token"];
-      if (token == null) {
-        return;
-      }
+      // String? token = html.window.localStorage["auth_token"];
+      // if (token == null) {
+      //   return;
+      // }
+      String token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6ImI3Yjg4NDkzLTIxYjctNDRmYS1hYTIxLTQyMjdmMGY5NTM5ZSIsImV4cCI6MTcxNjY1NzA0N30.eCPM6AItasHg4J8MM6g2--XyY93VQGKRx7LhaIMugk0";
 
       Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
       Map<String, dynamic> map = position.toJson();
@@ -29,7 +32,7 @@ class PostService {
         },
         body: jsonEncode(<String, dynamic>{
           'userId': await _getUserId(),
-          'content': "hard coded content",
+          'content': content,
           'position': map,
           'token': token,
         }),
@@ -48,28 +51,17 @@ class PostService {
 
   static FutureOr<String> _getUserId() async {
 
-    String? token = html.window.localStorage["auth_token"];
-
-    if (token == null) {
-      return '';
-    }
-
-    try {
-      final jwt = JWT.verify(token, SecretKey(secret));
-      final userId = jwt.payload['id'];
-      return userId;
-    } catch (e) {
-      print('Error decoding JWT token: $e');
-    }
-    return '';
+    Users user = await UserService.getUserFromJWT();
+    return user.id;
   }
 
   static Future<List<Post>> getAllPosts() async {
 
-    String? token = html.window.localStorage["auth_token"];
-    if (token == null) {
-      return Future.error('No token found');
-    }
+    // String? token = html.window.localStorage["auth_token"];
+    // if (token == null) {
+    //   return Future.error('No token found');
+    // }
+    String token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6ImI3Yjg4NDkzLTIxYjctNDRmYS1hYTIxLTQyMjdmMGY5NTM5ZSIsImV4cCI6MTcxNjY1NzA0N30.eCPM6AItasHg4J8MM6g2--XyY93VQGKRx7LhaIMugk0";
     try {
       final response = await http.get(
         Uri.parse(apiUrl),
