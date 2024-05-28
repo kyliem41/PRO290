@@ -50,7 +50,7 @@ class PostService {
     }
   }
 
-  static FutureOr<int> _getUserId() async {
+  static FutureOr<String> _getUserId() async {
 
     Users user = await UserService.getUserFromJWT();
     return user.id;

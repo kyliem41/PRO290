@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 class Users {
-  int id;
+  String id;
   String username;
   String email;
   String password;
