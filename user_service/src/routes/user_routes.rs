@@ -16,11 +16,20 @@ use crate::dal::userdb::UserDB;
 use crate::dal::image;
 use rocket::fs::NamedFile;
 use serde_json::json;
+use rocket_cors;
 
 const EXPERIATION_ONE_DAY: i64 = 86400;
 const EXPERIATION_ONE_HOUR: i64 = 3600;
 
-//TODO add default pfps and checking if a pfp is null
+#[options("/<_..>")]
+pub async fn options_user_preflight() -> rocket::http::Status {
+    rocket::http::Status::Ok
+}
+
+// #[options("/login", rank = 2)]
+// pub fn options_user_preflight() -> rocket::http::Status {
+//     rocket::http::Status::Ok
+// }
 
 //post a user to the datbase takes in form data
 #[post("/post", data = "<user_form>")]
@@ -81,6 +90,7 @@ pub async fn post_user(user_form: Form<UserForm>) -> status::Custom<String> {
 }
 
 #[post("/login", data = "<login>")]
+// #[cors(origins = "", methods = "POST")]
 pub async fn login(login: Json<Login>) -> status::Custom<String> {
     println!("Received login request: {:?}", login);
 

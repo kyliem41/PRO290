@@ -52,14 +52,10 @@ class _SearchResultsColumnState extends State<SearchResultsColumn> {
                             return ResultCard(
                               user: results[index],
                               currentUserId: currentUser?.id ?? 0,
-                              onFollow: (userId) {
-                                // Implement follow logic here
-                                print('Follow user with ID: $userId');
+                              onFollow: (userId) {  
                                 onFollow(userId);
                               },
                               onUnfollow: (userId) {
-                                // Implement unfollow logic here
-                                print('Unfollow user with ID: $userId');
                                 onUnfollow(userId);
                               },
                             );

@@ -50,6 +50,10 @@ exports.createMessage = async (req, res) => {
   }
 };
 
+exports.createConversation = async (req, res) => {
+  print(req.user)
+}
+
 exports.updateMessage = async (req, res) => {
   try {
     const { messageId } = req.params;

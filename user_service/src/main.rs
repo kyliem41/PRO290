@@ -10,6 +10,10 @@ mod dal;
 use std::env;
 use rocket::figment::util;
 use routes::user_routes;  
+use rocket::http::Header;
+use rocket_cors::AllOrSome;
+use rocket::fairing::{Fairing, Info, Kind};
+use rocket::{Request, Response};
 
 use reqwest;
 
@@ -47,6 +51,28 @@ fn register_to_consul() -> Result<(), Box<dyn std::error::Error>> {
     Ok(())
 }
 
+pub struct Cors;
+
+#[rocket::async_trait]
+impl Fairing for Cors {
+    fn info(&self) -> Info {
+        Info {
+            name: "Cross-Origin-Resource-Sharing Fairing",
+            kind: Kind::Response,
+        }
+    }
+
+    async fn on_response<'r>(&self, request: &'r Request<'_>, response: &mut Response<'r>) {
+        response.set_header(Header::new("Access-Control-Allow-Origin", "*"));
+        response.set_header(Header::new(
+            "Access-Control-Allow-Methods",
+            request.method().as_str(),
+        ));
+        response.set_header(Header::new("Access-Control-Allow-Headers", "*"));
+        response.set_header(Header::new("Access-Control-Allow-Credentials", "true"));
+    }
+}
+
 #[launch]
 fn rocket() -> _ {
     //get address
@@ -78,8 +104,9 @@ fn rocket() -> _ {
             user_routes::verify_jwt,
             user_routes::get_user_by_username,
             user_routes::search,
-            user_routes::does_email_exist
-        ]);
+            user_routes::options_user_preflight
+        ])
+        .attach(Cors);
 
     //check if service is in testing or needs to be registered
     if address != "127.0.0.1" {
