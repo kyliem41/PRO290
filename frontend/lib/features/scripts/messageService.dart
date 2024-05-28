@@ -12,7 +12,9 @@ class MessageService {
       Uri.parse('$url'),
       headers: {
         // 'authorization': 'Bearer $authToken',
-        
+        'Access-Control-Allow-Origin': '*',
+        "Access-Control-Allow-Methods": "GET,PUT,PATCH,POST,DELETE",
+        "Access-Control-Allow-Headers": "Origin, X-Requested-With, Content-Type, Accept",
       },
     );
 
@@ -29,7 +31,10 @@ class MessageService {
       Uri.parse('$url'),
       headers: {
         'Content-Type': 'application/json',
-        'authorization': 'Bearer $authToken'
+        // 'authorization': 'Bearer $authToken'
+        'Access-Control-Allow-Origin': '*',
+        "Access-Control-Allow-Methods": "GET,PUT,PATCH,POST,DELETE",
+        "Access-Control-Allow-Headers": "Origin, X-Requested-With, Content-Type, Accept",
       },
       body: jsonEncode(message.toJson()),
     );
