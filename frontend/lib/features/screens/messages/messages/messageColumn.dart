@@ -14,11 +14,11 @@ class MessageColumn extends StatefulWidget {
 
 class _MessageColumnState extends State<MessageColumn> {
   List<ChatMessage> messages = [];
-  ChatUsers? sender;
-  List<ChatUsers> recipients = [];
+  // ChatUsers? sender;
+  // List<ChatUsers> recipients = [];
   final _controller = TextEditingController();
   final MessageService messageService = MessageService();
-  final UserService userService = UserService();
+  // final UserService userService = UserService();
 
   @override
   void initState() {
@@ -28,33 +28,32 @@ class _MessageColumnState extends State<MessageColumn> {
 
   void _loadUsersAndMessages() async {
     try {
-      // ChatUsers sender = await userService.getSender();
-      // List<ChatUsers> recipients = await userService.getRecipients();
+      // sender = await userService.getSender();
+      // recipients = await userService.getRecipients();
       List<ChatMessage> loadedMessages = await messageService.getMessages();
 
       setState(() {
-        // sender = sender;
-        // recipients = recipients;
         messages = loadedMessages;
       });
+      print('loaded messages: $messages');
     } catch (e) {
       print('Error loading messages: $e');
     }
   }
 
   void _sendMessage() async {
-    if (_controller.text.isNotEmpty &&
-        sender != null &&
-        recipients.isNotEmpty) {
+    if (_controller.text.isNotEmpty) {
+      // sender != null &&
+      // recipients.isNotEmpty) {
       ChatMessage newMessage = ChatMessage(
           messageId: '',
           // senderId: sender!.userId.toString(),
-          senderId: 'senderId',
-          recipientIds: ['recipientId'],
+          senderId: 'test',
+          recipientIds: ['test'],
           // recipientIds: recipients.map((r) => r.userId.toString()).toList(),
           content: _controller.text,
           messageType: 'text',
-          conversationId: '');
+          conversationId: 'test');
 
       try {
         ChatMessage message = await messageService.createMessage(newMessage);
@@ -62,6 +61,7 @@ class _MessageColumnState extends State<MessageColumn> {
           messages.add(message);
         });
         _controller.clear();
+        print('message sent: $message');
       } catch (e) {
         print('Error creating message: $e');
       }
