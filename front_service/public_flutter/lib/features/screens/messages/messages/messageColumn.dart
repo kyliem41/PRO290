@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/features/screens/messages/messages/customAppBar.dart';
-import 'package:frontend/models/chatMeessageModel.dart';
+import 'package:frontend/models/chatMessageModel.dart';
 
 class MessageColumn extends StatefulWidget {
   @override

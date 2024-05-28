@@ -1,14 +1,12 @@
 import 'dart:convert';
 import 'package:frontend/models/chatMessageModel.dart';
 import 'package:frontend/models/chatUsersModel.dart';
-import 'package:frontend/models/userModel.dart';
 import 'package:http/http.dart' as http;
 import 'dart:html' as html;
+import 'package:frontend/models/userModel.dart';
 
 class UserService {
   static const String baseUrl = 'http://userservice:8500/api/user';
-  static const String apiUrl = 'http://localhost:80/user';
-  static const String secret = '';
 
   Future<List<ChatUsers>> getUsers() async {
     final response = await http.get(Uri.parse('$baseUrl'));
@@ -19,39 +17,6 @@ class UserService {
     } else {
       throw Exception('Failed to load users');
     }
-  }
-
-  static Future<Users> getUserFromJWT() async {
-    try {
-      String? token = html.window.localStorage["auth_token"];
-      if (token == null) {
-        return Future.error('Token not found');
-      }
-      // String token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6ImI3Yjg4NDkzLTIxYjctNDRmYS1hYTIxLTQyMjdmMGY5NTM5ZSIsImV4cCI6MTcxNjY1NzA0N30.eCPM6AItasHg4J8MM6g2--XyY93VQGKRx7LhaIMugk0";
-
-      final response = await http.get(
-        Uri.parse('$apiUrl/get/$token'),
-        headers: <String, String>{
-          'Content-Type': 'application/json; charset=UTF-8',
-          'Authorization': 'Bearer $token',
-        },
-      );
-      
-      if (response.statusCode == 200) {
-        final jsonData = json.decode(response.body);
-        return Users.fromJson(jsonData);
-      } else {
-        print('Request failed with status: ${response.statusCode}');
-        return Future.error('Request failed with status: ${response.statusCode}');
-      }
-
-
-    }
-    catch (error) {
-      print('Error: $error');
-      return Future.error('Error: $error');
-    }
-    
   }
 
   Future<ChatUsers> createUser(ChatUsers user) async {
@@ -90,6 +55,42 @@ class UserService {
     }
   }
 
+  static const String apiUrl = 'http://localhost:80/user';
+  static const String secret = '';
+
+  static Future<Users> getUserFromJWT() async {
+    try {
+      String? token = html.window.localStorage["auth_token"];
+      if (token == null) {
+        return Future.error('No token found');
+      }
+      //(get_user) GET /user/get/<token>
+      //String token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6ImI3Yjg4NDkzLTIxYjctNDRmYS1hYTIxLTQyMjdmMGY5NTM5ZSIsImV4cCI6MTcxNjY1NzA0N30.eCPM6AItasHg4J8MM6g2--XyY93VQGKRx7LhaIMugk0";
+
+      final response = await http.get(
+        Uri.parse('$apiUrl/get/$token'),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+          'Authorization': 'Bearer $token',
+        },
+      );
+      
+      if (response.statusCode == 200) {
+        final jsonData = json.decode(response.body);
+        return Users.fromJson(jsonData);
+      } else {
+        print('Request failed with status: ${response.statusCode}');
+        return Future.error('Request failed with status: ${response.statusCode}');
+      }
+
+
+    }
+    catch (error) {
+      print('Error: $error');
+      return Future.error('Error: $error');
+    }
+    
+  }
+
   //add methods for update and delete
-  
 }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:frontend/features/screens/home/posts/post.dart';
-import 'package:frontend/features/screens/home/posts/postsColumn.dart';
+import 'package:frontend/features/scripts/post_service_call.dart' as postService;
+import 'package:frontend/models/postModel.dart' as PostModel;
+import 'package:frontend/features/screens/location/posts/locationPost.dart';
 
 class LocationPostsColumn extends StatefulWidget {
   @override
@@ -9,6 +10,26 @@ class LocationPostsColumn extends StatefulWidget {
 
 class _LocationPostsColumnState extends State<LocationPostsColumn> {
   OverlayEntry? _overlayEntry;
+  List<PostModel.Post> _posts = [];
+
+
+  @override
+void initState() {
+  super.initState();
+  _fetchPosts();
+}
+
+Future<void> _fetchPosts() async {
+  try {
+    List<PostModel.Post> posts = await postService.PostService.getAllPosts();
+    setState(() {
+      _posts = posts;
+    });
+  } catch (error) {
+    // Handle error
+    print('Error fetching posts: $error');
+  }
+}
 
   @override
   Widget build(BuildContext context) {
@@ -27,9 +48,9 @@ class _LocationPostsColumnState extends State<LocationPostsColumn> {
         SizedBox(height: 20),
         ListView.builder(
           padding: EdgeInsets.only(top: 60, bottom: 20, left: 20, right: 20),
-          itemBuilder: (_, int index) => Post(),
-          itemCount: 10,
-          reverse: false,
+          itemBuilder: (_ , int index) => Post(post: _posts[index],), // Post is being called here
+          itemCount: _posts.length, // Change this for each post
+          reverse: true,
         ),
         Positioned(
           bottom: 16.0,
@@ -175,3 +196,4 @@ class _AddPostState extends State<AddPost> {
     );
   }
 }
+
