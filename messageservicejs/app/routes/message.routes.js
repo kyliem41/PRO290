@@ -10,7 +10,9 @@ module.exports = app => {
   // Apply the authMiddleware to routes that require authentication
   router.get("/", authMiddleware, messageController.findAllMessages);
   router.get("/sender/:senderId", authMiddleware, messageController.findMessagesBySenderId);
-  router.post("/", authMiddleware, messageController.createMessage);
+    router.post("/", authMiddleware, messageController.createMessage);
+  //TODO come up with a better id   
+  router.post("/create/:id", authMiddleware);
   router.put("/:messageId", authMiddleware, messageController.updateMessage);
   router.delete("/:messageId", authMiddleware, messageController.deleteMessage);
 

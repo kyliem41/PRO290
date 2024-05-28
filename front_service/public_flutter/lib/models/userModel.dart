@@ -1,23 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-
-// class Users {
-//   String username;
-//   String pfp;
-//   String bio;
-//   List<String> followers;
-//   List<String> following;
-
-//   Users(
-//       {
-//         required this.username,
-//         required this.pfp,
-//         required this.bio,
-//         required this.followers,
-//         required this.following
-//       });
-// }
-
 class Users {
   int id;
   String username;
@@ -53,5 +35,24 @@ class Users {
       followers: List<String>.from(json['followers']),
       following: List<String>.from(json['following']),
     );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'username': username,
+      'email': email,
+      'password': password,
+      'dob': dob,
+      'bio': bio,
+      'pfp': pfp,
+      'followers': followers,
+      'following': following,
+    };
+  }
+
+  @override
+  String toString() {
+    return 'Users{id: $id, username: $username, email: $email, password: $password, dob: $dob, bio: $bio, pfp: $pfp, followers: ${followers.length}, following: ${following.length}}';
   }
 }

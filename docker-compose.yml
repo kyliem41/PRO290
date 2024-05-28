@@ -20,6 +20,9 @@ services:
       # - ./traefik.yaml:/etc/traefik/traefik.yaml
     networks:
       - Pro290_network
+    labels:
+      - "traefik.http.middlewares.cors.headers.accesscontrolallowmethods=GET,POST,PUT,DELETE"
+      - "traefik.http.middlewares.cors.headers.accesscontrolalloworiginlist=http://localhost:60698"
     restart: always
 
   MongoDBPosts:
