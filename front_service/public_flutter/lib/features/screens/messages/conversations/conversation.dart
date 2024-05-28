@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/features/screens/messages/conversations/conversationList.dart';
 import 'package:frontend/models/chatUsersModel.dart';
+import 'package:frontend/features/scripts/search.dart';
 
 class ChatColumn extends StatefulWidget {
   @override

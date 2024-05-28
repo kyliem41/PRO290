@@ -3,6 +3,7 @@ import 'package:frontend/features/screens/search/customAppBar.dart';
 import 'package:frontend/models/userModel.dart';
 import 'package:frontend/features/scripts/search.dart';
 import 'package:frontend/features/scripts/get_user.dart';
+import 'package:frontend/features/scripts/follow.dart';
 
 class SearchResultsColumn extends StatefulWidget {
   @override
@@ -12,6 +13,20 @@ class SearchResultsColumn extends StatefulWidget {
 class _SearchResultsColumnState extends State<SearchResultsColumn> {
   List<Users> results = [];
   bool isSearching = false;
+  Users? currentUser;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchCurrentUser();
+  }
+
+  Future<void> _fetchCurrentUser() async {
+    Users? user = await getUser();
+    setState(() {
+      currentUser = user;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -34,7 +49,20 @@ class _SearchResultsColumnState extends State<SearchResultsColumn> {
                       ? ListView.builder(
                           itemCount: results.length,
                           itemBuilder: (context, index) {
-                            return ResultCard(user: results[index]);
+                            return ResultCard(
+                              user: results[index],
+                              currentUserId: currentUser?.id ?? 0,
+                              onFollow: (userId) {
+                                // Implement follow logic here
+                                print('Follow user with ID: $userId');
+                                onFollow(userId);
+                              },
+                              onUnfollow: (userId) {
+                                // Implement unfollow logic here
+                                print('Unfollow user with ID: $userId');
+                                onUnfollow(userId);
+                              },
+                            );
                           },
                         )
                       : Center(
@@ -51,13 +79,12 @@ class _SearchResultsColumnState extends State<SearchResultsColumn> {
     setState(() {
       isSearching = true;
     });
-    Users? user = await getUser();
-    if (user != null) {
-        List<Users> searchResults = await search(query, user.username);
-        setState(() {
-          results = searchResults;
-          isSearching = false;
-        });
+    if (currentUser != null) {
+      List<Users> searchResults = await search(query, currentUser!.username);
+      setState(() {
+        results = searchResults;
+        isSearching = false;
+      });
     }
   }
 }
@@ -130,10 +157,21 @@ class _SearchBarState extends State<SearchBar> {
 
 class ResultCard extends StatelessWidget {
   final Users user;
-  ResultCard({required this.user});
+  final int currentUserId;
+  final void Function(int userId) onFollow;
+  final void Function(int userId) onUnfollow;
+
+  ResultCard({
+    required this.user,
+    required this.currentUserId,
+    required this.onFollow,
+    required this.onUnfollow,
+  });
 
   @override
   Widget build(BuildContext context) {
+    bool isFollowing = user.followers.contains(currentUserId.toString());
+
     return Card(
       elevation: 2,
       child: Padding(
@@ -159,6 +197,13 @@ class ResultCard extends StatelessWidget {
             Text(
               'Following: ${user.following.length}',
               style: TextStyle(fontSize: 14),
+            ),
+            SizedBox(height: 8),
+            ElevatedButton(
+              onPressed: isFollowing
+                  ? () => onUnfollow(user.id)
+                  : () => onFollow(user.id),
+              child: Text(isFollowing ? 'Unfollow' : 'Follow'),
             ),
           ],
         ),
