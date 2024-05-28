@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/features/screens/home/posts/post.dart';
 import 'package:frontend/features/scripts/post_service_call.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:frontend/models/postModel.dart' as PostModel;
+import 'package:frontend/features/scripts/post_service_call.dart' as postService;
 
 class PostsColumn extends StatefulWidget {
   @override
@@ -8,7 +11,28 @@ class PostsColumn extends StatefulWidget {
 }
 
 class _PostsColumnState extends State<PostsColumn> {
+  // final PostService _postService = PostService();
+
   OverlayEntry? _overlayEntry;
+  List<PostModel.Post> _posts = [];
+
+  @override
+void initState() {
+  super.initState();
+  _fetchPosts();
+}
+
+Future<void> _fetchPosts() async {
+  try {
+    List<PostModel.Post> posts = await postService.PostService.getAllPosts();
+    setState(() {
+      _posts = posts;
+    });
+  } catch (error) {
+    // Handle error
+    print('Error fetching posts: $error');
+  }
+}
 
   @override
   Widget build(BuildContext context) {
@@ -27,17 +51,17 @@ class _PostsColumnState extends State<PostsColumn> {
         SizedBox(height: 20),
         ListView.builder(
           padding: EdgeInsets.only(top: 60, bottom: 20, left: 20, right: 20),
-          itemBuilder: (_, int index) => Post(),
-          itemCount: 10,
-          reverse: false,
+          itemBuilder: (_, int index) => Post(post: _posts[index],), // Post is being called here ajfkjdsafkdsaj
+          itemCount: _posts.length,
+          reverse: true,
         ),
         Positioned(
           bottom: 16.0,
           right: 16.0,
           child: FloatingActionButton(
             onPressed: () {
-              _overlayEntry = AddPostOverlayEntry(removeOverlayEntry).build();
-              Overlay.of(context)?.insert(_overlayEntry!);
+              _overlayEntry = AddPostOverlayEntry(removeOverlayEntry).build(); // here is where post.dart is being called
+              Overlay.of(context)?.insert(_overlayEntry!); 
             },
             child: Icon(Icons.edit_note_rounded),
           ),
@@ -68,6 +92,34 @@ class AddPostOverlayEntry {
 
 class AddPost extends StatefulWidget {
   final VoidCallback onRemove;
+  final PostService _postService = PostService();
+  final TextEditingController _bodyController = TextEditingController();
+
+  Future<Position> _determinePosition() async {
+    bool serviceEnabled;
+    LocationPermission permission;
+
+    serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      return Future.error('Location services are disabled.');
+    }
+
+    permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.deniedForever) {
+      return Future.error(
+          'Location permissions are permanently denied, we cannot request permissions.');
+    }
+
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission != LocationPermission.whileInUse &&
+          permission != LocationPermission.always) {
+        return Future.error('Location permissions are denied');
+      }
+    }
+
+    return await Geolocator.getCurrentPosition();
+  }
 
   AddPost(this.onRemove);
 
@@ -75,27 +127,18 @@ class AddPost extends StatefulWidget {
   _AddPostState createState() => _AddPostState();
 }
 
+// Creates a new post
 class _AddPostState extends State<AddPost> {
   // final PostService _postService = PostService();
-  // final _titleController = TextEditingController();
+  final _titleController = TextEditingController();
   final _bodyController = TextEditingController();
-  String _postContent = '';
+  final _postService = PostService();
 
   @override
   void dispose() {
-    // _titleController.dispose();
+    _titleController.dispose();
     _bodyController.dispose();
     super.dispose();
-  }
-
-  void _submitPost() {
-    if (_bodyController.text.isNotEmpty) {
-      setState(() {
-        _postContent = _bodyController.text;
-      });
-      _bodyController.clear();
-      print('post: $_postContent');
-    }
   }
 
   @override
@@ -141,6 +184,7 @@ class _AddPostState extends State<AddPost> {
                             ],
                           ),
                           TextFormField(
+                            controller: _bodyController,
                             decoration: InputDecoration(
                               prefixIcon: Icon(Icons.arrow_forward_ios_rounded),
                               labelText: 'new post',
@@ -149,33 +193,28 @@ class _AddPostState extends State<AddPost> {
                               filled: true,
                               fillColor: Colors.white,
                             ),
-                            onFieldSubmitted: (value) {
-                              _bodyController.text = value;
-                              _submitPost();
+                            onChanged: (value) {
+                              setState(() {
+                                _bodyController.text = value;
+                              });
                             },
                           ),
                           SizedBox(height: 35),
                           SizedBox(
                             width: 170,
                             child: ElevatedButton(
-                              // onPressed: () async {
-                              //   final body = _bodyController.text;
-                              //   // await _postService.createPost(title, body);
-                              //   print('text: $body');
-                              //   // widget.onRemove();
-                              // },
-                              onPressed: _submitPost,
+                              onPressed: () async {
+                                final body = _bodyController.text;
+                                print(body);
+                                // if (body.isEmpty) {
+                                //   return;
+                                // }
+                                await PostService.createPost(body);
+                                widget.onRemove();
+                              },
                               child: Text('ADD'),
                             ),
                           ),
-                          _postContent.isNotEmpty
-                              ? Text(
-                                  'Submitted Post: $_postContent',
-                                  style: TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.bold),
-                                )
-                              : Container(),
                         ],
                       ),
                     ),

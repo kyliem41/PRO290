@@ -26,7 +26,7 @@ Future<bool> sendMessage(String senderID, String recipientIds, String content, S
     body: jsonPayload,
   );
 
-  print("Message Status: " + response.statusCode);
+  print("Message Status: $response.statusCode");
 
   if (response.statusCode == 201) {
     print(response.body);

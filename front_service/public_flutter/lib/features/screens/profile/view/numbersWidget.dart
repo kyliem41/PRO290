@@ -37,7 +37,7 @@ class NumbersWidget extends StatelessWidget {
           height: 24,
           child: VerticalDivider(),
         ),
-        buildButton(context, '50', 'Posts'),
+        buildButton(context, '0', 'Posts'),
       ],
     ),
   );
