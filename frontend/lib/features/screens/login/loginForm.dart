@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:frontend/features/screens/createUser/createUser.dart';
 import 'package:frontend/features/screens/home/homeScreen.dart';
 import 'package:frontend/features/screens/login/password/email/getEmail.dart';
+import 'package:frontend/features/scripts/login.dart';
 
 class LogInForm extends StatefulWidget {
   @override
@@ -11,6 +12,7 @@ class LogInForm extends StatefulWidget {
 class _LogInFormState extends State<LogInForm> {
   final _usernameController = TextEditingController();
   final _passController = TextEditingController();
+  final loginService = LoginService();
 
   @override
   void dispose() {
@@ -101,9 +103,9 @@ class _LogInFormState extends State<LogInForm> {
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
-                    onPressed: () {
+                    onPressed: () async {
                       //TODOS: if login successful, if not give error message
-                      if (userValid) {
+                      if (await loginService.login(_usernameController.text, _passController.text)) {
                         Navigator.push(
                           context,
                           MaterialPageRoute(builder: (context) => MyHomePage()),
@@ -114,7 +116,7 @@ class _LogInFormState extends State<LogInForm> {
                             builder: (BuildContext context) {
                               return AlertDialog(
                                 content: Text(
-                                    'Something went wrong. Please try again.'),
+                                    'Invalid username or password please try again'),
                                 contentTextStyle: TextStyle(color: Colors.blue),
                               );
                             });

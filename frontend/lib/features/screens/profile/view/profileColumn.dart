@@ -17,7 +17,13 @@ class _ProfileColumnState extends State<ProfileColumn> {
         username: 'johndoe',
         email: 'johndoe@gmail.com',
         bio: 'swell of a guy',
-        imagePath: 'assets/images/john.png');
+        pfp: 'assets/images/john.png',
+        id: 420420420420,
+        followers: ['jane', 'jim', 'joe'],
+        following: ['jane', 'jim', 'joe'],
+        dob: DateTime(2000, 1, 1),
+        password: 'password'
+        );
 
     return Scaffold(
       backgroundColor: Colors.teal[100],
@@ -27,7 +33,7 @@ class _ProfileColumnState extends State<ProfileColumn> {
         physics: BouncingScrollPhysics(),
         children: [
           ProfileWidget(
-              imagePath: user.imagePath,
+              imagePath: user.pfp,
               onEditClicked: () {
                 Navigator.of(context).push(
                   MaterialPageRoute(

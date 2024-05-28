@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/models/postModel.dart' as PostModel;
 
 class Post extends StatelessWidget {
+  final PostModel.Post post;
 
+  const Post({required this.post});
   
   @override
   Widget build(BuildContext context) {
@@ -24,7 +27,7 @@ class Post extends StatelessWidget {
             ),
             Expanded(
               child: SizedBox(
-                child: _postContent("testid", "test content"),
+                child: _postContent(post.userId, post.content),
               ),
             ),
           ],
@@ -34,11 +37,9 @@ class Post extends StatelessWidget {
   }
 }
 
-Widget _postContent(String userid, String text) {
+Widget _postContent(String userid, String content) {
   //final DateTime time = new DateTime(2024);
-  // String user, String userHandle, 
-  String time = "01/05/05";
-  String location = "im right here";
+  //String user, String userHandle, 
 
   return Flexible(
     child: ListView(
@@ -56,16 +57,14 @@ Widget _postContent(String userid, String text) {
                           color: Colors.black, fontWeight: FontWeight.bold)),
                   Container(
                     margin: EdgeInsets.only(left: 5),
-                    child: Text(" " + userid + " " + location + " " + time,
-                        style: TextStyle(
-                            color: Color.fromARGB(197, 189, 189, 189))),
+                    child: Text(userid, style: TextStyle(color: Colors.black)),
                   ),
                 ],
               ),
               Container(
                   margin: EdgeInsets.only(top: 15),
                   child: Text(
-                      'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ultrices vitae auctor eu augue ut lectus. Purus non enim praesent elementum facilisis leo vel. Dictum fusce ut placerat orci nulla pellentesque dignissim. Mattis enim ut tellus elementum sagittis vitae. Tristique senectus et netus et malesuada fames ac turpis egestas. Malesuada fames ac turpis egestas integer eget aliquet nibh praesent. Non odio euismod lacinia at quis risus. Porta lorem mollis aliquam ut. Proin fermentum leo vel orci porta. Elementum nisi quis eleifend quam adipiscing vitae. Ut venenatis tellus in metus vulputate eu scelerisque felis imperdiet. Lectus urna duis convallis convallis tellus id interdum velit.',
+                      content,
                       style: TextStyle(color: Colors.black))), //text
               SizedBox(height: 10),
               Container(

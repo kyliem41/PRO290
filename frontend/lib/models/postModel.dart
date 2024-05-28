@@ -1,10 +1,10 @@
 import 'package:mongo_dart/mongo_dart.dart';
 
 class Post {
-  final ObjectId id;
+  final String id;
   final String userId;
   final String content;
-  final String location;
+  final Map position;
   final String time;
   final String date;
   final DateTime createdAt;
@@ -14,7 +14,7 @@ class Post {
     required this.id,
     required this.userId,
     required this.content,
-    required this.location,
+    required this.position,
     required this.time,
     required this.date,
     required this.createdAt,
@@ -23,14 +23,14 @@ class Post {
 
   factory Post.fromJson(Map<String, dynamic> json) {
     return Post(
-      id: json['_id'],
+      id: json['_id'].toString(),
       userId: json['userId'],
       content: json['content'],
-      location: json['location'],
+      position: json['position'],
       time: json['time'],
       date: json['date'],
-      createdAt: json['createdAt'].toDate(),
-      updatedAt: json['updatedAt'].toDate(),
+      createdAt: DateTime.parse(json['createdAt']),
+      updatedAt: DateTime.parse(json['updatedAt']),
     );
   }
 
@@ -39,7 +39,7 @@ class Post {
       '_id': id,
       'userId': userId,
       'content': content,
-      'location': location,
+      'position': position,
       'time': time,
       'date': date,
       'createdAt': createdAt,

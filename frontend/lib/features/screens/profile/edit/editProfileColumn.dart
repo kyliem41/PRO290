@@ -28,7 +28,13 @@ class _EditProfileColumnState extends State<EditProfileColumn> {
         username: 'johndoe',
         email: 'johndoe@gmail.com',
         bio: 'swell of a guy',
-        imagePath: 'assets/images/john.png');
+        pfp: 'assets/images/john.png',
+        id: 420420420420,
+        followers: ['jane', 'jim', 'joe'],
+        following: ['jane', 'jim', 'joe'],
+        dob: DateTime(2000, 1, 1),
+        password: 'password'
+        );
 
     return Scaffold(
       backgroundColor: Colors.teal[100],
@@ -38,7 +44,7 @@ class _EditProfileColumnState extends State<EditProfileColumn> {
         physics: BouncingScrollPhysics(),
         children: [
           EditProfileWidget(
-              imagePath: user.imagePath, isEdit: true, onUploadClicked: () {}),
+              imagePath: user.pfp, isEdit: true, onUploadClicked: () {}),
           SizedBox(height: 24),
           TextFieldWidget(
             label: 'username',
