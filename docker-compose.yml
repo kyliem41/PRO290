@@ -99,7 +99,7 @@ services:
   UserDatabase:
     image: postgres
     container_name: userdatabase
-    hostname: userdatabase
+    hostname: userdatabaseidk
     ports:
       - "5432:5432"
     environment:
@@ -143,19 +143,19 @@ services:
     networks:
       - Pro290_network
 
-  # FrontService:
-  #   container_name: frontend
-  #   image: flutter_web_app
-  #   build: /frontend
-  #   environment:
-  #     - HOST=0.0.0.0  
-  #   networks:
-  #     - Pro290_network
-  #   ports:
-  #     - "8088:8088"
-  #   depends_on:
-  #     - Consul
-  #   restart: unless-stopped
+  FrontService:
+    container_name: frontend
+    image: flutter_web_app
+    build: /front_service
+    environment:
+      - HOST=0.0.0.0  
+    networks:
+      - Pro290_network
+    ports:
+      - "8088:8088"
+    depends_on:
+      - Consul
+    restart: unless-stopped
     
 
   # FrontEnd:
