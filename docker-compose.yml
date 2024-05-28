@@ -145,7 +145,7 @@ services:
 
   FrontService:
     image: front_service
-    build: /front_service
+    build: /frontend
     environment:
       - HOST=0.0.0.0  
     networks:
