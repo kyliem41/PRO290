@@ -1,12 +1,20 @@
 import 'dart:convert';
 import 'package:frontend/models/chatMessageModel.dart';
 import 'package:http/http.dart' as http;
+import 'dart:html' as html;
 
 class MessageService {
-  static const String baseUrl = 'http://messageservice:8500/api/messages';
+  final url = Uri.parse('http://messageservice:8500/api/messages');
+  String? authToken = html.window.localStorage["auth_token"];
 
   Future<List<ChatMessage>> getMessages() async {
-    final response = await http.get(Uri.parse('$baseUrl'));
+    final response = await http.get(
+      Uri.parse('$url'),
+      headers: {
+        // 'authorization': 'Bearer $authToken',
+        
+      },
+    );
 
     if (response.statusCode == 200) {
       List<dynamic> body = jsonDecode(response.body);
@@ -18,8 +26,11 @@ class MessageService {
 
   Future<ChatMessage> createMessage(ChatMessage message) async {
     final response = await http.post(
-      Uri.parse('$baseUrl'),
-      headers: {'Content-Type': 'application/json'},
+      Uri.parse('$url'),
+      headers: {
+        'Content-Type': 'application/json',
+        'authorization': 'Bearer $authToken'
+      },
       body: jsonEncode(message.toJson()),
     );
 

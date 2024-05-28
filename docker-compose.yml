@@ -143,16 +143,19 @@ services:
     networks:
       - Pro290_network
 
-  FrontService:
-    image: front_service
-    build: /front_service
-    environment:
-      - HOST=0.0.0.0  
-    networks:
-      - Pro290_network
-    depends_on:
-      - Consul
-    restart: unless-stopped
+  # FrontService:
+  #   container_name: frontend
+  #   image: flutter_web_app
+  #   build: /frontend
+  #   environment:
+  #     - HOST=0.0.0.0  
+  #   networks:
+  #     - Pro290_network
+  #   ports:
+  #     - "8088:8088"
+  #   depends_on:
+  #     - Consul
+  #   restart: unless-stopped
     
 
   # FrontEnd:
