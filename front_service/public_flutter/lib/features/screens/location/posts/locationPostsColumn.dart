@@ -21,7 +21,7 @@ void initState() {
 
 Future<void> _fetchPosts() async {
   try {
-    List<PostModel.Post> posts = await postService.PostService.getAllPosts();
+    List<PostModel.Post> posts = await postService.PostService.getAllPostFilterLocation();
     setState(() {
       _posts = posts;
     });

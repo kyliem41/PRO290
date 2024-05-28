@@ -20,7 +20,7 @@ class PostService {
         print("No Token Found");
         return;
       }
-      //String token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6ImI3Yjg4NDkzLTIxYjctNDRmYS1hYTIxLTQyMjdmMGY5NTM5ZSIsImV4cCI6MTcxNjY1NzA0N30.eCPM6AItasHg4J8MM6g2--XyY93VQGKRx7LhaIMugk0";
+      // String token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6ImIyYzNjZjdmLTc3YzctNGUyYi05YmRmLTBmZmYyODMxZWMwNSIsImV4cCI6MTcxNzAxMjYyM30.aJaexVZA9HRA2vS1oNOjAQ_v3oCZaiXm0vuDlRDmUOo";
 
       Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
       Map<String, dynamic> map = position.toJson();
@@ -62,7 +62,7 @@ class PostService {
     if (token == null) {
       return Future.error('No token found');
     }
-    //String token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6ImI3Yjg4NDkzLTIxYjctNDRmYS1hYTIxLTQyMjdmMGY5NTM5ZSIsImV4cCI6MTcxNjY1NzA0N30.eCPM6AItasHg4J8MM6g2--XyY93VQGKRx7LhaIMugk0";
+    // String token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6ImIyYzNjZjdmLTc3YzctNGUyYi05YmRmLTBmZmYyODMxZWMwNSIsImV4cCI6MTcxNzAxMjYyM30.aJaexVZA9HRA2vS1oNOjAQ_v3oCZaiXm0vuDlRDmUOo";
     try {
       final response = await http.get(
         Uri.parse(apiUrl),
@@ -83,6 +83,54 @@ class PostService {
       print('Error: $error');
       return Future.error('Error: $error');
     }
+  }
+
+  static Future<List<Post>> getAllPostFilterLocation() async {
+      
+      String? token = html.window.localStorage["auth_token"];
+      if (token == null) {
+        return Future.error('No token found');
+      }
+      // String token = "";
+      try {
+      final response = await http.get(
+        Uri.parse(apiUrl),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+          'Authorization': 'Bearer $token',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final jsonData = json.decode(response.body);
+        var list = Post.fromListJson(jsonData);
+        List<Post> posts = [];
+        Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+        for (var post in list) {
+          if (post.position != null) {
+            Map<String, dynamic> map = position.toJson();
+            double distance = Geolocator.distanceBetween(
+              position.latitude, 
+              position.longitude, 
+              post.position['latitude'], 
+              post.position['longitude']
+            );
+            if (distance < 1000) {
+              posts.add(post);
+            }
+          }
+        }
+        return posts;
+
+      } else {
+        print('Request failed with status: ${response.statusCode}');
+        return Future.error('Request failed with status: ${response.statusCode}');
+      }
+    } catch (error) {
+      print('Error: $error');
+      return Future.error('Error: $error');
+    }
+
   }
 
   static Future<List<Post>> getPostByUserId(String userId) async {

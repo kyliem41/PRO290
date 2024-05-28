@@ -105,7 +105,7 @@ class _LogInFormState extends State<LogInForm> {
                 child: ElevatedButton(
                     onPressed: () async {
                       //TODOS: if login successful, if not give error message
-                      if (await loginService.login(_usernameController.text, _passController.text)) {
+                      if (/*await loginService.login(_usernameController.text, _passController.text)*/true) {
                         Navigator.push(
                           context,
                           MaterialPageRoute(builder: (context) => MyHomePage()),

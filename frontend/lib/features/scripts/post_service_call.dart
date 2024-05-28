@@ -15,12 +15,12 @@ class PostService {
 
   static Future<void> createPost(String content) async {
     try {
-      String? token = html.window.localStorage["auth_token"];
-      if (token == null) {
-        print("No Token Found");
-        return;
-      }
-      //String token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6ImI3Yjg4NDkzLTIxYjctNDRmYS1hYTIxLTQyMjdmMGY5NTM5ZSIsImV4cCI6MTcxNjY1NzA0N30.eCPM6AItasHg4J8MM6g2--XyY93VQGKRx7LhaIMugk0";
+      // String? token = html.window.localStorage["auth_token"];
+      // if (token == null) {
+      //   print("No Token Found");
+      //   return;
+      // }
+      String token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6ImIyYzNjZjdmLTc3YzctNGUyYi05YmRmLTBmZmYyODMxZWMwNSIsImV4cCI6MTcxNzAxMjYyM30.aJaexVZA9HRA2vS1oNOjAQ_v3oCZaiXm0vuDlRDmUOo";
 
       Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
       Map<String, dynamic> map = position.toJson();
@@ -58,11 +58,11 @@ class PostService {
 
   static Future<List<Post>> getAllPosts() async {
 
-    String? token = html.window.localStorage["auth_token"];
-    if (token == null) {
-      return Future.error('No token found');
-    }
-    //String token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6ImI3Yjg4NDkzLTIxYjctNDRmYS1hYTIxLTQyMjdmMGY5NTM5ZSIsImV4cCI6MTcxNjY1NzA0N30.eCPM6AItasHg4J8MM6g2--XyY93VQGKRx7LhaIMugk0";
+    // String? token = html.window.localStorage["auth_token"];
+    // if (token == null) {
+    //   return Future.error('No token found');
+    // }
+    String token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6ImIyYzNjZjdmLTc3YzctNGUyYi05YmRmLTBmZmYyODMxZWMwNSIsImV4cCI6MTcxNzAxMjYyM30.aJaexVZA9HRA2vS1oNOjAQ_v3oCZaiXm0vuDlRDmUOo";
     try {
       final response = await http.get(
         Uri.parse(apiUrl),
