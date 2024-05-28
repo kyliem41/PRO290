@@ -61,6 +61,7 @@ impl UserDB {
         let row = self.client.query_one(&query, &[&username]).await?;
     
         let user = PublicUser {
+            id: row.get("id"),
             username: row.get("username"),
             pfp: row.get("pfp"),
             bio: row.get("bio"),
@@ -110,6 +111,7 @@ impl UserDB {
         let users: Vec<PublicUser> = rows.iter()
             .map(|row| {
                 PublicUser {
+                    id: row.get("id"),
                     username: row.get("username"),
                     pfp: row.get("pfp"),
                     bio: row.get("bio"),

@@ -23,7 +23,7 @@ class Users {
   String username;
   String email;
   String password;
-  DateTime dob;
+  String dob;
   String bio;
   String pfp;
   List<String> followers;
@@ -47,7 +47,7 @@ class Users {
       username: json['username'],
       email: json['email'],
       password: json['password'],
-      dob: DateTime.parse(json['dob']),
+      dob: json['dob'],
       bio: json['bio'],
       pfp: json['pfp'],
       followers: List<String>.from(json['followers']),
