@@ -104,7 +104,8 @@ fn rocket() -> _ {
             user_routes::verify_jwt,
             user_routes::get_user_by_username,
             user_routes::search,
-            user_routes::options_user_preflight
+            user_routes::options_user_preflight,
+            user_routes::get_user_by_id
         ])
         .attach(Cors);
 

@@ -2,7 +2,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:frontend/features/screens/messages/messages/customAppBar.dart';
-import 'package:frontend/features/scripts/messageService.dart';
+// import 'package:frontend/features/scripts/messageService.dart';
 import 'package:frontend/features/scripts/userService.dart';
 import 'package:frontend/models/chatMessageModel.dart';
 import 'package:frontend/models/chatUsersModel.dart';
@@ -17,7 +17,7 @@ class _MessageColumnState extends State<MessageColumn> {
   ChatUsers? sender;
   List<ChatUsers> recipients = [];
   final _controller = TextEditingController();
-  final MessageService messageService = MessageService();
+  // final MessageService messageService = MessageService();
   final UserService userService = UserService();
 
   @override
@@ -30,12 +30,12 @@ class _MessageColumnState extends State<MessageColumn> {
     try {
       // ChatUsers sender = await userService.getSender();
       // List<ChatUsers> recipients = await userService.getRecipients();
-      List<ChatMessage> loadedMessages = await messageService.getMessages();
+      // List<ChatMessage> loadedMessages = await messageService.getMessages();
 
       setState(() {
         // sender = sender;
         // recipients = recipients;
-        messages = loadedMessages;
+        // messages = loadedMessages;
       });
     } catch (e) {
       print('Error loading messages: $e');
@@ -57,9 +57,9 @@ class _MessageColumnState extends State<MessageColumn> {
           conversationId: '');
 
       try {
-        ChatMessage message = await messageService.createMessage(newMessage);
+        // ChatMessage message = await messageService.createMessage(newMessage);
         setState(() {
-          messages.add(message);
+          // messages.add(message);
         });
         _controller.clear();
       } catch (e) {

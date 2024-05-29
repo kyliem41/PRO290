@@ -23,17 +23,17 @@ class Users {
     required this.following,
   });
 
-  factory Users.fromJson(Map<String, dynamic> json) {
+  factory Users.fromJson(Map<String, dynamic>? json) {
     return Users(
-      id: json['id'],
-      username: json['username'],
-      email: json['email'],
-      password: json['password'],
-      dob: json['dob'],
-      bio: json['bio'],
-      pfp: json['pfp'],
-      followers: List<String>.from(json['followers']),
-      following: List<String>.from(json['following']),
+      id: json?['id'] ?? '',
+      username: json?['username'] ?? '',
+      email: json?['email'] ?? '',
+      password: json?['password'] ?? '',
+      dob: json?['dob'] ?? '',
+      bio: json?['bio'] ?? '',
+      pfp: json?['pfp'] ?? '',
+      followers: List<String>.from(json?['followers'] ?? []),
+      following: List<String>.from(json?['following'] ?? []),
     );
   }
 
@@ -47,7 +47,7 @@ class Users {
       'bio': bio,
       'pfp': pfp,
       'followers': followers,
-      'following': following,
+      'followiAng': following,
     };
   }
 

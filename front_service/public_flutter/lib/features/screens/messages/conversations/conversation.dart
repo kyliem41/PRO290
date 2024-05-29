@@ -1,8 +1,12 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'package:frontend/features/scripts/conversation.dart';
 import 'package:frontend/models/chatUsersModel.dart';
 import 'package:frontend/features/scripts/search.dart';
 import 'package:frontend/features/scripts/get_user.dart';
 import 'package:frontend/models/userModel.dart';
+import 'package:frontend/models/conversation.dart';
 
 class ChatColumn extends StatefulWidget {
   @override
@@ -13,6 +17,24 @@ class _ChatColumnState extends State<ChatColumn> {
   List<ChatUsers> chatUsers = [];
   final _searchController = TextEditingController();
   List<Users> searchResults = [];
+  List<dynamic> conversations = []; // Modified to hold dynamic data
+
+  @override
+  void initState() {
+    super.initState();
+    _loadConversations();
+  }
+
+  Future<void> _loadConversations() async {
+    try {
+      final List<dynamic> allConversations = await getConversations();
+      setState(() {
+        conversations = allConversations;
+      });
+    } catch (e) {
+      print('Error loading conversations: $e');
+    }
+  }
 
   void _showSearchDialog() {
     showDialog(
@@ -54,8 +76,9 @@ class _ChatColumnState extends State<ChatColumn> {
                           itemCount: searchResults.length,
                           itemBuilder: (context, index) {
                             return GestureDetector(
-                              onTap: () {
+                              onTap: () async {
                                 print('Selected user: ${searchResults[index]}');
+                                Conversation? conversation = await createConversation(searchResults[index].id);
                               },
                               child: Card(
                                 child: Padding(
@@ -165,12 +188,36 @@ class _ChatColumnState extends State<ChatColumn> {
             ),
             Expanded(
               child: ListView.builder(
-                itemCount: chatUsers.length,
+                itemCount: conversations.length,
                 shrinkWrap: true,
                 padding: EdgeInsets.only(top: 16),
                 itemBuilder: (context, index) {
                   return Container(
-                    // Return your conversation list item here
+                    child: ListTile(
+                      title: FutureBuilder<Users?>(
+                        future: getUser(),
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState == ConnectionState.waiting) {
+                            return CircularProgressIndicator();
+                          } else {
+                            if (snapshot.hasError) {
+                              return Text('Error: ${snapshot.error}');
+                            } else {
+                              final currentUser = snapshot.data;
+                              final conversation = conversations[index];
+                              final otherUserId = conversation['firstUserId'] != currentUser?.id ? conversation['firstUserId'] : conversation['secondUserId'];
+                              return Text('$otherUserId');
+                            }
+                          }
+                        },
+                      ),
+                      onTap: () async {
+                        Users? currentUser = await getUser();
+                        final conversation = conversations[index];
+                        final otherUserId = conversation['firstUserId'] != currentUser?.id ? conversation['firstUserId'] : conversation['secondUserId'];
+                        print('Tapped conversation with $otherUserId');
+                      },
+                    ),
                   );
                 },
               ),

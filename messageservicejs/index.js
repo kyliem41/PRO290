@@ -8,7 +8,7 @@ var corsOptions = {
   // origin: 'http://localhost:3000',
 };
 
-app.use(cors(corsOptions));
+app.use(cors());
 
 // MongoDB connection
 const db = require("./app/models");

@@ -3,7 +3,7 @@ import 'package:frontend/models/chatMessageModel.dart';
 import 'package:http/http.dart' as http;
 
 class MessageService {
-  static const String baseUrl = 'localhost:80/api/messages';
+  static const String baseUrl = 'http://localhost:80/api/messages';
 
   Future<List<ChatMessage>> getMessages() async {
     final response = await http.get(Uri.parse('$baseUrl'));
