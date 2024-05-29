@@ -4,17 +4,22 @@ import 'package:http/http.dart' as http;
 import 'dart:html' as html;
 import 'package:frontend/models/conversation.dart';
 
-Future<Conversation?> createConversation(String userId) async {
-  String? auth_token = html.window.localStorage["auth_token"];
+Future<Conversation?> createConversation(Conversation conversation) async {
+  String? authToken = html.window.localStorage["auth_token"];
 
   final response = await http.post(
-    Uri.parse("http://localhost:80/api/messages/create/$userId"),
+    Uri.parse("http://localhost:80/api/messages/create/"),
     headers: {
-      'authorization': '$auth_token'
-    }
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer $authToken',
+      'Access-Control-Allow-Origin': '*',
+      "Access-Control-Allow-Methods": "GET,PUT,PATCH,POST,DELETE",
+      "Access-Control-Allow-Headers": "Origin, X-Requested-With, Content-Type, Accept",
+    },
+    body: jsonEncode(conversation.toJson()),
   );
 
-  if (response.statusCode == 200) {
+  if (response.statusCode == 201) {
     Map<String, dynamic> responseBody = jsonDecode(response.body);    
     Conversation conversation = Conversation.fromJson(responseBody);
     

@@ -3,7 +3,10 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:frontend/features/screens/messages/messages/customAppBar.dart';
 import 'package:frontend/features/scripts/messageService.dart';
+<<<<<<< HEAD
 // import 'package:frontend/features/scripts/messageService.dart';
+=======
+>>>>>>> 26034c8186909230093dde453f76746cc16ba8e7
 import 'package:frontend/features/scripts/userService.dart';
 import 'package:frontend/models/chatMessageModel.dart';
 import 'package:frontend/models/chatUsersModel.dart';
@@ -17,6 +20,7 @@ class _MessageColumnState extends State<MessageColumn> {
   List<ChatMessage> messages = [];
   ChatUsers? sender;
   List<ChatUsers> recipients = [];
+  ChatMessage? conversationId;
   final _controller = TextEditingController();
   final MessageService messageService = MessageService();
   final UserService userService = UserService();
@@ -31,11 +35,16 @@ class _MessageColumnState extends State<MessageColumn> {
     try {
       sender = await userService.getSender();
       recipients = await userService.getRecipients();
+<<<<<<< HEAD
+=======
+      conversationId = await messageService.getConversationId();
+>>>>>>> 26034c8186909230093dde453f76746cc16ba8e7
       List<ChatMessage> loadedMessages = await messageService.getMessages();
 
       setState(() {
         messages = loadedMessages;
       });
+      print('loaded messages: $messages');
     } catch (e) {
       print('Error loading messages: $e');
     }
@@ -51,7 +60,7 @@ class _MessageColumnState extends State<MessageColumn> {
           recipientIds: recipients.map((r) => r.userId.toString()).toList(),
           content: _controller.text,
           messageType: 'text',
-          conversationId: '');
+          conversationId: conversationId!.conversationId.toString());
 
       try {
         ChatMessage message = await messageService.createMessage(newMessage);
@@ -59,6 +68,7 @@ class _MessageColumnState extends State<MessageColumn> {
           messages.add(message);
         });
         _controller.clear();
+        print('message sent: $message');
       } catch (e) {
         print('Error creating message: $e');
       }

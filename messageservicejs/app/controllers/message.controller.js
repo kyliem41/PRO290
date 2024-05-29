@@ -10,6 +10,16 @@ exports.health = (req, res) => {
   res.status(200).send('Healthy');
 };
 
+exports.getConversationId = async (req, res) => {
+  try {
+    const conversationId = await Conversation.find();
+    res.status(200).json(conversationId);
+  } catch {
+    console.error('Error getting conversationId');
+    res.status(500).json({ error: 'getting Internal Server Error '});
+  }
+};
+
 exports.findAllMessages = async (req, res) => {
   try {
     const messages = await Message.find();
@@ -34,15 +44,17 @@ exports.findMessagesBySenderId = async (req, res) => {
 exports.findConversations = async (req, res) => {
   try {
     const userId = req.user.id;
+    const conversationId = req.conversation.conversationId;
 
     const conversations = await Conversation.find({
       $or: [
+        { conversationId: conversationId },
         { firstUserId: userId },
         { secondUserId: userId }
       ],
       $and: [
-        { $or: [{ firstUserId: userId }, { secondUserId: userId }] },
-        { $or: [{ firstUserId: { $ne: userId } }, { secondUserId: { $ne: userId } }] }
+        { $or: [{ conversationId: conversationId }, { firstUserId: userId }, { secondUserId: userId }] },
+        { $or: [{ conversationId: { $ne: conversationId } }, { firstUserId: { $ne: userId } }, { secondUserId: { $ne: userId } }] }
       ]
     });
 
@@ -75,12 +87,17 @@ exports.createMessage = async (req, res) => {
 
 exports.createConversation = async (req, res) => {
   try {
-    const firstUserId = req.user.id;
-    const secondUserId = req.params.id;
-    
+    const { senderId } = req.params;
+    const { recipientIds } = req.body;
+
+    if (!Array.isArray(recipientIds)) {
+      return res.status(400).json({ error: 'recipientIds must be an array' });
+    }
+
     const conversation = await Conversation.create({
-      firstUserId,
-      secondUserId
+      conversationId: uuidv4(),
+      senderId,
+      recipientIds,
     });
 
     res.status(200).json(conversation);
