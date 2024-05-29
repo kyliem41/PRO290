@@ -31,7 +31,8 @@ class ProfileColumn extends StatelessWidget {
                   builder: (context, pfpSnapshot) {
                     if (pfpSnapshot.connectionState == ConnectionState.waiting) {
                       return Center(child: CircularProgressIndicator());
-                    } else if (pfpSnapshot.hasError) {
+                    } 
+                    else if (pfpSnapshot.hasError) {
                       return ProfileWidget(
                         image: AssetImage('assets/default_pfp.png'),
                         onEditClicked: () {

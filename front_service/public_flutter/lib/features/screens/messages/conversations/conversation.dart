@@ -17,7 +17,7 @@ class _ChatColumnState extends State<ChatColumn> {
   List<ChatUsers> chatUsers = [];
   final _searchController = TextEditingController();
   List<Users> searchResults = [];
-  List<dynamic> conversations = []; // Modified to hold dynamic data
+  List<dynamic> conversations = [];
 
   @override
   void initState() {
@@ -206,7 +206,21 @@ class _ChatColumnState extends State<ChatColumn> {
                               final currentUser = snapshot.data;
                               final conversation = conversations[index];
                               final otherUserId = conversation['firstUserId'] != currentUser?.id ? conversation['firstUserId'] : conversation['secondUserId'];
-                              return Text('$otherUserId');
+                              return FutureBuilder<String>(
+                                future: getUsername(otherUserId),
+                                builder: (context, snapshot) {
+                                  if (snapshot.connectionState == ConnectionState.waiting) {
+                                    return CircularProgressIndicator();
+                                  } else {
+                                    if (snapshot.hasError) {
+                                      return Text('Error: ${snapshot.error}');
+                                    } else {
+                                      final username = snapshot.data;
+                                      return Text(username ?? '');
+                                    }
+                                  }
+                                },
+                              );
                             }
                           }
                         },
