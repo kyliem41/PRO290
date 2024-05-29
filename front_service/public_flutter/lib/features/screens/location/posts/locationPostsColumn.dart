@@ -50,7 +50,7 @@ Future<void> _fetchPosts() async {
           padding: EdgeInsets.only(top: 60, bottom: 20, left: 20, right: 20),
           itemBuilder: (_ , int index) => Post(post: _posts[index],), // Post is being called here
           itemCount: _posts.length, // Change this for each post
-          reverse: true,
+          reverse: false,
         ),
         Positioned(
           bottom: 16.0,

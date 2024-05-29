@@ -17,7 +17,7 @@ class GenerateHomePage extends StatelessWidget {
             width: MediaQuery.of(context).size.width * 0.25,
             child: Container(
               color: Colors.white,
-              child: NotificationColumn(),
+              //child: NotificationColumn(),
             ),
           )
         ],

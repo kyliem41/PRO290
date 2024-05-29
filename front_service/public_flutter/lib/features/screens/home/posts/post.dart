@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:frontend/models/postModel.dart' as PostModel;
 import 'package:frontend/features/scripts/userService.dart';
 import 'package:frontend/models/userModel.dart';
+import 'package:frontend/features/scripts/get_user.dart';
+// front_service\public_flutter\lib\features\scripts
 import 'package:http/http.dart' as http;
 import 'package:frontend/features/scripts/get_user.dart';
 
@@ -17,12 +19,12 @@ class Post extends StatefulWidget {
 }
 
 class _PostState extends State<Post> {
-  late Future<Users> futureUser;
+  late Future<String> username;
 
   @override
   void initState() {
     super.initState();
-    futureUser = UserService.getUserFromJWT();
+    username = getUsername(widget.post.userId);
   }
 
   @override

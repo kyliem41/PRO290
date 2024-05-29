@@ -57,33 +57,37 @@ class PostService {
   }
 
   static Future<List<Post>> getAllPosts() async {
-
-    String? token = html.window.localStorage["auth_token"];
-    if (token == null) {
-      return Future.error('No token found');
-    }
-    // String token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6ImIyYzNjZjdmLTc3YzctNGUyYi05YmRmLTBmZmYyODMxZWMwNSIsImV4cCI6MTcxNzAxMjYyM30.aJaexVZA9HRA2vS1oNOjAQ_v3oCZaiXm0vuDlRDmUOo";
-    try {
-      final response = await http.get(
-        Uri.parse(apiUrl),
-        headers: <String, String>{
-          'Content-Type': 'application/json; charset=UTF-8',
-          'Authorization': 'Bearer $token',
-        },
-      );
-
-      if (response.statusCode == 200) {
-        final jsonData = json.decode(response.body);
-        return Post.fromListJson(jsonData);
-      } else {
-        print('Request failed with status: ${response.statusCode}');
-        return Future.error('Request failed with status: ${response.statusCode}');
-      }
-    } catch (error) {
-      print('Error: $error');
-      return Future.error('Error: $error');
-    }
+  String? token = html.window.localStorage["auth_token"];
+  if (token == null) {
+    return Future.error('No token found');
   }
+  
+  try {
+    final response = await http.get(
+      Uri.parse(apiUrl),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+        'Authorization': 'Bearer $token',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      final jsonData = json.decode(response.body);
+      List<Post> posts = Post.fromListJson(jsonData);
+      
+      // Sort posts in reverse order based on creation time
+      posts.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+      
+      return posts;
+    } else {
+      print('Request failed with status: ${response.statusCode}');
+      return Future.error('Request failed with status: ${response.statusCode}');
+    }
+  } catch (error) {
+    print('Error: $error');
+    return Future.error('Error: $error');
+  }
+}
 
   static Future<List<Post>> getAllPostFilterLocation() async {
       
