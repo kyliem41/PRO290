@@ -20,11 +20,13 @@ class Post extends StatefulWidget {
 
 class _PostState extends State<Post> {
   late Future<String> username;
+  late Future<Users> futureUser;
 
   @override
   void initState() {
     super.initState();
     username = getUsername(widget.post.userId);
+    futureUser = getUserById(widget.post.userId);
   }
 
   @override

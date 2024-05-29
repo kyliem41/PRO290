@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:frontend/models/userModel.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
@@ -35,6 +37,18 @@ Future<String> getUsername(String id) async {
   }
   
   return " ";
+}
+
+Future<Users> getUserById(String id) async {
+  final response = await http.get(Uri.parse('http://localhost:80/user/get/id/$id'));
+  if (response.statusCode == 200) {
+    print(response.body);
+    // Parse the response body as JSON
+    Map<String, dynamic> jsonResponse = json.decode(response.body);
+    return Users.fromJson(jsonResponse);
+  } else {
+    throw Exception('Failed to load user');
+  }
 }
 
 Future<Uint8List?> getPfp() async {
