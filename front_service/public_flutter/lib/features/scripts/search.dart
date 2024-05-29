@@ -8,7 +8,11 @@ Future<List<Users>> search(String username, String currentUserUsername) async {
   if (response.statusCode == 200) {
     List<dynamic> jsonResponse = jsonDecode(response.body);
     List<Users> users = jsonResponse.map((userJson) => Users.fromJson(userJson)).toList();
-    users.removeWhere((user) => user.username == currentUserUsername);
+    bool currentUserExists = users.any((user) => user.username == currentUserUsername);
+
+    if (currentUserExists) {
+      users.removeWhere((user) => user.username == currentUserUsername);
+    }
     
     print(users);
     return users;

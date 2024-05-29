@@ -1,5 +1,6 @@
 const { v4: uuidv4 } = require('uuid');
 const Message = require('../models/message.model');
+const Conversation = require("../models/conversation")
 
 exports.testRest = (req, res) => {
   res.status(200).send('Hello, World!');
@@ -30,6 +31,28 @@ exports.findMessagesBySenderId = async (req, res) => {
   }
 };
 
+exports.findConversations = async (req, res) => {
+  try {
+    const userId = req.user.id;
+
+    const conversations = await Conversation.find({
+      $or: [
+        { firstUserId: userId },
+        { secondUserId: userId }
+      ],
+      $and: [
+        { $or: [{ firstUserId: userId }, { secondUserId: userId }] },
+        { $or: [{ firstUserId: { $ne: userId } }, { secondUserId: { $ne: userId } }] }
+      ]
+    });
+
+    res.status(200).json(conversations);
+  } catch (error) {
+    console.error('Error retrieving conversations:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+};
+
 exports.createMessage = async (req, res) => {
   try {
     const { senderId, recipientIds, content, type, conversationId } = req.body;
@@ -51,8 +74,22 @@ exports.createMessage = async (req, res) => {
 };
 
 exports.createConversation = async (req, res) => {
-  print(req.user)
-}
+  try {
+    const firstUserId = req.user.id;
+    const secondUserId = req.params.id;
+    
+    const conversation = await Conversation.create({
+      firstUserId,
+      secondUserId
+    });
+
+    res.status(200).json(conversation);
+  } 
+  catch (error) {
+    console.error('Error creating conversation:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+};
 
 exports.updateMessage = async (req, res) => {
   try {

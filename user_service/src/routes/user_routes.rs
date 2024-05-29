@@ -26,11 +26,6 @@ pub async fn options_user_preflight() -> rocket::http::Status {
     rocket::http::Status::Ok
 }
 
-// #[options("/login", rank = 2)]
-// pub fn options_user_preflight() -> rocket::http::Status {
-//     rocket::http::Status::Ok
-// }
-
 //post a user to the datbase takes in form data
 #[post("/post", data = "<user_form>")]
 pub async fn post_user(user_form: Form<UserForm>) -> status::Custom<String> {
@@ -228,6 +223,25 @@ pub async fn get_user(token: String) -> status::Custom<Value>{
 
         let response_json = json!({"message": "User not found"});
         return status::Custom(Status::NotFound, response_json)
+    }
+
+    let response_json = json!({"message": "invalid auth token"});
+    return status::Custom(Status::BadRequest, response_json)
+}
+
+#[get("/get/id/<id>")]
+pub async fn get_user_by_id(id: String) -> status::Custom<Value>{
+    let db = match UserDB::new().await {
+        Ok(db) => db,
+        Err(err) => {
+            println!("{}", err);
+            let response_json = json!({"message": "Error creating connection to database"});
+            return status::Custom(Status::InternalServerError, response_json)
+        }
+    }; 
+
+    if let Ok (user_json) = db.get_user_with_id(id).await {
+        return status::Custom(Status::Ok, user_json)
     }
 
     let response_json = json!({"message": "invalid auth token"});

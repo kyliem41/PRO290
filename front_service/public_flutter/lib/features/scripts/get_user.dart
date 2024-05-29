@@ -19,6 +19,15 @@ Future<Users?> getUser() async {
   return null;
 }
 
+Future<String> getUsername(String id) async {
+  final response = await http.get(Uri.parse('http://localhost:80/user/get/id/$id'));
+  if (response.statusCode == 200) {
+    
+  }
+  
+  return " ";
+}
+
 Future<Uint8List?> getPfp() async {
   String? authToken = html.window.localStorage["auth_token"];
   if (authToken == null) {

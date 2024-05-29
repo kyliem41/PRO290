@@ -1,14 +1,47 @@
 import 'dart:convert';
+import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:html' as html;
+import 'package:frontend/models/conversation.dart';
 
-Future<void> createConversation(String userId) async {
+Future<Conversation?> createConversation(String userId) async {
   String? auth_token = html.window.localStorage["auth_token"];
 
   final response = await http.post(
-    Uri.parse("localhost:80/api/messages/create/$userId"),
+    Uri.parse("http://localhost:80/api/messages/create/$userId"),
     headers: {
-      'authorization': 'Bearer $auth_token'
+      'authorization': '$auth_token'
     }
   );
+
+  if (response.statusCode == 200) {
+    Map<String, dynamic> responseBody = jsonDecode(response.body);    
+    Conversation conversation = Conversation.fromJson(responseBody);
+    
+    return conversation;
+  }
+
+  return null;
+}
+
+Future<List<dynamic>> getConversations() async {
+  String? auth_token = html.window.localStorage["auth_token"];
+
+  final response = await http.get(
+    Uri.parse("http://localhost:80/api/messages/conversations"),
+    headers: {
+      'authorization': '$auth_token'
+    }
+  );
+
+  if (response.statusCode == 200) {
+    final List<dynamic> jsonConversations = json.decode(response.body);
+
+    print("This: $jsonConversations");
+
+    return jsonConversations;
+  } 
+  else {
+    throw Exception('Failed to load conversations: ${response.statusCode}');
+  }
 }
