@@ -1,7 +1,11 @@
+import 'dart:typed_data';
+import 'dart:html' as html;
 import 'package:flutter/material.dart';
 import 'package:frontend/models/postModel.dart' as PostModel;
 import 'package:frontend/features/scripts/userService.dart';
 import 'package:frontend/models/userModel.dart';
+import 'package:http/http.dart' as http;
+import 'package:frontend/features/scripts/get_user.dart';
 
 class Post extends StatefulWidget {
   final PostModel.Post post;
@@ -18,7 +22,7 @@ class _PostState extends State<Post> {
   @override
   void initState() {
     super.initState();
-    futureUser = UserService.getUserFromJWT(); // Fetch user data
+    futureUser = UserService.getUserFromJWT();
   }
 
   @override
@@ -37,26 +41,58 @@ class _PostState extends State<Post> {
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            CircleAvatar(
-              child: Text("U"),
+            FutureBuilder<Users>(
+              future: futureUser,
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return CircularProgressIndicator();
+                } else if (snapshot.hasError) {
+                  return CircleAvatar(
+                    child: Text("U"),
+                  );
+                } else if (!snapshot.hasData) {
+                  return CircleAvatar(
+                    child: Text("U"),
+                  );
+                } else {
+                  final user = snapshot.data!;
+                  return FutureBuilder<Uint8List?>(
+                    future: getPfpById(user.id),
+                    builder: (context, pfpSnapshot) {
+                      if (pfpSnapshot.connectionState == ConnectionState.waiting) {
+                        return CircleAvatar(
+                          child: CircularProgressIndicator(),
+                        );
+                      } else if (pfpSnapshot.hasError || pfpSnapshot.data == null) {
+                        return CircleAvatar(
+                          child: Text("U"),
+                        );
+                      } else {
+                        return CircleAvatar(
+                          backgroundImage: MemoryImage(pfpSnapshot.data!),
+                        );
+                      }
+                    },
+                  );
+                }
+              },
             ),
             Expanded(
-              child: SizedBox(
-                child: FutureBuilder<Users>(
-                  future: futureUser,
-                  builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return CircularProgressIndicator();
-                    } else if (snapshot.hasError) {
-                      return Text('Error: ${snapshot.error}');
-                    } else if (!snapshot.hasData) {
-                      return Text('No user data');
-                    } else {
-                      final user = snapshot.data!;
-                      return _postContent(user.username, widget.post.content);
-                    }
-                  },
-                ),
+              flex: 3,
+              child: FutureBuilder<Users>(
+                future: futureUser,
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return CircularProgressIndicator();
+                  } else if (snapshot.hasError) {
+                    return Text('Error: ${snapshot.error}');
+                  } else if (!snapshot.hasData) {
+                    return Text('No user data');
+                  } else {
+                    final user = snapshot.data!;
+                    return _postContent(user.username, widget.post.content);
+                  }
+                },
               ),
             ),
           ],

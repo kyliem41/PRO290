@@ -51,6 +51,23 @@ Future<Uint8List?> getPfp() async {
   }
 }
 
+Future<Uint8List?> getPfpById(String id) async {
+  try {
+    print("id: $id");
+    final response = await http.get(Uri.parse('http://localhost:80/user/pfp/id/$id'));
+
+    if (response.statusCode == 200) {
+      return response.bodyBytes;
+    } else {
+      print('Failed to fetch profile picture: ${response.statusCode}');
+      return null;
+    }
+  } catch (e) {
+    print('Error fetching profile picture: $e');
+    return null;
+  }
+}
+
 //finish
 void get_posts() async {
   String? auth_token = html.window.localStorage["auth_token"];
