@@ -36,22 +36,19 @@ class UserService {
           'Authorization': 'Bearer $token',
         },
       );
-      
+
       if (response.statusCode == 200) {
         final jsonData = json.decode(response.body);
         return Users.fromJson(jsonData);
       } else {
         print('Request failed with status: ${response.statusCode}');
-        return Future.error('Request failed with status: ${response.statusCode}');
+        return Future.error(
+            'Request failed with status: ${response.statusCode}');
       }
-
-
-    }
-    catch (error) {
+    } catch (error) {
       print('Error: $error');
       return Future.error('Error: $error');
     }
-    
   }
 
   Future<ChatUsers> createUser(ChatUsers user) async {
@@ -91,5 +88,4 @@ class UserService {
   }
 
   //add methods for update and delete
-  
 }

@@ -2,7 +2,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:frontend/features/screens/messages/messages/customAppBar.dart';
-// import 'package:frontend/features/scripts/messageService.dart';
+import 'package:frontend/features/scripts/messageService.dart';
 import 'package:frontend/features/scripts/userService.dart';
 import 'package:frontend/models/chatMessageModel.dart';
 import 'package:frontend/models/chatUsersModel.dart';
@@ -16,8 +16,9 @@ class _MessageColumnState extends State<MessageColumn> {
   List<ChatMessage> messages = [];
   ChatUsers? sender;
   List<ChatUsers> recipients = [];
+  ChatMessage? conversationId;
   final _controller = TextEditingController();
-  // final MessageService messageService = MessageService();
+  final MessageService messageService = MessageService();
   final UserService userService = UserService();
 
   @override
@@ -28,15 +29,15 @@ class _MessageColumnState extends State<MessageColumn> {
 
   void _loadUsersAndMessages() async {
     try {
-      // ChatUsers sender = await userService.getSender();
-      // List<ChatUsers> recipients = await userService.getRecipients();
-      // List<ChatMessage> loadedMessages = await messageService.getMessages();
+      sender = await userService.getSender();
+      recipients = await userService.getRecipients();
+      conversationId = await messageService.getConversationId();
+      List<ChatMessage> loadedMessages = await messageService.getMessages();
 
       setState(() {
-        // sender = sender;
-        // recipients = recipients;
-        // messages = loadedMessages;
+        messages = loadedMessages;
       });
+      print('loaded messages: $messages');
     } catch (e) {
       print('Error loading messages: $e');
     }
@@ -48,20 +49,19 @@ class _MessageColumnState extends State<MessageColumn> {
         recipients.isNotEmpty) {
       ChatMessage newMessage = ChatMessage(
           messageId: '',
-          // senderId: sender!.userId.toString(),
-          senderId: 'senderId',
-          recipientIds: ['recipientId'],
-          // recipientIds: recipients.map((r) => r.userId.toString()).toList(),
+          senderId: sender!.userId.toString(),
+          recipientIds: recipients.map((r) => r.userId.toString()).toList(),
           content: _controller.text,
           messageType: 'text',
-          conversationId: '');
+          conversationId: conversationId!.conversationId.toString());
 
       try {
-        // ChatMessage message = await messageService.createMessage(newMessage);
+        ChatMessage message = await messageService.createMessage(newMessage);
         setState(() {
-          // messages.add(message);
+          messages.add(message);
         });
         _controller.clear();
+        print('message sent: $message');
       } catch (e) {
         print('Error creating message: $e');
       }

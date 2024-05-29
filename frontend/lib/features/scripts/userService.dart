@@ -6,7 +6,7 @@ import 'package:http/http.dart' as http;
 import 'dart:html' as html;
 
 class UserService {
-  static const String baseUrl = 'http://userservice:8500/api/user';
+  // static const String baseUrl = 'http://userservice:8500/api/user';
   static const String apiUrl = 'http://localhost:80/user/';
   static const String secret = '';
 
@@ -36,22 +36,19 @@ class UserService {
           'Authorization': 'Bearer $token',
         },
       );
-      
+
       if (response.statusCode == 200) {
         final jsonData = json.decode(response.body);
         return Users.fromJson(jsonData);
       } else {
         print('Request failed with status: ${response.statusCode}');
-        return Future.error('Request failed with status: ${response.statusCode}');
+        return Future.error(
+            'Request failed with status: ${response.statusCode}');
       }
-
-
-    }
-    catch (error) {
+    } catch (error) {
       print('Error: $error');
       return Future.error('Error: $error');
     }
-    
   }
 
   Future<ChatUsers> createUser(ChatUsers user) async {
@@ -80,7 +77,7 @@ class UserService {
   }
 
   Future<List<ChatUsers>> getRecipients() async {
-    final response = await http.get(Uri.parse('$baseUrl/get/id/recipient'));
+    final response = await http.get(Uri.parse('$apiUrl/get/id/recipient'));
 
     if (response.statusCode == 200) {
       List<dynamic> body = jsonDecode(response.body);
@@ -91,5 +88,4 @@ class UserService {
   }
 
   //add methods for update and delete
-  
 }

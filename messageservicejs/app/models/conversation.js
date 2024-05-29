@@ -1,6 +1,10 @@
 const mongoose = require('mongoose');
 
 const conversationSchema = new mongoose.Schema({
+    conversationId: {
+        type: String,
+        required: true,
+    },
     firstUserId: { 
         type: String,
         required: true,

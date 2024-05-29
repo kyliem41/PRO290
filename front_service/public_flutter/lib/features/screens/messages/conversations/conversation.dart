@@ -78,7 +78,7 @@ class _ChatColumnState extends State<ChatColumn> {
                             return GestureDetector(
                               onTap: () async {
                                 print('Selected user: ${searchResults[index]}');
-                                Conversation? conversation = await createConversation(searchResults[index].id);
+                                // Conversation? conversation = await createConversation(searchResults[index].id);
                               },
                               child: Card(
                                 child: Padding(
