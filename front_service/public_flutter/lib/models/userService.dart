@@ -11,7 +11,7 @@ class UserService {
   static const String secret = '';
 
   Future<List<ChatUsers>> getUsers() async {
-    final response = await http.get(Uri.parse('$baseUrl'));
+    final response = await http.get(Uri.parse('$apiUrl'));
 
     if (response.statusCode == 200) {
       List<dynamic> body = jsonDecode(response.body);
@@ -56,7 +56,7 @@ class UserService {
 
   Future<ChatUsers> createUser(ChatUsers user) async {
     final response = await http.post(
-      Uri.parse('$baseUrl'),
+      Uri.parse('$apiUrl'),
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode(user.toJson()),
     );
@@ -69,7 +69,7 @@ class UserService {
   }
 
   Future<ChatUsers> getSender() async {
-    final response = await http.get(Uri.parse('$baseUrl/get/id/sender'));
+    final response = await http.get(Uri.parse('$apiUrl/get/id/sender'));
 
     if (response.statusCode == 200) {
       final Map<String, dynamic> json = jsonDecode(response.body);
@@ -80,7 +80,7 @@ class UserService {
   }
 
   Future<List<ChatUsers>> getRecipients() async {
-    final response = await http.get(Uri.parse('$baseUrl/get/id/recipient'));
+    final response = await http.get(Uri.parse('$apiUrl/get/id/recipient'));
 
     if (response.statusCode == 200) {
       List<dynamic> body = jsonDecode(response.body);
