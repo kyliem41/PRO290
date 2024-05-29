@@ -5,8 +5,8 @@ import 'dart:html' as html;
 class LoginService {
   final String consulHost = 'consul';
   final int consulPort = 8500;
-  String? authToken =
-      'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6IjQwNWY0NDc3LWVlYWEtNGQ1NS1iZTAwLTdiM2UzN2ZkYWQ2MiIsImV4cCI6MTcxNzAxNDAxNH0.MFRyHXjKwU_LVx12OFMjqoXF_v0pka9Wr3ExXo0h_qE';
+  // String? authToken =
+      // 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6ImFiMmM0OGUyLTkxZWYtNGQ4YS1hOTllLWIyMDhiY2RiNWYxMiIsImV4cCI6MTcxNzA0MTUyN30.IWo3stQDkfJ6YMQEUOvr9c78WeO9-0OnhoyKXxqqQDM';
 
   // LoginService({required this.consulHost, required this.consulPort});
 
@@ -28,8 +28,8 @@ class LoginService {
       print('Response body: ${response.body}');
 
       if (response.statusCode == 200) {
-        // html.window.localStorage["auth_token"] = response.body;
-        authToken = response.body;
+        html.window.localStorage["auth_token"] = response.body;
+        // authToken = response.body;
         return true;
       } else {
         print('Failed to login: ${response.statusCode}');
