@@ -22,7 +22,18 @@ Future<Users?> getUser() async {
 Future<String> getUsername(String id) async {
   final response = await http.get(Uri.parse('http://localhost:80/user/get/id/$id'));
   if (response.statusCode == 200) {
+    print(response.body);
+     // Parse the response body as JSON
+    Map<String, dynamic> userData = json.decode(response.body);
     
+    // Extract the username from the userData map
+    String username = userData['username'];
+    
+    return username;
+  }
+  else{
+    print("Failed to get username");
+    print(response.statusCode);
   }
   
   return " ";

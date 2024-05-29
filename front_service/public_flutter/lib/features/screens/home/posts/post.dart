@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:frontend/models/postModel.dart' as PostModel;
 import 'package:frontend/features/scripts/userService.dart';
 import 'package:frontend/models/userModel.dart';
+import 'package:frontend/features/scripts/get_user.dart';
+// front_service\public_flutter\lib\features\scripts
 
 class Post extends StatefulWidget {
   final PostModel.Post post;
@@ -13,12 +15,12 @@ class Post extends StatefulWidget {
 }
 
 class _PostState extends State<Post> {
-  late Future<Users> futureUser;
+  late Future<String> username;
 
   @override
   void initState() {
     super.initState();
-    futureUser = UserService.getUserFromJWT(); // Fetch user data
+    username = getUsername(widget.post.userId); // Fetch user data
   }
 
   @override
@@ -42,8 +44,8 @@ class _PostState extends State<Post> {
             ),
             Expanded(
               child: SizedBox(
-                child: FutureBuilder<Users>(
-                  future: futureUser,
+                child: FutureBuilder<String>(
+                  future: username,
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
                       return CircularProgressIndicator();
@@ -52,8 +54,9 @@ class _PostState extends State<Post> {
                     } else if (!snapshot.hasData) {
                       return Text('No user data');
                     } else {
-                      final user = snapshot.data!;
-                      return _postContent(user.username, widget.post.content);
+                      String username = snapshot.data!;
+                      print('Username: $username');
+                      return _postContent(username, widget.post.content);
                     }
                   },
                 ),
