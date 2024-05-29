@@ -3,11 +3,6 @@ import 'package:http/http.dart' as http;
 import 'dart:html' as html;
 
 class LoginService {
-  final String consulHost = 'consul';
-  final int consulPort = 8500;
-
-  // LoginService({required this.consulHost, required this.consulPort});
-
   Future<bool> login(String username, String password) async {
     try {
       print("Username: $username");
@@ -45,20 +40,4 @@ class LoginService {
     }
     return false;
   }
-
-  // Future<String> getServiceAddress(String serviceName) async {
-  //   // final url = Uri.http(consulHost, '$consulPort/v1/catalog/service/$serviceName');
-  //   final url = Uri.http('localhost:80/user/login');
-  //   final response = await http.get(url);
-
-  //   if (response.statusCode == 200) {
-  //     final body = jsonDecode(response.body) as List;
-  //     if (body.isNotEmpty) {
-  //       final service = body.first;
-  //       return 'http://${service['ServiceAddress']}:${service['ServicePort']}';
-  //     }
-  //   }
-
-  //   throw Exception('Failed to retrieve service address');
-  // }
 }

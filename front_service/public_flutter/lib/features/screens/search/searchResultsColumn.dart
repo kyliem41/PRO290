@@ -51,15 +51,11 @@ class _SearchResultsColumnState extends State<SearchResultsColumn> {
                           itemBuilder: (context, index) {
                             return ResultCard(
                               user: results[index],
-                              currentUserId: currentUser?.id ?? 0,
-                              onFollow: (userId) {
-                                // Implement follow logic here
-                                print('Follow user with ID: $userId');
+                              currentUserId: currentUser?.id ?? "",
+                              onFollow: (userId) {  
                                 onFollow(userId);
                               },
                               onUnfollow: (userId) {
-                                // Implement unfollow logic here
-                                print('Unfollow user with ID: $userId');
                                 onUnfollow(userId);
                               },
                             );
@@ -157,9 +153,9 @@ class _SearchBarState extends State<SearchBar> {
 
 class ResultCard extends StatelessWidget {
   final Users user;
-  final int currentUserId;
-  final void Function(int userId) onFollow;
-  final void Function(int userId) onUnfollow;
+  final String currentUserId;
+  final void Function(String userId) onFollow;
+  final void Function(String userId) onUnfollow;
 
   ResultCard({
     required this.user,

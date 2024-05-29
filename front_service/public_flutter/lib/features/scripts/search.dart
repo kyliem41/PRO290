@@ -16,4 +16,3 @@ Future<List<Users>> search(String username, String currentUserUsername) async {
 
   return [];
 }
-

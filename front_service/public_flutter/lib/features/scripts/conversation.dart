@@ -1,14 +1,14 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'dart:html' as html;
 
-//possibly dont send all the data
-Future<Map<String, dynamic>> getUser(String username) async {
-  final response = await http.get(Uri.parse('http://localhost:80/user/get/username/$username'));
-  if (response.statusCode == 200) {
-    print(response.body);
-    return jsonDecode(response.body);
-  } 
-  else {
-    throw Exception('Failed to load user');
-  }
+Future<void> createConversation(String userId) async {
+  String? auth_token = html.window.localStorage["auth_token"];
+
+  final response = await http.post(
+    Uri.parse("localhost:80/api/messages/create/$userId"),
+    headers: {
+      'authorization': 'Bearer $auth_token'
+    }
+  );
 }

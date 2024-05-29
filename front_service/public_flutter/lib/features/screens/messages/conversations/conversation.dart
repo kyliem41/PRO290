@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:frontend/features/screens/messages/conversations/conversationList.dart';
 import 'package:frontend/models/chatUsersModel.dart';
 import 'package:frontend/features/scripts/search.dart';
+import 'package:frontend/features/scripts/get_user.dart';
+import 'package:frontend/models/userModel.dart';
 
 class ChatColumn extends StatefulWidget {
   @override
@@ -10,45 +11,88 @@ class ChatColumn extends StatefulWidget {
 
 class _ChatColumnState extends State<ChatColumn> {
   List<ChatUsers> chatUsers = [];
+  final _searchController = TextEditingController();
+  List<Users> searchResults = [];
 
   void _showSearchDialog() {
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text('New Conversation'),
-          content: TextField(
-            decoration: InputDecoration(
-              hintText: "Search for a user",
-              hintStyle: TextStyle(color: Colors.grey.shade600),
-              prefixIcon: Icon(
-                Icons.search,
-                color: Colors.grey.shade600,
-                size: 20,
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return AlertDialog(
+              title: Text('New Conversation'),
+              content: Container(
+                height: searchResults.isEmpty ? 150 : 400,
+                width: 300,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    TextField(
+                      controller: _searchController,
+                      decoration: InputDecoration(
+                        hintText: "Search for a user",
+                        hintStyle: TextStyle(color: Colors.grey.shade600),
+                        prefixIcon: Icon(
+                          Icons.search,
+                          color: Colors.grey.shade600,
+                          size: 20,
+                        ),
+                        filled: true,
+                        fillColor: Colors.grey.shade100,
+                        contentPadding: EdgeInsets.all(8),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(20),
+                          borderSide: BorderSide(color: Colors.grey.shade100),
+                        ),
+                      ),
+                    ),
+                    if (searchResults.isNotEmpty) ...[
+                      SizedBox(height: 20),
+                      Expanded(
+                        child: ListView.builder(
+                          itemCount: searchResults.length,
+                          itemBuilder: (context, index) {
+                            return GestureDetector(
+                              onTap: () {
+                                print('Selected user: ${searchResults[index]}');
+                              },
+                              child: Card(
+                                child: Padding(
+                                  padding: EdgeInsets.all(16),
+                                  child: Text(searchResults[index].username),
+                                ),
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                    ],
+                  ],
+                ),
               ),
-              filled: true,
-              fillColor: Colors.grey.shade100,
-              contentPadding: EdgeInsets.all(8),
-              enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(20),
-                borderSide: BorderSide(color: Colors.grey.shade100),
-              ),
-            ),
-          ),
-          actions: <Widget>[
-            TextButton(
-              child: Text('Cancel'),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-            TextButton(
-              child: Text('Search'),
-              onPressed: () {
-                // Perform search action
-              },
-            ),
-          ],
+              actions: <Widget>[
+                TextButton(
+                  child: Text('Cancel'),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                ),
+                TextButton(
+                  child: Text('Search'),
+                  onPressed: () async {
+                    Users? user = await getUser();
+                    if (user != null) {
+                      List<Users> results = await search(_searchController.text, user.username);
+                      setState(() {
+                        searchResults = results;
+                      });
+                    }
+                  },
+                ),
+              ],
+            );
+          },
         );
       },
     );
@@ -76,8 +120,7 @@ class _ChatColumnState extends State<ChatColumn> {
                       ),
                     ),
                     Container(
-                      padding: EdgeInsets.only(
-                          left: 8, right: 8, top: 2, bottom: 2),
+                      padding: EdgeInsets.only(left: 8, right: 8, top: 2, bottom: 2),
                       height: 40,
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(30),
