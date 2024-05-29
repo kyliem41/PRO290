@@ -347,6 +347,23 @@ pub async fn get_pfp(token: String) -> Option<NamedFile> {
     None
 }
 
+#[get("/pfp/id/<id>")]
+pub async fn get_pfp_by_id(id: String) -> Option<NamedFile> {
+    let user_db = match UserDB::new().await {
+        Ok(db) => db,
+        Err(err) => {
+            println!("{}", err);
+            return None;
+        }
+    };
+
+    if let Some(pfp_id) = user_db.get_column(&id, "pfp").await {
+        return image::get_image(&pfp_id).await;
+    }
+
+    None
+}
+
 #[get("/verify/token/<token>")]
 pub fn verify_jwt(token: String) -> Status {
     if let Ok(id) = utils::verify_jwt(&token) {
