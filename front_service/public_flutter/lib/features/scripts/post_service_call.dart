@@ -102,25 +102,27 @@ class PostService {
       );
 
       if (response.statusCode == 200) {
-        final jsonData = json.decode(response.body);
-        var list = Post.fromListJson(jsonData);
-        List<Post> posts = [];
-        Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
-        for (var post in list) {
-          if (post.position != null) {
-            Map<String, dynamic> map = position.toJson();
-            double distance = Geolocator.distanceBetween(
-              position.latitude, 
-              position.longitude, 
-              post.position['latitude'], 
-              post.position['longitude']
-            );
-            if (distance < 1000) {
-              posts.add(post);
-            }
-          }
-        }
-        return posts;
+  final jsonData = json.decode(response.body);
+  var list = Post.fromListJson(jsonData);
+  List<Post> posts = [];
+  Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+  for (var post in list) {
+    if (post.position != null) {
+      Map<String, dynamic> map = position.toJson();
+      double postLatitude = double.parse(post.position['latitude'].toString());
+      double postLongitude = double.parse(post.position['longitude'].toString());
+      double distance = Geolocator.distanceBetween(
+        position.latitude, 
+        position.longitude, 
+        postLatitude, 
+        postLongitude
+      );
+      if (distance < 1000) {
+        posts.add(post);
+      }
+    }
+  }
+  return posts;
 
       } else {
         print('Request failed with status: ${response.statusCode}');

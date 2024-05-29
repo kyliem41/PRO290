@@ -1,11 +1,26 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/models/postModel.dart' as PostModel;
+import 'package:frontend/features/scripts/userService.dart';
+import 'package:frontend/models/userModel.dart';
 
-class Post extends StatelessWidget {
+class Post extends StatefulWidget {
   final PostModel.Post post;
 
   const Post({required this.post});
-  
+
+  @override
+  _PostState createState() => _PostState();
+}
+
+class _PostState extends State<Post> {
+  late Future<Users> futureUser;
+
+  @override
+  void initState() {
+    super.initState();
+    futureUser = UserService.getUserFromJWT(); // Fetch user data
+  }
+
   @override
   Widget build(BuildContext context) {
     return SizedBox(
@@ -27,7 +42,21 @@ class Post extends StatelessWidget {
             ),
             Expanded(
               child: SizedBox(
-                child: _postContent(post.userId, post.content),
+                child: FutureBuilder<Users>(
+                  future: futureUser,
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return CircularProgressIndicator();
+                    } else if (snapshot.hasError) {
+                      return Text('Error: ${snapshot.error}');
+                    } else if (!snapshot.hasData) {
+                      return Text('No user data');
+                    } else {
+                      final user = snapshot.data!;
+                      return _postContent(user.username, widget.post.content);
+                    }
+                  },
+                ),
               ),
             ),
           ],
@@ -37,10 +66,7 @@ class Post extends StatelessWidget {
   }
 }
 
-Widget _postContent(String userid, String content) {
-  //final DateTime time = new DateTime(2024);
-  //String user, String userHandle, 
-
+Widget _postContent(String username, String content) {
   return Flexible(
     child: ListView(
       children: [
@@ -52,20 +78,20 @@ Widget _postContent(String userid, String content) {
             children: <Widget>[
               Row(
                 children: <Widget>[
-                  Text(userid,
+                  Text(username,
                       style: TextStyle(
                           color: Colors.black, fontWeight: FontWeight.bold)),
                   Container(
                     margin: EdgeInsets.only(left: 5),
-                    child: Text(userid, style: TextStyle(color: Colors.black)),
+                    child: Text(username, style: TextStyle(color: Colors.black)),
                   ),
                 ],
               ),
               Container(
-                  margin: EdgeInsets.only(top: 15),
-                  child: Text(
-                      content,
-                      style: TextStyle(color: Colors.black))), //text
+                margin: EdgeInsets.only(top: 15),
+                child: Text(content,
+                    style: TextStyle(color: Colors.black)), //text
+              ),
               SizedBox(height: 10),
               Container(
                 margin:
@@ -75,7 +101,7 @@ Widget _postContent(String userid, String content) {
                   children: <Widget>[
                     HoverableIcon(
                       icon: Icons.message_rounded,
-                      label: "15",
+                      label: "0",
                       hintText: "Comments",
                       onTap: () {
                         print('Comments icon clicked');
@@ -83,7 +109,7 @@ Widget _postContent(String userid, String content) {
                     ),
                     HoverableIcon(
                       icon: Icons.repeat,
-                      label: "15",
+                      label: "0",
                       hintText: "Reposts",
                       onTap: () {
                         print('Repeat icon clicked');
@@ -91,7 +117,7 @@ Widget _postContent(String userid, String content) {
                     ),
                     HoverableIcon(
                       icon: Icons.favorite_border,
-                      label: "15",
+                      label: "0",
                       hintText: "Likes",
                       onTap: () {
                         print('Like icon clicked');

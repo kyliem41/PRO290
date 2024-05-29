@@ -6,6 +6,7 @@ import 'package:frontend/models/postModel.dart' as PostModel;
 import 'package:frontend/features/scripts/post_service_call.dart' as postService;
 
 class PostsColumn extends StatefulWidget {
+
   @override
   _PostsColumnState createState() => _PostsColumnState();
 }
@@ -53,7 +54,7 @@ Future<void> _fetchPosts() async {
           padding: EdgeInsets.only(top: 60, bottom: 20, left: 20, right: 20),
           itemBuilder: (_, int index) => Post(post: _posts[index],), // Post is being called here ajfkjdsafkdsaj
           itemCount: _posts.length,
-          reverse: true,
+          reverse: false,
         ),
         Positioned(
           bottom: 16.0,
@@ -193,11 +194,11 @@ class _AddPostState extends State<AddPost> {
                               filled: true,
                               fillColor: Colors.white,
                             ),
-                            onChanged: (value) {
-                              setState(() {
-                                _bodyController.text = value;
-                              });
-                            },
+                            // onChanged: (value) {
+                            //   setState(() {
+                            //     _bodyController.text += value;
+                            //   });
+                            // },
                           ),
                           SizedBox(height: 35),
                           SizedBox(
