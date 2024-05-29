@@ -10,8 +10,6 @@ Future<Users?> getUser() async {
     final response = await http.get(Uri.parse('http://localhost:80/user/get/$auth_token'));
     if (response.statusCode == 200) {
       final Map<String, dynamic> jsonResponse = jsonDecode(response.body);
-      print("got user");
-      print(jsonResponse);
       return Users.fromJson(jsonResponse);
     }
   }
@@ -40,6 +38,7 @@ Future<String> getUsername(String id) async {
 }
 
 Future<Uint8List?> getPfp() async {
+  print("trying to get profile image");
   String? authToken = html.window.localStorage["auth_token"];
   if (authToken == null) {
     print('No auth token found in local storage');

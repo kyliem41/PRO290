@@ -1,12 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/features/screens/home/posts/post.dart';
 import 'package:frontend/models/postModel.dart' as PostModel;
+import 'package:frontend/features/scripts/get_user.dart';
 
-class Post extends StatelessWidget {
-
+class Post extends StatefulWidget {
   final PostModel.Post post;
 
   const Post({required this.post});
+
+  @override
+  _PostState createState() => _PostState();
+}
+
+class _PostState extends State<Post> {
+  late Future<String> username;
+
+  @override
+  void initState() {
+    super.initState();
+    username = getUsername(widget.post.userId); // Fetch user data
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -29,7 +42,22 @@ class Post extends StatelessWidget {
             ),
             Expanded(
               child: SizedBox(
-                child: _postContent(post.userId, post.content),
+                child: FutureBuilder<String>(
+                  future: username,
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return CircularProgressIndicator();
+                    } else if (snapshot.hasError) {
+                      return Text('Error: ${snapshot.error}');
+                    } else if (!snapshot.hasData) {
+                      return Text('No user data');
+                    } else {
+                      String username = snapshot.data!;
+                      print('Username: $username');
+                      return _postContent(username, widget.post.content);
+                    }
+                  },
+                ),
               ),
             ),
           ],
@@ -39,11 +67,7 @@ class Post extends StatelessWidget {
   }
 }
 
-Widget _postContent(String userid, String content) {
-  //final DateTime time = new DateTime(2024);
-  // String time = "01/05/05";
-  // String location = "im right here";
-
+Widget _postContent(String username, String content) {
   return Flexible(
     child: ListView(
       children: [
@@ -55,20 +79,20 @@ Widget _postContent(String userid, String content) {
             children: <Widget>[
               Row(
                 children: <Widget>[
-                  Text(userid,
+                  Text(username,
                       style: TextStyle(
                           color: Colors.black, fontWeight: FontWeight.bold)),
                   Container(
                     margin: EdgeInsets.only(left: 5),
-                    child: Text(userid, style: TextStyle(color: Colors.black)),
+                    child: Text(username, style: TextStyle(color: Colors.black)),
                   ),
                 ],
               ),
               Container(
-                  margin: EdgeInsets.only(top: 15),
-                  child: Text(
-                      content,
-                      style: TextStyle(color: Colors.black))), //text
+                margin: EdgeInsets.only(top: 15),
+                child: Text(content,
+                    style: TextStyle(color: Colors.black)), //text
+              ),
               SizedBox(height: 10),
               Container(
                 margin:
